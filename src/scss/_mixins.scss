@@ -1,0 +1,48 @@
+@mixin unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  @mixin respond($breakpoint) {
+  
+    @if $breakpoint == x-small {
+        @media (max-width: 22.5em) { @content };   
+    }
+  
+    @if $breakpoint == small {
+        @media (max-width: 35.5em) { @content };   
+    }
+  
+    @if $breakpoint == medium {
+        @media (max-width: 41.625em) { @content };    
+    }
+  
+    @if $breakpoint == large {
+        @media (max-width: 48em) { @content };
+    }
+  
+    @if $breakpoint == x-large {
+        @media (min-width: 64em) { @content };
+    }
+  
+    @if $breakpoint == xx-large {
+        @media (min-width: 81.25em) { @content };
+    }
+  }
+  
+  // 360px / 16 = 22.5em - x-small
+  
+  // 568px / 16 = 35.5em - small
+  
+  // 666px / 16 = 41.625em - medium
+  
+  // 768px / 16 = 48em - large
+  
+  // 1024px / 16 = 64em - x-large
+  
+  // 1300px / 16 = 81.25em - xx-large
+  

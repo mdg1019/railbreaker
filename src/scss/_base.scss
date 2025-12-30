@@ -1,0 +1,78 @@
+@use './_mixins';
+@use './_colors';
+
+@font-face {
+  font-family: 'MGSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/MGSans.ttf') format('truetype');
+}
+
+
+@font-face {
+  font-family: 'MGSansCondensed';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/MGSansCondensed.ttf') format('truetype');
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 62.5%; // 1rem = 10px
+
+  @include mixins.respond(x-large) {
+    font-size: 68.75%; // 1rem = 11px
+  }
+
+  //   @include respond(xx-large) {
+  //       font-size: 75%;             // 1rem = 12px
+  //   }
+
+  @include mixins.respond(large) {
+    font-size: 56.25%; // 1rem = 9px
+  }
+
+  @include mixins.respond(medium) {
+    font-size: 50%; // 1rem = 8px
+  }
+
+  @include mixins.respond(small) {
+    font-size: 43.75%; // 1rem = 7px
+  }
+
+  @include mixins.respond(x-small) {
+    font-size: 37.5%; // 1rem = 6px
+  }
+}
+
+body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-width: 100vw;
+  color: colors.$primary-text_color;
+  border: colors.$background-color;
+  font-family: 'MGSans', sans-serif;
+  font-style: normal;
+  font-size: 1.6rem;
+  overflow-x: hidden;
+  @include mixins.unselectable;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: colors.$hyperlink-color;
+}
+
+a:active {
+  color: colors.$hyperlink-active-color;
+}
