@@ -61,31 +61,27 @@ fn get_tracks() -> HashMap<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let context = tauri::generate_context!();
-    let exe_dir = std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
-        .unwrap_or_default();
-    let resource_path = exe_dir.join("resources/tracks.csv");
-    let tracks = models::track::load_tracks(&resource_path).unwrap_or_default();
  
     tauri::Builder::default()
         .setup(move |app| {
+            let current_directory = std::env::current_dir()
+                .map_err(|e| format!("Failed to get current directory: {}", e)).unwrap();
+                            
+            let downloads_directory = dirs::download_dir()
+                .ok_or_else(|| "Could not find downloads directory".to_string()).unwrap();
+
+   
+            let resource_path = current_directory.join("resources/tracks.csv");
+            let tracks = models::track::load_tracks(&resource_path).unwrap_or_default();
+ 
+
             let global_state = global_state();
-            {
-                let mut state = global_state.lock().unwrap();
-                state.tracks = tracks.clone();
-            }
 
             {
-                let current_dir = std::env::current_dir()
-                    .map_err(|e| format!("Failed to get current directory: {}", e)).unwrap();
-
-                let downloads_dir = dirs::download_dir()
-                    .ok_or_else(|| "Could not find downloads directory".to_string()).unwrap();
-
                 let mut gs = global_state.lock().unwrap();
-                gs.current_directory = current_dir.to_string_lossy().to_string();
-                gs.downloads_directory = downloads_dir.to_string_lossy().to_string();
+                gs.tracks = tracks;
+                gs.current_directory = current_directory.to_string_lossy().to_string();
+                gs.downloads_directory = downloads_directory.to_string_lossy().to_string();
             }
 
             menus::setup_menus(app)?;
@@ -108,8 +104,24 @@ pub fn run() {
                         let gs = global_state.lock().unwrap();
                         gs.downloads_directory.clone()
                     };
-                    let mut cfg = ConfigState::default();
-                    cfg.last_directory = downloads_directory;
+
+                    // Wait a little for the window to be ready
+                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                    
+                    let window = app_handle.get_webview_window("main").unwrap();
+                        let outer_size = window.outer_size().unwrap();
+                        let width = outer_size.width as f64;
+                        let height = outer_size.height as f64;
+                        let x = window.outer_position().unwrap().x as f64;
+                        let y = window.outer_position().unwrap().y as f64;
+
+                        let cfg = ConfigState {
+                            last_directory: downloads_directory,
+                            window_x: Some(x),
+                            window_y: Some(y),
+                            window_width: Some(width),
+                            window_height: Some(height),
+                        };  
 
                     let _ = files::write_json_file(path, &cfg).await;
                 }
@@ -144,7 +156,7 @@ pub fn run() {
                         if let Ok(mut cfg) = files::read_json_file::<ConfigState>(path.clone()).await {
                             cfg.window_width = Some(w);
                             cfg.window_height = Some(h);
-                            let r = files::write_json_file(path, &cfg).await;
+                            let _ = files::write_json_file(path, &cfg).await;
                         }
                     });
                 }
