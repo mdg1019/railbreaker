@@ -1,8 +1,10 @@
 mod models;
 mod global_state;
+mod menus;
 
 use std::collections::HashMap;
 use global_state::global_state;
+use tauri::Emitter;
 
 #[tauri::command]
 fn get_tracks() -> HashMap<String, String> {
@@ -25,8 +27,30 @@ pub fn run() {
     }
 
     tauri::Builder::default()
+        .setup(|app| {
+            menus::setup_menus(app)?;
+
+            Ok(())
+        })
+                .on_menu_event(|app, event| {
+            match event.id().as_ref() {
+                "new" => {
+                    let _ = app.emit("menu-new", ()).unwrap();
+                }
+                "open" => {
+                    let _ = app.emit("menu-open", ()).unwrap();
+                }
+                "exit" => {
+                    let _ = app.emit("menu-exit", ()).unwrap();
+                }
+                _ => {}
+            }
+        })
+
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_tracks])
+        .invoke_handler(tauri::generate_handler![
+            get_tracks
+        ])
         .run(context)
         .expect("error while running tauri application");
 }
