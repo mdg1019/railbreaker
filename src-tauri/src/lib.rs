@@ -63,6 +63,11 @@ fn get_tracks() -> HashMap<String, String> {
     global_state().lock().unwrap().tracks.clone()
 }
 
+#[tauri::command]
+async fn process_zip_file(path: String) -> Result<String, String> {
+    Ok(format!("Processed zip file at path: {}", path))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let context = tauri::generate_context!();
@@ -193,8 +198,10 @@ pub fn run() {
         })
 
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
-            get_tracks
+            get_tracks,
+            process_zip_file,
         ])
         .run(context)
         .expect("error while running tauri application");

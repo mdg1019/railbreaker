@@ -1,19 +1,17 @@
 <script setup lang="ts">
 
-import { onMounted, onBeforeUnmount } from "vue";
+import { onMounted, onUnmounted } from "vue";
+import { open } from "@tauri-apps/plugin-dialog";
+import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import { useTracksStore } from "./stores/tracks";
 import "./scss/_main.scss";
-import { listen } from "@tauri-apps/api/event";
 
 const tracksStore = useTracksStore();
 
-let unlistenNew: (() => void) | null = null;
-let unlistenOpen: (() => void) | null = null;
-let unlistenExit: (() => void) | null = null;
-
-function handleMenuNew() {
-  tracksStore.tracks.clear();
-}
+let unlistenOpen: (() => void);
+let unlistenOpenZip: (() => void);
+let unlistenExit: (() => void);
 
 function handleMenuOpen() {
   console.log("Open menu clicked");
@@ -25,15 +23,33 @@ function handleMenuExit() {
 
 onMounted(async () => {
   tracksStore.loadTracks();
-  unlistenNew = await listen("menu-new", handleMenuNew);
   unlistenOpen = await listen("menu-open", handleMenuOpen);
+
+  unlistenOpenZip = await listen("menu-open-zip", async () => {
+    console.log("Open Zip menu clicked");
+    const file = await open({
+      multiple: false,
+      filters: [
+        {
+          name: "Zip Files",
+          extensions: ["zip"],
+        },
+      ],
+    });
+
+    if (file && typeof file === "string") {
+      console.log("Selected zip file:", file);
+      let racecard = await invoke('process_zip_file', { path: file });
+      console.log("Racecard data:", racecard);
+    }
+  });
   unlistenExit = await listen("menu-exit", handleMenuExit);
 });
 
-onBeforeUnmount(() => {
-  if (unlistenNew) unlistenNew();
-  if (unlistenOpen) unlistenOpen();
-  if (unlistenExit) unlistenExit();
+onUnmounted(() => {
+  unlistenOpen();
+  unlistenOpenZip();
+  unlistenExit();
 });
 </script>
 
@@ -43,6 +59,4 @@ onBeforeUnmount(() => {
   </main>
 </template>
 
-<style lang="scss" scoped>
-</style>
-
+<style lang="scss" scoped></style>
