@@ -18,7 +18,7 @@ pub fn run() {
         .ok()
         .and_then(|p| p.parent().map(|p| p.to_path_buf()))
         .unwrap_or_default();
-    let resource_path = exe_dir.join("resources/tracks.txt");
+    let resource_path = exe_dir.join("resources/tracks.csv");
     let tracks = models::track::load_tracks(&resource_path).unwrap_or_default();
     let global_state = global_state();
     {
