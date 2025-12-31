@@ -5,7 +5,7 @@ mod files;
 
 use std::collections::HashMap;
 use tokio::fs;
-use states::global_state::global_state;
+use states::global_state::{global_state, GlobalState};
 use states::config_state::ConfigState;
 use tauri::{Emitter, Manager};
 
@@ -19,6 +19,11 @@ fn get_config_file_path() -> Result<String, String> {
     }
     
     Ok(format!("{}/config.json", global_state.current_directory))
+}
+
+#[tauri::command]
+fn get_global_state() -> GlobalState {
+    global_state().lock().unwrap().clone()
 }
 
 #[tauri::command]

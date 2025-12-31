@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import FormView from '../views/FormView.vue'
+import RaceCard from '../views/RacecardView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Form',
-    component: FormView
+    name: 'RaceCard',
+    component: RaceCard
   },
   
 ]
