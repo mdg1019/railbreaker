@@ -7,6 +7,7 @@ pub struct GlobalState {
     pub tracks: HashMap<String, String>,
     pub current_directory: String,
     pub downloads_directory: String,
+    pub racecards_directory: String,
 }
 
 impl Default for GlobalState {
@@ -15,6 +16,7 @@ impl Default for GlobalState {
             tracks: HashMap::new(),
             current_directory: String::new(),
             downloads_directory: String::new(),
+            racecards_directory: String::new(),
         }
     }
 }

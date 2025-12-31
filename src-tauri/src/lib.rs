@@ -82,7 +82,16 @@ pub fn run() {
                 gs.tracks = tracks;
                 gs.current_directory = current_directory.to_string_lossy().to_string();
                 gs.downloads_directory = downloads_directory.to_string_lossy().to_string();
-            }
+
+                let racecard_path = current_directory.join("Racecards");
+                if !racecard_path.exists() {
+                    if let Err(e) = std::fs::create_dir_all(&racecard_path) {
+                        eprintln!("Failed to create Racecards directory: {}", e);
+                    }
+                }
+                
+                gs.racecards_directory = racecard_path.to_string_lossy().to_string();
+            }            
 
             menus::setup_menus(app)?;
 
@@ -107,7 +116,7 @@ pub fn run() {
 
                     // Wait a little for the window to be ready
                     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                    
+
                     let window = app_handle.get_webview_window("main").unwrap();
                         let outer_size = window.outer_size().unwrap();
                         let width = outer_size.width as f64;
@@ -165,11 +174,11 @@ pub fn run() {
         })
         .on_menu_event(|app, event| {
             match event.id().as_ref() {
-                "new" => {
-                    let _ = app.emit("menu-new", ()).unwrap();
-                }
                 "open" => {
                     let _ = app.emit("menu-open", ()).unwrap();
+                }
+                "open-zip" => {
+                    let _ = app.emit("menu-open-zip", ()).unwrap();
                 }
                 "exit" => {
                     let _ = app.emit("menu-exit", ()).unwrap();
