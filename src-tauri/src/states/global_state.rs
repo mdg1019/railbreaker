@@ -5,12 +5,16 @@ use serde::Serialize;
 #[derive(Debug, Clone, Serialize)]
 pub struct GlobalState {
     pub tracks: HashMap<String, String>,
+    pub current_directory: String,
+    pub downloads_directory: String,
 }
 
 impl Default for GlobalState {
     fn default() -> Self {
         GlobalState {
             tracks: HashMap::new(),
+            current_directory: String::new(),
+            downloads_directory: String::new(),
         }
     }
 }
