@@ -16,7 +16,6 @@
                 "title": "RailBreaker",
                 "width": 800,
                 "height": 600,
-                "backgroundColor": "#121212",
                 "transparent": false,
                 "visible": false
             }
