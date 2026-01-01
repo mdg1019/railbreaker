@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
@@ -22,6 +22,8 @@ function handleMenuOpen() {
 function handleMenuExit() {
     console.log("Exit menu clicked");
 }
+
+document.documentElement.classList.add('dark');
 
 onMounted(async () => {
     unlistenOpen = await listen("menu-open", handleMenuOpen);
@@ -62,9 +64,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <main>
-        <router-view />
+    <main class="container">
+        <!-- <router-view /> -->
     </main>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+    
+</style>

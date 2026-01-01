@@ -78,6 +78,14 @@ pub fn run() {
 
             menus::setup_menus(app)?;
 
+            if let Some(window) = app.get_webview_window("main") {
+                let window_clone = window.clone();
+                tauri::async_runtime::spawn(async move {
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                    let _ = window_clone.show();
+                });
+            }
+
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 load_or_init_config(app_handle).await;

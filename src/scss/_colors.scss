@@ -1,8 +1,14 @@
-@use 'sass:color';
+@use "sass:color";
 
-$primary-text-color: #333333;
-$background-color: #f5f5f5;
-$gray-text-color: #666666;
+:root {
+    --bg: #ffffff;
+    --fg: #000000;
+}
+
+:root.dark {
+    --bg: #121212;
+    --fg: #ffffff;
+}
 
 $hyperlink-active-color: rgba(color.scale(blue, $lightness: 30%), 0.8);
 $hyperlink-color: rgba(color.scale(blue, $lightness: 20%), 1);
