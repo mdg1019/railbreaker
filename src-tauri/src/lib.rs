@@ -8,6 +8,9 @@ use tokio::fs;
 use states::global_state::{global_state, GlobalState};
 use states::config_state::ConfigState;
 use tauri::{Emitter, Manager};
+use models::racecard::Racecard;
+
+use crate::models::track;
 
 fn get_config_file_path() -> Result<String, String> {
     let global_state = global_state()
@@ -116,9 +119,44 @@ async fn process_zip_file(path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn process_racecard_file(path: String) -> Result<String, String> {
-    println!("Processing racecard file at path: {}", path);
-    Ok(path)
+async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String> {
+    let contents = fs::read_to_string(&path).await
+        .map_err(|e| format!("Failed to racecard file: {}", e))?;
+
+    let lines: Vec<Vec<String>> = contents
+        .lines()
+        .map(|line| {
+            line.split(',')
+                .map(|field| field.trim().trim_matches('"').to_string())
+                .collect()
+        })
+        .collect();
+
+    let number_of_columns = lines.first()
+        .ok_or("Racecard file is empty")?
+        .len();
+
+    for (i, line) in lines.iter().enumerate() {
+        if line.len() != number_of_columns {
+            return Err(format!("Inconsistent number of columns at line {}", i + 1));
+        }
+    }
+  
+    let track_code = &lines[0][0];
+    let track_name = {
+        let gs = global_state().lock().unwrap();
+        gs.tracks.get(track_code)
+            .cloned()
+            .unwrap_or_else(|| track_code.clone())
+    };
+    
+    let mut racecard = models::racecard::Racecard {
+        track: track_name,
+        date: lines[0][1].clone(),
+    };
+
+    println!("{:?}", racecard);
+    Ok(racecard)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

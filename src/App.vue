@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, nextTick } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,6 +18,7 @@ let unlistenExit: (() => void);
 
 const isProcessingZip = ref(false); 
 const isProcessingRacecard = ref(false); 
+const racecardData = ref(null);
 
 function handleMenuOpen() {
     console.log("Open menu clicked");
@@ -44,17 +45,21 @@ onMounted(async () => {
             defaultPath: configFileStore.configState.lastDirectory
         });
 
+        racecardData.value = null;
+        await nextTick();
+        
+
         if (file) {
             isProcessingZip.value = true;
 
             try {
-                let racecard = await invoke('process_zip_file', { path: file });
+                let racecard_path = await invoke('process_zip_file', { path: file });
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = true;
-                let path = await invoke('process_racecard_file', { path: racecard });
-                console.log("Racecard processed at path:", path);
+                racecardData.value = await invoke('process_racecard_file', { path: racecard_path });
+                console.log("Racecard processed:", racecardData.value);
                 
-                //isProcessingRacecard.value = false;
+                isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
                 console.error("Error processing zip file:", error);
@@ -90,7 +95,10 @@ onUnmounted(() => {
             <br />
             Processing Racecard File
         </div>
-        <!-- <router-view /> -->
+        <div v-if="racecardData">
+            <h2>Racecard Data:</h2>
+            <pre>{{ racecardData }}</pre>
+        </div>
     </main>
 </template>
 
