@@ -1,20 +1,20 @@
 
 <script setup lang="ts">
-import { useTracksStore } from "../stores/tracks";
+import { useGlobalStateStore } from "../stores/globalStateStore";
 
-const tracksStore = useTracksStore();
+const globalStateStore = useGlobalStateStore();
 </script>
 
 <template>
     <section>
       <h2>Tracks</h2>
-      <div v-if="tracksStore.loading">Loading...</div>
-      <div v-if="tracksStore.error" style="color: red">{{ tracksStore.error }}</div>
+      <div v-if="globalStateStore.loading">Loading...</div>
+      <div v-if="globalStateStore.error" style="color: red">{{ globalStateStore.error }}</div>
       <textarea
         rows="10"
         style="width: 100%; margin-top: 1em;"
         readonly
-        :value="Array.from(tracksStore.tracks.entries())
+        :value="Array.from(globalStateStore.getTracks().entries())
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([key, value]) => `${key}: ${value}`)
           .join('\n')"

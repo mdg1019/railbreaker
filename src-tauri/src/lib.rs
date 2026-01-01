@@ -22,7 +22,7 @@ fn get_config_file_path() -> Result<String, String> {
 }
 
 #[tauri::command]
-fn get_global_state() -> GlobalState {
+fn load_global_state() -> GlobalState {
     global_state().lock().unwrap().clone()
 }
 
@@ -96,6 +96,9 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             get_tracks,
+            load_config_file,
+            save_config_file,
+            load_global_state,
             process_zip_file,
         ])
         .run(context)
