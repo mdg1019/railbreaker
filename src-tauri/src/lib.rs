@@ -1,11 +1,11 @@
 mod files;
 mod menus;
 mod models;
-mod single_file_indexes;
+mod constants;
 mod states;
 
 use models::racecard::{Horse, Race, Racecard};
-use single_file_indexes::*;
+use constants::single_file_indexes::*;
 use states::config_state::ConfigState;
 use states::global_state::{global_state, GlobalState};
 use std::collections::HashMap;
