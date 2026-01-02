@@ -74,7 +74,21 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             entry: line[SF_ENTRY].clone(),
             claiming_price_of_horse: line[SF_CLAIMING_PRICE_OF_HORSE].parse::<u32>().ok(),
             breed_type: line[SF_BREED_TYPE].clone(),
-            todays_nasal_strip_change: line[SF_TODAYS_NASAL_STRIP_CHANGE].parse::<u32>().ok(), 
+            todays_nasal_strip_change: line[SF_TODAYS_NASAL_STRIP_CHANGE].parse::<u32>().ok(),
+            todays_trainer: line[SF_TODAYS_TRAINER].clone(),
+            trainer_starts: line[SF_TRAINER_STARTS].parse::<u32>().ok(),
+            trainer_wins: line[SF_TRAINER_WINS].parse::<u32>().ok(),
+            trainer_places: line[SF_TRAINER_PLACES].parse::<u32>().ok(),
+            trainer_shows: line[SF_TRAINER_SHOWS].parse::<u32>().ok(),
+            todays_jockey: line[SF_TODAYS_JOCKEY].clone(),
+            apprentice_weight_allowance: line[SF_APPRENTICE_WEIGHT_ALLOWANCE].parse::<f32>().ok(),
+            jockey_starts: line[SF_JOCKEY_STARTS].parse::<u32>().ok(),
+            jockey_wins: line[SF_JOCKEY_WINS].parse::<u32>().ok(),
+            jockey_places: line[SF_JOCKEY_PLACES].parse::<u32>().ok(),
+            jockey_shows: line[SF_JOCKEY_SHOWS].parse::<u32>().ok(),
+            todays_owner: line[SF_TODAYS_OWNER].clone(),
+            owners_silks: line[SF_OWNERS_SILKS].clone(),
+            main_track_only_ae_indicator: line[SF_MAIN_TRACK_ONLY_AE_INDICATOR].clone(),
         };
 
         races[race_idx].horses.push(horse);

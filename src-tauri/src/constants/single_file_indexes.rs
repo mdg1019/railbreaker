@@ -23,4 +23,20 @@ pub const SF_SIMULCAST_HOST_TRACK_RACE_NUMBER: usize = 21;
 pub const SF_BREED_TYPE: usize = 22;
 pub const SF_TODAYS_NASAL_STRIP_CHANGE: usize = 23;
 pub const SF_TODAYS_ALL_WEATHER_SURFACE_FLAG: usize = 24;
-// 26-27 are reserved
+// 25-26 are reserved
+pub const SF_TODAYS_TRAINER: usize = 27;
+pub const SF_TRAINER_STARTS: usize = 28;
+pub const SF_TRAINER_WINS: usize = 29;
+pub const SF_TRAINER_PLACES: usize = 30;
+pub const SF_TRAINER_SHOWS: usize = 31;
+pub const SF_TODAYS_JOCKEY: usize = 32;
+pub const SF_APPRENTICE_WEIGHT_ALLOWANCE: usize = 33;
+pub const SF_JOCKEY_STARTS: usize = 34;
+pub const SF_JOCKEY_WINS: usize = 35;
+pub const SF_JOCKEY_PLACES: usize = 36;
+pub const SF_JOCKEY_SHOWS: usize = 37;
+pub const SF_TODAYS_OWNER: usize = 38;
+pub const SF_OWNERS_SILKS: usize = 39;
+pub const SF_MAIN_TRACK_ONLY_AE_INDICATOR: usize = 40;
+// 41 is reserved
+
