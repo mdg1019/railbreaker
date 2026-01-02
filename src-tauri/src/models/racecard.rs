@@ -32,6 +32,17 @@ pub struct Race {
     pub race_conditions_line4: String,
     pub race_conditions_line5: String,
     pub race_conditions_line6: String,
+    pub low_claiming_price: Option<u32>,
+    pub statebred_flag: String,
+    pub wager_type_line1: String,
+    pub wager_type_line2: String,
+    pub wager_type_line3: String,
+    pub wager_type_line4: String,
+    pub wager_type_line5: String,
+    pub wager_type_line6: String,  
+    pub wager_type_line7: String,
+    pub wager_type_line8: String,
+    pub wager_type_line9: String, 
     pub horses: Vec<Horse>,
 }
 
@@ -124,7 +135,15 @@ pub struct Horse {
     pub trainer_jockey_combination_shows: Option<u32>,
     pub trainer_two_dollar_roi: Option<u32>,
     pub number_of_days_since_last_race: Option<u32>,
+    pub lifetime_all_weather_starts: Option<u32>,
+    pub lifetime_all_weather_wins: Option<u32>,
+    pub lifetime_all_weather_places: Option<u32>,
+    pub lifetime_all_weather_shows: Option<u32>,
+    pub lifetime_all_weather_earnings: Option<u32>,
+    pub best_bris_speed_all_weather_surface: Option<u32>,
+    pub bris_prime_power_rating: Option<f64>,
     pub workouts: Vec<Workout>,
+    pub past_performances: Vec<PastPerformance>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -138,4 +157,13 @@ pub struct Workout {
     pub main_inner_track_indicator: String,
     pub number_of_workouts_that_day_distance: Option<u32>,
     pub rank: Option<u32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PastPerformance {
+    pub race_date: String,
+    pub days_since_last_race: Option<u32>,
+    pub track_code: String,
+    pub bris_track_code: String,
+    pub race_number: Option<u32>,
 }

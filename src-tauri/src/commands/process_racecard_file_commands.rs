@@ -1,5 +1,5 @@
 use tokio::fs;
-use crate::models::racecard::{Racecard, Race, Horse, Workout};
+use crate::models::racecard::{Racecard, Race, Horse, Workout, PastPerformance};
 use crate::states::global_state::global_state;
 use crate::constants::single_file_indexes::*;
 
@@ -69,6 +69,17 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 race_conditions_line4: line[SF_RACE_CONDITIONS_LINE4].clone(),
                 race_conditions_line5: line[SF_RACE_CONDITIONS_LINE5].clone(),
                 race_conditions_line6: line[SF_RACE_CONDITIONS_LINE6].clone(),
+                low_claiming_price: line[SF_LOW_CLAIMING_PRICE_FOR_RACE].parse::<u32>().ok(),
+                statebred_flag: line[SF_STATEBRED_FLAG_FOR_RACE].clone(),
+                wager_type_line1: line[SF_WAGER_TYPES_FOR_RACE_LINE1].clone(),
+                wager_type_line2: line[SF_WAGER_TYPES_FOR_RACE_LINE2].clone(),
+                wager_type_line3: line[SF_WAGER_TYPES_FOR_RACE_LINE3].clone(),
+                wager_type_line4: line[SF_WAGER_TYPES_FOR_RACE_LINE4].clone(),
+                wager_type_line5: line[SF_WAGER_TYPES_FOR_RACE_LINE5].clone(),
+                wager_type_line6: line[SF_WAGER_TYPES_FOR_RACE_LINE6].clone(),
+                wager_type_line7: line[SF_WAGER_TYPES_FOR_RACE_LINE7].clone(),
+                wager_type_line8: line[SF_WAGER_TYPES_FOR_RACE_LINE8].clone(),
+                wager_type_line9: line[SF_WAGER_TYPES_FOR_RACE_LINE9].clone(),
                 horses: Vec::new(),
             };
             races.push(race);
@@ -163,7 +174,15 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             trainer_jockey_combination_shows: line[SF_TRAINER_JOCKEY_COMBINATION_SHOWS].parse::<u32>().ok(),
             trainer_two_dollar_roi: line[SF_TRAINER_TWO_DOLLAR_ROI].parse::<u32>().ok(),
             number_of_days_since_last_race: line[SF_NUMBER_OF_DAYS_SINCE_LAST_RACE].parse::<u32>().ok(),
+            lifetime_all_weather_starts: line[SF_LIFETIME_ALL_WEATHER_SURFACE_STARTS].parse::<u32>().ok(),
+            lifetime_all_weather_wins: line[SF_LIFETIME_ALL_WEATHER_SURFACE_WINS].parse::<u32>().ok(),
+            lifetime_all_weather_places: line[SF_LIFETIME_ALL_WEATHER_SURFACE_PLACES].parse::<u32>().ok(),
+            lifetime_all_weather_shows: line[SF_LIFETIME_ALL_WEATHER_SURFACE_SHOWS].parse::<u32>().ok(),
+            lifetime_all_weather_earnings: line[SF_LIFETIME_ALL_WEATHER_SURFACE_EARNINGS].parse::<u32>().ok(),
+            best_bris_speed_all_weather_surface: line[SF_BEST_BRIS_SPEED_ALL_WEATHER_SURFACE].parse::<u32>().ok(),
+            bris_prime_power_rating: line[SF_BRIS_PRIME_POWER_RATING].parse::<f64>().ok(),
             workouts: Vec::new(),
+            past_performances: Vec::new(),
         };
 
         for j in 0..12 {
@@ -182,7 +201,20 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             horse.workouts.push(workout);
         }
 
+        for j in 0..10 {
+            let pp = PastPerformance { 
+                race_date: line[SF_PP_RACE_DATE + j].clone(),
+                days_since_last_race: line[SF_PP_NUMBER_OF_DAYS_SINCE_LAST_RACE + j].parse::<u32>().ok(),
+                track_code: line[SF_PP_TRACK_CODE + j].clone(),
+                bris_track_code: line[SF_PP_BRIS_TRACK_CODE + j].clone(),
+                race_number: line[SF_PP_RACE_NUMBER + j].parse::<u32>().ok(),
+            };
+
+            horse.past_performances.push(pp);
+        }
+
         races[race_idx].horses.push(horse);
+
     }
 
     let racecard = Racecard {

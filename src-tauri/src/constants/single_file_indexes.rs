@@ -125,3 +125,29 @@ pub const SF_RACE_CONDITIONS_LINE3: usize = 226;
 pub const SF_RACE_CONDITIONS_LINE4: usize = 227;
 pub const SF_RACE_CONDITIONS_LINE5: usize = 228;
 pub const SF_RACE_CONDITIONS_LINE6: usize = 229;
+pub const SF_LIFETIME_ALL_WEATHER_SURFACE_STARTS: usize = 230;
+pub const SF_LIFETIME_ALL_WEATHER_SURFACE_WINS: usize = 231;
+pub const SF_LIFETIME_ALL_WEATHER_SURFACE_PLACES: usize = 232;
+pub const SF_LIFETIME_ALL_WEATHER_SURFACE_SHOWS: usize = 233;
+pub const SF_LIFETIME_ALL_WEATHER_SURFACE_EARNINGS: usize = 234;
+pub const SF_BEST_BRIS_SPEED_ALL_WEATHER_SURFACE: usize = 235;
+// 236 is reserved
+pub const SF_LOW_CLAIMING_PRICE_FOR_RACE: usize = 237;
+pub const SF_STATEBRED_FLAG_FOR_RACE: usize = 238;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE1: usize = 239;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE2: usize = 240;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE3: usize = 241;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE4: usize = 242;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE5: usize = 243;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE6: usize = 244;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE7: usize = 245;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE8: usize = 246;
+pub const SF_WAGER_TYPES_FOR_RACE_LINE9: usize = 247;
+// 248-249 are reserved
+pub const SF_BRIS_PRIME_POWER_RATING: usize = 250;
+// 251-254 are reserved
+pub const SF_PP_RACE_DATE: usize = 255;
+pub const SF_PP_NUMBER_OF_DAYS_SINCE_LAST_RACE: usize = 265;
+pub const SF_PP_TRACK_CODE: usize = 275;
+pub const SF_PP_BRIS_TRACK_CODE: usize = 285;
+pub const SF_PP_RACE_NUMBER: usize = 295;
