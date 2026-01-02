@@ -105,4 +105,18 @@ pub struct Horse {
     pub lifetime_record_places: Option<u32>,
     pub lifetime_record_shows: Option<u32>,
     pub lifetime_record_earnings: Option<u32>,
+    pub workouts: Vec<Workout>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Workout {
+    pub date: String,
+    pub time: Option<f64>,
+    pub track: String,
+    pub distance: Option<i32>,
+    pub condition: String,
+    pub description: String,
+    pub main_inner_track_indicator: String,
+    pub number_of_workouts_that_day_distance: Option<u32>,
+    pub rank: Option<u32>,
 }

@@ -1,5 +1,5 @@
 use tokio::fs;
-use crate::models::racecard::{Racecard, Race, Horse};
+use crate::models::racecard::{Racecard, Race, Horse, Workout};
 use crate::states::global_state::global_state;
 use crate::constants::single_file_indexes::*;
 
@@ -69,7 +69,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             races.len() - 1
         };
 
-        let horse = Horse {
+        let mut horse = Horse {
             post_position: line[SF_POST_POSITION].parse::<u32>().ok(),
             entry: line[SF_ENTRY].clone(),
             claiming_price_of_horse: line[SF_CLAIMING_PRICE_OF_HORSE].parse::<u32>().ok(),
@@ -107,44 +107,61 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             todays_medication_new: line[SF_TODAYS_MEDICATION_NEW].parse::<u32>().ok(),
             todays_medication_old: line[SF_TODAYS_MEDICATION_OLD].parse::<u32>().ok(),
             equipment_change: line[SF_EQUIPMENT_CHANGE].parse::<u32>().ok(),
-            lifetime_record_todays_distance_starts: line.get(SF_LIFETIME_RECORD_TODAYS_DISTANCE_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_distance_wins: line.get(SF_LIFETIME_RECORD_TODAYS_DISTANCE_WINS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_distance_places: line.get(SF_LIFETIME_RECORD_TODAYS_DISTANCE_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_distance_shows: line.get(SF_LIFETIME_RECORD_TODAYS_DISTANCE_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_distance_earnings: line.get(SF_LIFETIME_RECORD_TODAYS_DISTANCE_EARNINGS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_track_starts: line.get(SF_LIFETIME_RECORD_TODAYS_TRACK_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_track_wins: line.get(SF_LIFETIME_RECORD_TODAYS_TRACK_WINS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_track_places: line.get(SF_LIFETIME_RECORD_TODAYS_TRACK_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_track_shows: line.get(SF_LIFETIME_RECORD_TODAYS_TRACK_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_todays_track_earnings: line.get(SF_LIFETIME_RECORD_TODAYS_TRACK_EARNINGS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_turf_starts: line.get(SF_LIFETIME_RECORD_TURF_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_turf_wins: line.get(SF_LIFETIME_RECORD_TURF_WINS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_turf_places: line.get(SF_LIFETIME_RECORD_TURF_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_turf_shows: line.get(SF_LIFETIME_RECORD_TURF_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_turf_earnings: line.get(SF_LIFETIME_RECORD_TURF_EARNINGS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_wet_starts: line.get(SF_LIFETIME_RECORD_WET_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_wet_wins: line.get(SF_LIFETIME_RECORD_WET_WINS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_wet_places: line.get(SF_LIFETIME_RECORD_WET_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_wet_shows: line.get(SF_LIFETIME_RECORD_WET_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            lifetime_record_wet_earnings: line.get(SF_LIFETIME_RECORD_WET_EARNINGS).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_year: line.get(SF_CURRENT_YEAR_RECORD_YEAR).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_starts: line.get(SF_CURRENT_YEAR_RECORD_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_wins: line.get(SF_CURRENT_YEAR_RECORD_WINS).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_places: line.get(SF_CURRENT_YEAR_RECORD_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_shows: line.get(SF_CURRENT_YEAR_RECORD_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            current_year_record_earnings: line.get(SF_CURRENT_YEAR_RECORD_EARNINGS).and_then(|s| s.parse::<u32>().ok()),    
-            previous_year_record_year: line.get(SF_PREVIOUS_YEAR_RECORD_YEAR).and_then(|s| s.parse::<u32>().ok()),
-            previous_year_record_starts: line.get(SF_PREVIOUS_YEAR_RECORD_STARTS).and_then(|s| s.parse::<u32>().ok()),
-            previous_year_record_wins: line.get(SF_PREVIOUS_YEAR_RECORD_WINS).and_then(|s| s.parse::<u32>().ok()),
-            previous_year_record_places: line.get(SF_PREVIOUS_YEAR_RECORD_PLACES).and_then(|s| s.parse::<u32>().ok()),
-            previous_year_record_shows: line.get(SF_PREVIOUS_YEAR_RECORD_SHOWS).and_then(|s| s.parse::<u32>().ok()),
-            previous_year_record_earnings: line.get(SF_PREVIOUS_YEAR_RECORD_EARNINGS).and_then(|s| s.parse::<u32>().ok()),  
-            lifetime_record_starts: line.get(SF_LIFETIME_RECORD_STARTS).and_then(|s| s.parse::<u32>().ok()),    
-            lifetime_record_wins: line.get(SF_LIFETIME_RECORD_WINS).and_then(|s| s.parse::<u32>().ok()),    
-            lifetime_record_places: line.get(SF_LIFETIME_RECORD_PLACES).and_then(|s| s.parse::<u32>().ok()),    
-            lifetime_record_shows: line.get(SF_LIFETIME_RECORD_SHOWS).and_then(|s| s.parse::<u32>().ok()),    
-            lifetime_record_earnings: line.get(SF_LIFETIME_RECORD_EARNINGS).and_then(|s| s.parse::<u32>().ok()),
+            lifetime_record_todays_distance_starts: line[SF_LIFETIME_RECORD_TODAYS_DISTANCE_STARTS].parse::<u32>().ok(),
+            lifetime_record_todays_distance_wins: line[SF_LIFETIME_RECORD_TODAYS_DISTANCE_WINS].parse::<u32>().ok(),
+            lifetime_record_todays_distance_places: line[SF_LIFETIME_RECORD_TODAYS_DISTANCE_PLACES].parse::<u32>().ok(),
+            lifetime_record_todays_distance_shows: line[SF_LIFETIME_RECORD_TODAYS_DISTANCE_SHOWS].parse::<u32>().ok(),
+            lifetime_record_todays_distance_earnings: line[SF_LIFETIME_RECORD_TODAYS_DISTANCE_EARNINGS].parse::<u32>().ok(),
+            lifetime_record_todays_track_starts: line[SF_LIFETIME_RECORD_TODAYS_TRACK_STARTS].parse::<u32>().ok(),
+            lifetime_record_todays_track_wins: line[SF_LIFETIME_RECORD_TODAYS_TRACK_WINS].parse::<u32>().ok(),
+            lifetime_record_todays_track_places: line[SF_LIFETIME_RECORD_TODAYS_TRACK_PLACES].parse::<u32>().ok(),
+            lifetime_record_todays_track_shows: line[SF_LIFETIME_RECORD_TODAYS_TRACK_SHOWS].parse::<u32>().ok(),
+            lifetime_record_todays_track_earnings: line[SF_LIFETIME_RECORD_TODAYS_TRACK_EARNINGS].parse::<u32>().ok(),
+            lifetime_record_turf_starts: line[SF_LIFETIME_RECORD_TURF_STARTS].parse::<u32>().ok(),
+            lifetime_record_turf_wins: line[SF_LIFETIME_RECORD_TURF_WINS].parse::<u32>().ok(),
+            lifetime_record_turf_places: line[SF_LIFETIME_RECORD_TURF_PLACES].parse::<u32>().ok(),
+            lifetime_record_turf_shows: line[SF_LIFETIME_RECORD_TURF_SHOWS].parse::<u32>().ok(),
+            lifetime_record_turf_earnings: line[SF_LIFETIME_RECORD_TURF_EARNINGS].parse::<u32>().ok(),
+            lifetime_record_wet_starts: line[SF_LIFETIME_RECORD_WET_STARTS].parse::<u32>().ok(),
+            lifetime_record_wet_wins: line[SF_LIFETIME_RECORD_WET_WINS].parse::<u32>().ok(),
+            lifetime_record_wet_places: line[SF_LIFETIME_RECORD_WET_PLACES].parse::<u32>().ok(),
+            lifetime_record_wet_shows: line[SF_LIFETIME_RECORD_WET_SHOWS].parse::<u32>().ok(),
+            lifetime_record_wet_earnings: line[SF_LIFETIME_RECORD_WET_EARNINGS].parse::<u32>().ok(),
+            current_year_record_year: line[SF_CURRENT_YEAR_RECORD_YEAR].parse::<u32>().ok(),
+            current_year_record_starts: line[SF_CURRENT_YEAR_RECORD_STARTS].parse::<u32>().ok(),
+            current_year_record_wins: line[SF_CURRENT_YEAR_RECORD_WINS].parse::<u32>().ok(),
+            current_year_record_places: line[SF_CURRENT_YEAR_RECORD_PLACES].parse::<u32>().ok(),
+            current_year_record_shows: line[SF_CURRENT_YEAR_RECORD_SHOWS].parse::<u32>().ok(),
+            current_year_record_earnings: line[SF_CURRENT_YEAR_RECORD_EARNINGS].parse::<u32>().ok(),    
+            previous_year_record_year: line[SF_PREVIOUS_YEAR_RECORD_YEAR].parse::<u32>().ok(),
+            previous_year_record_starts: line[SF_PREVIOUS_YEAR_RECORD_STARTS].parse::<u32>().ok(),
+            previous_year_record_wins: line[SF_PREVIOUS_YEAR_RECORD_WINS].parse::<u32>().ok(),
+            previous_year_record_places: line[SF_PREVIOUS_YEAR_RECORD_PLACES].parse::<u32>().ok(),
+            previous_year_record_shows: line[SF_PREVIOUS_YEAR_RECORD_SHOWS].parse::<u32>().ok(),
+            previous_year_record_earnings: line[SF_PREVIOUS_YEAR_RECORD_EARNINGS].parse::<u32>().ok(),  
+            lifetime_record_starts: line[SF_LIFETIME_RECORD_STARTS].parse::<u32>().ok(),    
+            lifetime_record_wins: line[SF_LIFETIME_RECORD_WINS].parse::<u32>().ok(),    
+            lifetime_record_places: line[SF_LIFETIME_RECORD_PLACES].parse::<u32>().ok(),    
+            lifetime_record_shows: line[SF_LIFETIME_RECORD_SHOWS].parse::<u32>().ok(),    
+            lifetime_record_earnings: line[SF_LIFETIME_RECORD_EARNINGS].parse::<u32>().ok(),           
+            workouts: Vec::new(),
         };
+
+        for j in 0..12 {
+            let workout = Workout {
+                date: line[SF_WORKOUT_DATE + j].clone(),
+                time: line[SF_WORKOUT_TIME + j].parse::<f64>().ok(),
+                track: line[SF_WORKOUT_TRACK + j].clone(),
+                distance: line[SF_WORKOUT_DISTANCE + j].parse::<i32>().ok(),
+                condition: line[SF_WORKOUT_CONDITION + j].clone(),
+                description: line[SF_WORKOUT_DESCRIPTION + j].clone(),
+                main_inner_track_indicator: line[SF_WORKOUT_MAIN_INNER_TRACK_INDICATOR + j].clone(),   
+                number_of_workouts_that_day_distance: line[SF_WORKOUT_NUMBER_OF_WORKOUTS_THAT_DAY_DISTANCE + j].parse::<u32>().ok(),
+                rank: line[SF_WORKOUT_RANK + j].parse::<u32>().ok(),
+            };  
+
+            horse.workouts.push(workout);
+        }
 
         races[race_idx].horses.push(horse);
     }
