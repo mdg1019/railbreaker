@@ -60,6 +60,9 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 todays_bute_list: line[SF_TODAYS_BUTE_LIST].clone(),
                 todays_coupled_list: line[SF_TODAYS_COUPLED_LIST].clone(),
                 todays_mutuel_list: line[SF_TODAYS_MUTUEL_LIST].clone(),
+                simulcast_host_track_code: line[SF_SIMULCAST_HOST_TRACK_CODE].clone(),
+                simulcast_host_track_race_number: line[SF_SIMULCAST_HOST_TRACK_RACE_NUMBER].parse::<u32>().ok(),
+                all_weather_surface_flag: line[SF_TODAYS_ALL_WEATHER_SURFACE_FLAG].clone(),
                 horses: Vec::new(),
             };
             races.push(race);
@@ -70,6 +73,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             post_position: line[SF_POST_POSITION].parse::<u32>().ok(),
             entry: line[SF_ENTRY].clone(),
             claiming_price_of_horse: line[SF_CLAIMING_PRICE_OF_HORSE].parse::<u32>().ok(),
+            breed_type: line[SF_BREED_TYPE].clone(),
+            todays_nasal_strip_change: line[SF_TODAYS_NASAL_STRIP_CHANGE].parse::<u32>().ok(), 
         };
 
         races[race_idx].horses.push(horse);

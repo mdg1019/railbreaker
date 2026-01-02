@@ -18,3 +18,9 @@ pub const SF_TODAYS_LASIX_LIST: usize = 16;
 pub const SF_TODAYS_BUTE_LIST: usize = 17;
 pub const SF_TODAYS_COUPLED_LIST: usize = 18;
 pub const SF_TODAYS_MUTUEL_LIST: usize = 19;
+pub const SF_SIMULCAST_HOST_TRACK_CODE: usize = 20;
+pub const SF_SIMULCAST_HOST_TRACK_RACE_NUMBER: usize = 21;
+pub const SF_BREED_TYPE: usize = 22;
+pub const SF_TODAYS_NASAL_STRIP_CHANGE: usize = 23;
+pub const SF_TODAYS_ALL_WEATHER_SURFACE_FLAG: usize = 24;
+// 26-27 are reserved

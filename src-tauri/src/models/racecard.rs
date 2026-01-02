@@ -23,6 +23,9 @@ pub struct Race {
     pub todays_bute_list: String,
     pub todays_coupled_list: String,
     pub todays_mutuel_list: String,
+    pub simulcast_host_track_code: String,
+    pub simulcast_host_track_race_number: Option<u32>,
+    pub all_weather_surface_flag: String,
     pub horses: Vec<Horse>,
 }
 
@@ -31,4 +34,6 @@ pub struct Horse {
     pub post_position: Option<u32>,
     pub entry: String,
     pub claiming_price_of_horse: Option<u32>,
+    pub breed_type: String,
+    pub todays_nasal_strip_change: Option<u32>,
 }
