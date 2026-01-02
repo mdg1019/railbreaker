@@ -1,0 +1,9 @@
+pub const SF_TRACK: usize = 0;
+pub const SF_RACE_DATE: usize = 1;
+pub const SF_RACE_NUMBER: usize = 2;
+pub const SF_POST_POSITION: usize = 3;
+pub const SF_ENTRY: usize = 4;
+pub const SF_DISTANCE: usize = 5;
+pub const SF_SURFACE: usize = 6;
+pub const SF_RESERVED_1: usize = 7;
+pub const SF_RACE_TYPE: usize = 8;
