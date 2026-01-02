@@ -208,8 +208,34 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 track_code: line[SF_PP_TRACK_CODE + j].clone(),
                 bris_track_code: line[SF_PP_BRIS_TRACK_CODE + j].clone(),
                 race_number: line[SF_PP_RACE_NUMBER + j].parse::<u32>().ok(),
+                track_condition: line[SF_PP_TRACK_CONDITION + j].clone(),
+                distance: line[SF_PP_DISTANCE + j].parse::<i32>().ok(),
+                surface: line[SF_PP_SURFACE + j].clone(),
+                special_chute_indicator: line[SF_PP_SPECIAL_CHUTE_INDICATOR + j].clone(),
+                number_of_entrants: line[SF_PP_NUMBER_OF_ENTRANTS + j].parse::<u32>().ok(),
+                post_position: line[SF_PP_POST_POSITION + j].parse::<u32>().ok(),
+                equipment: line[SF_PP_EQUIPMENT + j].clone(),
+                racename: line[SF_PP_RACENAME + j].clone(),
+                medication: line[SF_PP_MEDICATION + j].parse::<u32>().ok(),
+                trip_comment: line[SF_PP_TRIP_COMMENT + j].clone(),
+                winners_name: line[SF_PP_WINNERS_NAME + j].clone(),
+                place_name: line[SF_PP_PLACE_NAME + j].clone(),
+                show_name: line[SF_PP_SHOW_NAME + j].clone(),
+                winners_weight: line[SF_PP_WINNERS_WEIGHT_CARRIED + j].parse::<u32>().ok(),
+                place_weight: line[SF_PP_PLACE_WEIGHT_CARRIED + j].parse::<u32>().ok(),
+                show_weight: line[SF_PP_SHOW_WEIGHT_CARRIED + j].parse::<u32>().ok(),
+                winners_margin: line[SF_PP_WINNERS_MARGIN + j].parse::<f64>().ok(),
+                place_margin: line[SF_PP_PLACE_MARGIN + j].parse::<f64>().ok(),
+                show_margin: line[SF_PP_SHOW_MARGIN + j].parse::<f64>().ok(),
+                alternate_comment_line: line[SF_PP_ALTERNATE_COMMENT_LINE + j].clone(),
+                weight: line[SF_PP_WEIGHT + j].parse::<u32>().ok(),
+                odds: line[SF_PP_ODDS + j].parse::<f64>().ok(),
+                entry: line[SF_PP_ENTRY + j].clone(),
+                race_classication: line[SF_PP_RACE_CLASSIFICATION + j].clone(),
+                claiming_price: line[SF_PP_CLAIMING_PRICE + j].parse::<u32>().ok(),
+                purse: line[SF_PP_PURSE + j].parse::<u32>().ok(),
             };
-
+            
             horse.past_performances.push(pp);
         }
 
