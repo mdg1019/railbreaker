@@ -5,5 +5,16 @@ pub const SF_POST_POSITION: usize = 3;
 pub const SF_ENTRY: usize = 4;
 pub const SF_DISTANCE: usize = 5;
 pub const SF_SURFACE: usize = 6;
-pub const SF_RESERVED_1: usize = 7;
+// 7 is reserved
 pub const SF_RACE_TYPE: usize = 8;
+pub const SF_AGE_SEX_RESTRICTIONS: usize = 9;
+pub const SF_TODAYS_RACE_CLASSIFICATION: usize = 10;
+pub const SF_PURSE: usize = 11;
+pub const SF_CLAIMING_PRICE: usize = 12;
+pub const SF_CLAIMING_PRICE_OF_HORSE: usize = 13;
+pub const SF_TRACK_RECORD: usize = 14;
+pub const SF_RACE_CONDITIONS: usize = 15;
+pub const SF_TODAYS_LASIX_LIST: usize = 16;
+pub const SF_TODAYS_BUTE_LIST: usize = 17;
+pub const SF_TODAYS_COUPLED_LIST: usize = 18;
+pub const SF_TODAYS_MUTUEL_LIST: usize = 19;
