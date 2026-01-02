@@ -64,6 +64,12 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 simulcast_host_track_race_number: line[SF_SIMULCAST_HOST_TRACK_RACE_NUMBER].parse::<u32>().ok(),
                 all_weather_surface_flag: line[SF_TODAYS_ALL_WEATHER_SURFACE_FLAG].clone(),
                 horses: Vec::new(),
+                race_conditions_line1: line[SF_RACE_CONDITIONS_LINE1].clone(),
+                race_conditions_line2: line[SF_RACE_CONDITIONS_LINE2].clone(),
+                race_conditions_line3: line[SF_RACE_CONDITIONS_LINE3].clone(),
+                race_conditions_line4: line[SF_RACE_CONDITIONS_LINE4].clone(),
+                race_conditions_line5: line[SF_RACE_CONDITIONS_LINE5].clone(),
+                race_conditions_line6: line[SF_RACE_CONDITIONS_LINE6].clone(),
             };
             races.push(race);
             races.len() - 1

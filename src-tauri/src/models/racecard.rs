@@ -26,6 +26,12 @@ pub struct Race {
     pub simulcast_host_track_code: String,
     pub simulcast_host_track_race_number: Option<u32>,
     pub all_weather_surface_flag: String,
+    pub race_conditions_line1: String,
+    pub race_conditions_line2: String,  
+    pub race_conditions_line3: String,
+    pub race_conditions_line4: String,
+    pub race_conditions_line5: String,
+    pub race_conditions_line6: String,
     pub horses: Vec<Horse>,
 }
 
