@@ -105,3 +105,17 @@ pub const SF_WORKOUT_DESCRIPTION: usize = 161;
 pub const SF_WORKOUT_MAIN_INNER_TRACK_INDICATOR: usize = 173;
 pub const SF_WORKOUT_NUMBER_OF_WORKOUTS_THAT_DAY_DISTANCE: usize = 185;
 pub const SF_WORKOUT_RANK: usize = 197;
+pub const SF_BRIS_RUN_STYLE: usize = 209;
+pub const SF_QUIRIN_STYLE_SPEED_POINTS: usize = 210;
+// 211-212 are reserved
+pub const SF_2F_BRIS_PACE_PAR: usize = 213;
+pub const SF_4F_BRIS_PACE_PAR: usize = 214;
+pub const SF_6F_BRIS_PACE_PAR: usize = 215;
+pub const SF_BRIS_SPEED_PAR_FOR_CLASS: usize = 216;
+pub const SF_BRIS_LATE_PACE_PAR: usize = 217;
+pub const SF_TRAINER_JOCKEY_COMBINATION_STARTS: usize = 218;
+pub const SF_TRAINER_JOCKEY_COMBINATION_WINS: usize = 219;
+pub const SF_TRAINER_JOCKEY_COMBINATION_PLACES: usize = 220;
+pub const SF_TRAINER_JOCKEY_COMBINATION_SHOWS: usize = 221;
+pub const SF_TRAINER_TWO_DOLLAR_ROI: usize = 222;
+pub const SF_NUMBER_OF_DAYS_SINCE_LAST_RACE: usize = 223;
