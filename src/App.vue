@@ -6,8 +6,9 @@ import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
-import "./scss/_main.scss";
+import { Racecard } from "./models/racecard";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
+import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -18,7 +19,7 @@ let unlistenExit: (() => void);
 
 const isProcessingZip = ref(false); 
 const isProcessingRacecard = ref(false); 
-const racecardData = ref(null);
+const racecard = ref<Racecard | null>(null);
 
 function handleMenuOpen() {
     console.log("Open menu clicked");
@@ -45,7 +46,7 @@ onMounted(async () => {
             defaultPath: configFileStore.configState.lastDirectory
         });
 
-        racecardData.value = null;
+        racecard.value = null;
         await nextTick();
         
 
@@ -56,9 +57,7 @@ onMounted(async () => {
                 let racecard_path = await invoke('process_zip_file', { path: file });
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = true;
-                racecardData.value = await invoke('process_racecard_file', { path: racecard_path });
-                console.log("Racecard processed:", racecardData.value);
-                
+                racecard.value = await invoke<Racecard>('process_racecard_file', { path: racecard_path });                
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
@@ -95,9 +94,9 @@ onUnmounted(() => {
             <br />
             Processing Racecard File
         </div>
-        <div v-if="racecardData">
+        <div v-if="racecard">
             <h2>Racecard Data:</h2>
-            <pre>{{ racecardData }}</pre>
+            <pre>{{ racecard }}</pre>
         </div>
     </main>
 </template>
