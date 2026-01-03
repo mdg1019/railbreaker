@@ -59,6 +59,8 @@ onMounted(async () => {
                 isProcessingRacecard.value = true;
                 racecard.value = await invoke<Racecard>('process_racecard_file', { path: racecard_path });                
                 isProcessingRacecard.value = false;
+
+        await nextTick();
             } catch (error) {
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = false;
