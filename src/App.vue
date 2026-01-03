@@ -8,6 +8,7 @@ import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
+import MessageDialog from "./components/MessageDialog.vue";
 import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
@@ -20,6 +21,9 @@ let unlistenExit: (() => void);
 const isProcessingZip = ref(false); 
 const isProcessingRacecard = ref(false); 
 const racecard = ref<Racecard | null>(null);
+
+const showErrorDialog = ref(false);
+const errorMessage = ref("");
 
 function handleMenuOpen() {
     console.log("Open menu clicked");
@@ -63,8 +67,8 @@ onMounted(async () => {
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = false;
 
-                // TODO: Create a message dialog component instead of using alert()
-                alert(error);
+                errorMessage.value = String(error);
+                showErrorDialog.value = true;
             }
         }
     });
@@ -98,6 +102,11 @@ onUnmounted(() => {
             <h2>Racecard Data:</h2>
             <pre>{{ racecard }}</pre>
         </div>
+        <MessageDialog
+            v-model="showErrorDialog"
+            :message="errorMessage"
+            title="Error"
+        />
     </main>
 </template>
 
