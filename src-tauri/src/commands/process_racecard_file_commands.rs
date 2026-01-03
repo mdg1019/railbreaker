@@ -1,4 +1,6 @@
 use tokio::fs;
+use std::path::PathBuf;
+use crate::files::write_json_file;
 use crate::models::racecard::{Racecard, Race, Horse, Workout, PastPerformance};
 use crate::states::global_state::global_state;
 use crate::constants::single_file_indexes::*;
@@ -13,7 +15,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
         .lines()
         .map(|line| {
             line.split(',')
-                .map(|field| field.trim().trim_matches('"').to_string())
+                .map(|field| field.trim().trim_matches('"').trim().to_string())
                 .collect()
         })
         .collect();
@@ -403,6 +405,12 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
         races: races,
     };
 
+    fs::remove_file(&path)
+        .await
+        .map_err(|e| format!("Failed to delete racecard file: {}", e))?;
+
+    let json_path = PathBuf::from(&path).with_extension("json");
+    write_json_file(json_path, &racecard).await?;
     // println!("{:?}", racecard);
     Ok(racecard)
 }
