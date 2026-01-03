@@ -32,7 +32,34 @@ function handleMenuOpen() {
 document.documentElement.classList.add('dark');
 
 onMounted(async () => {
-    unlistenOpen = await listen("menu-open", handleMenuOpen);
+    unlistenOpen = await listen("menu-open", async () => {
+        const file = await open({
+            multiple: false,
+            filters: [
+                {
+                    name: "Racecard Files",
+                    extensions: ["json"],
+                },
+            ],
+            defaultPath: globalStateStore.globalState.racecards_directory
+        });
+
+        if (file) {
+            racecard.value = null;
+            await nextTick();
+
+            isProcessingRacecard.value = true;
+            try {
+                racecard.value = await invoke<Racecard>('load_racecard_file', { path: file });
+                isProcessingRacecard.value = false;
+            } catch (error) {
+                isProcessingRacecard.value = false;
+
+                errorMessage.value = String(error);
+                showErrorDialog.value = true;
+            }
+        }
+    });
 
     unlistenOpenZip = await listen("menu-open-zip", async () => {
         const file = await open({
@@ -45,12 +72,12 @@ onMounted(async () => {
             ],                
             defaultPath: configFileStore.configState.lastDirectory
         });
-
-        racecard.value = null;
-        await nextTick();
         
 
         if (file) {
+            racecard.value = null;
+            await nextTick();
+
             isProcessingZip.value = true;
 
             try {
