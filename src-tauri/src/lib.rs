@@ -10,6 +10,7 @@ use commands::global_state_commands::load_global_state;
 use commands::config_file_commands::{load_config_file, save_config_file, get_config_file_path};
 use commands::process_zip_file_commands::process_zip_file;
 use commands::process_racecard_file_commands::process_racecard_file;
+use commands::exit_app_command::exit_app;
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -52,6 +53,7 @@ pub fn run() {
             load_global_state,
             process_zip_file,
             process_racecard_file,
+            exit_app,
         ])
         .run(context)
         .expect("error while running tauri application");

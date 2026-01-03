@@ -29,10 +29,6 @@ function handleMenuOpen() {
     console.log("Open menu clicked");
 }
 
-function handleMenuExit() {
-    console.log("Exit menu clicked");
-}
-
 document.documentElement.classList.add('dark');
 
 onMounted(async () => {
@@ -73,7 +69,9 @@ onMounted(async () => {
         }
     });
 
-    unlistenExit = await listen("menu-exit", handleMenuExit);
+    unlistenExit = await listen("menu-exit", async () => {
+        await invoke('exit_app');
+    });
 
     await globalStateStore.loadGlobalState();
     await configFileStore.loadConfigFile();
