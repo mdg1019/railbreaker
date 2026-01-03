@@ -20,39 +20,50 @@ const barStyle = computed(() => ({
   height: `${props.height}px`,
   color: props.color
 }))
+
+const getBarStyle = (index: number) => {
+  const durations = [1.8, 1.2, 1.5, 1.1, 1.6, 1.3, 1.7]
+  const duration = durations[index % durations.length]
+  return {
+    'animation-delay': `${index * 0.15}s`,
+    'animation-duration': `${duration}s`
+  }
+}
 </script>
 
 <template>
-  <div class="equalizer" :style="barStyle">
+  <div class="equalizer" :style="{ ...barStyle, '--bar-count': props.bars }">
     <span
       v-for="i in bars"
       :key="i"
       class="bar"
-      :style="{ animationDelay: `${i * 0.15}s` }"
+      :style="getBarStyle(i - 1)"
     />
   </div>
 </template>
 
 <style scoped>
+
 .equalizer {
-  display: flex;
+  display: grid;
   align-items: flex-end;
+  grid-template-columns: repeat(var(--bar-count), 1fr);
   gap: 8%;
+  width: 100%;
+  height: 100%;
 }
 
 .bar {
-  flex: 1;
+  min-width: 0;
+  width: 100%;
   height: 100%;
   background: currentColor;
   border-radius: 6%;
   transform-origin: bottom;
-  animation: bounce 1.4s infinite ease-in-out;
+  animation-name: bounce;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
 }
-
-.bar:nth-child(1) { animation-duration: 1.8s; }
-.bar:nth-child(2) { animation-duration: 1.2s; }
-.bar:nth-child(3) { animation-duration: 1.5s; }
-.bar:nth-child(4) { animation-duration: 1.1s; }
 
 @keyframes bounce {
   0%   { transform: scaleY(0.2); }

@@ -61,7 +61,7 @@ onMounted(async () => {
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
-                console.error("Error processing zip file:", error);
+                isProcessingRacecard.value = false;
 
                 // TODO: Create a message dialog component instead of using alert()
                 alert(error);
