@@ -12,6 +12,7 @@ import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
 import "./scss/_main.scss";
+import RaceClassification from "./components/RaceClassification.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -149,7 +150,7 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard">
             <div class="race-container-header">
                 <div class="track-name">{{ racecard.track }}</div>
-                <div class="race_type">{{ Transformers.getRaceType(racecard.races[race - 1]) }}</div>
+                <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
                 <div class="race-date">{{ racecard.long_date }}</div>
                 <div class="race-number">Race {{ race }}</div>
             </div>
