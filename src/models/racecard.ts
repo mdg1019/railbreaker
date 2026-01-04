@@ -284,36 +284,6 @@ export class Horse {
   places_fast_dirt: number | null;
   shows_fast_dirt: number | null;
   earnings_fast_dirt: number | null;
-  key_trainer_stat_category_1: string;
-  key_trainer_stat_category_1_starts: number | null;
-  key_trainer_stat_category_1_win_pct: number | null;
-  key_trainer_stat_category_1_in_the_money_pct: number | null;
-  key_trainer_stat_category_1_roi: number | null;
-  key_trainer_stat_category_2: string;
-  key_trainer_stat_category_2_starts: number | null;
-  key_trainer_stat_category_2_win_pct: number | null;
-  key_trainer_stat_category_2_in_the_money_pct: number | null;
-  key_trainer_stat_category_2_roi: number | null;
-  key_trainer_stat_category_3: string;
-  key_trainer_stat_category_3_starts: number | null;
-  key_trainer_stat_category_3_win_pct: number | null;
-  key_trainer_stat_category_3_in_the_money_pct: number | null;
-  key_trainer_stat_category_3_roi: number | null;
-  key_trainer_stat_category_4: string;
-  key_trainer_stat_category_4_starts: number | null;
-  key_trainer_stat_category_4_win_pct: number | null;
-  key_trainer_stat_category_4_in_the_money_pct: number | null;
-  key_trainer_stat_category_4_roi: number | null;
-  key_trainer_stat_category_5: string;
-  key_trainer_stat_category_5_starts: number | null;
-  key_trainer_stat_category_5_win_pct: number | null;
-  key_trainer_stat_category_5_in_the_money_pct: number | null;
-  key_trainer_stat_category_5_roi: number | null;
-  key_trainer_stat_category_6: string;
-  key_trainer_stat_category_6_starts: number | null;
-  key_trainer_stat_category_6_win_pct: number | null;
-  key_trainer_stat_category_6_in_the_money_pct: number | null;
-  key_trainer_stat_category_6_roi: number | null;
   jockey_distance_turf_label: string;
   jockey_distance_turf_starts: number | null;
   jockey_distance_turf_wins: number | null;
@@ -331,6 +301,7 @@ export class Horse {
   todays_equibase_abbreviated_race_conditions: string;
   workouts: Workout[];
   past_performances: PastPerformance[];
+  key_trainer_stats: KeyTrainerStat[];
 
   constructor(data: any = {}) {
     this.post_position = data.post_position ?? null;
@@ -467,36 +438,6 @@ export class Horse {
     this.places_fast_dirt = data.places_fast_dirt ?? null;
     this.shows_fast_dirt = data.shows_fast_dirt ?? null;
     this.earnings_fast_dirt = data.earnings_fast_dirt ?? null;
-    this.key_trainer_stat_category_1 = data.key_trainer_stat_category_1 ?? '';
-    this.key_trainer_stat_category_1_starts = data.key_trainer_stat_category_1_starts ?? null;
-    this.key_trainer_stat_category_1_win_pct = data.key_trainer_stat_category_1_win_pct ?? null;
-    this.key_trainer_stat_category_1_in_the_money_pct = data.key_trainer_stat_category_1_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_1_roi = data.key_trainer_stat_category_1_roi ?? null;
-    this.key_trainer_stat_category_2 = data.key_trainer_stat_category_2 ?? '';
-    this.key_trainer_stat_category_2_starts = data.key_trainer_stat_category_2_starts ?? null;
-    this.key_trainer_stat_category_2_win_pct = data.key_trainer_stat_category_2_win_pct ?? null;
-    this.key_trainer_stat_category_2_in_the_money_pct = data.key_trainer_stat_category_2_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_2_roi = data.key_trainer_stat_category_2_roi ?? null;
-    this.key_trainer_stat_category_3 = data.key_trainer_stat_category_3 ?? '';
-    this.key_trainer_stat_category_3_starts = data.key_trainer_stat_category_3_starts ?? null;
-    this.key_trainer_stat_category_3_win_pct = data.key_trainer_stat_category_3_win_pct ?? null;
-    this.key_trainer_stat_category_3_in_the_money_pct = data.key_trainer_stat_category_3_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_3_roi = data.key_trainer_stat_category_3_roi ?? null;
-    this.key_trainer_stat_category_4 = data.key_trainer_stat_category_4 ?? '';
-    this.key_trainer_stat_category_4_starts = data.key_trainer_stat_category_4_starts ?? null;
-    this.key_trainer_stat_category_4_win_pct = data.key_trainer_stat_category_4_win_pct ?? null;
-    this.key_trainer_stat_category_4_in_the_money_pct = data.key_trainer_stat_category_4_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_4_roi = data.key_trainer_stat_category_4_roi ?? null;
-    this.key_trainer_stat_category_5 = data.key_trainer_stat_category_5 ?? '';
-    this.key_trainer_stat_category_5_starts = data.key_trainer_stat_category_5_starts ?? null;
-    this.key_trainer_stat_category_5_win_pct = data.key_trainer_stat_category_5_win_pct ?? null;
-    this.key_trainer_stat_category_5_in_the_money_pct = data.key_trainer_stat_category_5_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_5_roi = data.key_trainer_stat_category_5_roi ?? null;
-    this.key_trainer_stat_category_6 = data.key_trainer_stat_category_6 ?? '';
-    this.key_trainer_stat_category_6_starts = data.key_trainer_stat_category_6_starts ?? null;
-    this.key_trainer_stat_category_6_win_pct = data.key_trainer_stat_category_6_win_pct ?? null;
-    this.key_trainer_stat_category_6_in_the_money_pct = data.key_trainer_stat_category_6_in_the_money_pct ?? null;
-    this.key_trainer_stat_category_6_roi = data.key_trainer_stat_category_6_roi ?? null;
     this.jockey_distance_turf_label = data.jockey_distance_turf_label ?? '';
     this.jockey_distance_turf_starts = data.jockey_distance_turf_starts ?? null;
     this.jockey_distance_turf_wins = data.jockey_distance_turf_wins ?? null;
@@ -514,13 +455,15 @@ export class Horse {
     this.todays_equibase_abbreviated_race_conditions = data.todays_equibase_abbreviated_race_conditions ?? '';
     this.workouts = data.workouts ?? [];
     this.past_performances = data.past_performances ?? [];
+    this.key_trainer_stats = data.key_trainer_stats ?? [];
   }
 
   static fromObject(obj: any): Horse {
     return new Horse({
       ...obj,
       workouts: obj.workouts?.map((w: any) => Workout.fromObject(w)) ?? [],
-      past_performances: obj.past_performances?.map((p: any) => PastPerformance.fromObject(p)) ?? []
+      past_performances: obj.past_performances?.map((p: any) => PastPerformance.fromObject(p)) ?? [],
+      key_trainer_stats: obj.key_trainer_stats?.map((k: any) => KeyTrainerStat.fromObject(k)) ?? []
     });
   }
 
@@ -660,36 +603,6 @@ export class Horse {
       places_fast_dirt: this.places_fast_dirt,
       shows_fast_dirt: this.shows_fast_dirt,
       earnings_fast_dirt: this.earnings_fast_dirt,
-      key_trainer_stat_category_1: this.key_trainer_stat_category_1,
-      key_trainer_stat_category_1_starts: this.key_trainer_stat_category_1_starts,
-      key_trainer_stat_category_1_win_pct: this.key_trainer_stat_category_1_win_pct,
-      key_trainer_stat_category_1_in_the_money_pct: this.key_trainer_stat_category_1_in_the_money_pct,
-      key_trainer_stat_category_1_roi: this.key_trainer_stat_category_1_roi,
-      key_trainer_stat_category_2: this.key_trainer_stat_category_2,
-      key_trainer_stat_category_2_starts: this.key_trainer_stat_category_2_starts,
-      key_trainer_stat_category_2_win_pct: this.key_trainer_stat_category_2_win_pct,
-      key_trainer_stat_category_2_in_the_money_pct: this.key_trainer_stat_category_2_in_the_money_pct,
-      key_trainer_stat_category_2_roi: this.key_trainer_stat_category_2_roi,
-      key_trainer_stat_category_3: this.key_trainer_stat_category_3,
-      key_trainer_stat_category_3_starts: this.key_trainer_stat_category_3_starts,
-      key_trainer_stat_category_3_win_pct: this.key_trainer_stat_category_3_win_pct,
-      key_trainer_stat_category_3_in_the_money_pct: this.key_trainer_stat_category_3_in_the_money_pct,
-      key_trainer_stat_category_3_roi: this.key_trainer_stat_category_3_roi,
-      key_trainer_stat_category_4: this.key_trainer_stat_category_4,
-      key_trainer_stat_category_4_starts: this.key_trainer_stat_category_4_starts,
-      key_trainer_stat_category_4_win_pct: this.key_trainer_stat_category_4_win_pct,
-      key_trainer_stat_category_4_in_the_money_pct: this.key_trainer_stat_category_4_in_the_money_pct,
-      key_trainer_stat_category_4_roi: this.key_trainer_stat_category_4_roi,
-      key_trainer_stat_category_5: this.key_trainer_stat_category_5,
-      key_trainer_stat_category_5_starts: this.key_trainer_stat_category_5_starts,
-      key_trainer_stat_category_5_win_pct: this.key_trainer_stat_category_5_win_pct,
-      key_trainer_stat_category_5_in_the_money_pct: this.key_trainer_stat_category_5_in_the_money_pct,
-      key_trainer_stat_category_5_roi: this.key_trainer_stat_category_5_roi,
-      key_trainer_stat_category_6: this.key_trainer_stat_category_6,
-      key_trainer_stat_category_6_starts: this.key_trainer_stat_category_6_starts,
-      key_trainer_stat_category_6_win_pct: this.key_trainer_stat_category_6_win_pct,
-      key_trainer_stat_category_6_in_the_money_pct: this.key_trainer_stat_category_6_in_the_money_pct,
-      key_trainer_stat_category_6_roi: this.key_trainer_stat_category_6_roi,
       jockey_distance_turf_label: this.jockey_distance_turf_label,
       jockey_distance_turf_starts: this.jockey_distance_turf_starts,
       jockey_distance_turf_wins: this.jockey_distance_turf_wins,
@@ -706,7 +619,8 @@ export class Horse {
       post_time_pacific_military: this.post_time_pacific_military,
       todays_equibase_abbreviated_race_conditions: this.todays_equibase_abbreviated_race_conditions,
       workouts: this.workouts.map(w => w.toObject()),
-      past_performances: this.past_performances.map(p => p.toObject())
+      past_performances: this.past_performances.map(p => p.toObject()),
+      key_trainer_stats: this.key_trainer_stats.map(k => k.toObject())
     };
   }
 }
@@ -769,6 +683,42 @@ export class Workout {
       main_inner_track_indicator: this.main_inner_track_indicator,
       workouts_that_day_distance: this.workouts_that_day_distance,
       rank: this.rank
+    };
+  }
+}
+
+export class KeyTrainerStat {
+  category: string;
+  starts: number | null;
+  win_pct: number | null;
+  in_the_money_pct: number | null;
+  roi: number | null;
+
+  constructor(data: any = {}) {
+    this.category = data.category ?? '';
+    this.starts = data.starts ?? null;
+    this.win_pct = data.win_pct ?? null;
+    this.in_the_money_pct = data.in_the_money_pct ?? null;
+    this.roi = data.roi ?? null;
+  }
+
+  static fromObject(obj: any): KeyTrainerStat {
+    return new KeyTrainerStat({
+      category: obj.category,
+      starts: obj.starts,
+      win_pct: obj.win_pct,
+      in_the_money_pct: obj.in_the_money_pct,
+      roi: obj.roi
+    });
+  }
+
+  toObject(): any {
+    return {
+      category: this.category,
+      starts: this.starts,
+      win_pct: this.win_pct,
+      in_the_money_pct: this.in_the_money_pct,
+      roi: this.roi
     };
   }
 }

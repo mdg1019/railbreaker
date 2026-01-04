@@ -182,36 +182,6 @@ pub struct Horse {
     pub places_fast_dirt: Option<u32>,
     pub shows_fast_dirt: Option<u32>,
     pub earnings_fast_dirt: Option<u32>,
-    pub key_trainer_stat_category_1: String,
-    pub key_trainer_stat_category_1_starts: Option<u32>,
-    pub key_trainer_stat_category_1_win_pct: Option<f64>,
-    pub key_trainer_stat_category_1_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_1_roi: Option<f64>,
-    pub key_trainer_stat_category_2: String,
-    pub key_trainer_stat_category_2_starts: Option<u32>,
-    pub key_trainer_stat_category_2_win_pct: Option<f64>,
-    pub key_trainer_stat_category_2_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_2_roi: Option<f64>,
-    pub key_trainer_stat_category_3: String,
-    pub key_trainer_stat_category_3_starts: Option<u32>,
-    pub key_trainer_stat_category_3_win_pct: Option<f64>,
-    pub key_trainer_stat_category_3_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_3_roi: Option<f64>,
-    pub key_trainer_stat_category_4: String,
-    pub key_trainer_stat_category_4_starts: Option<u32>,
-    pub key_trainer_stat_category_4_win_pct: Option<f64>,
-    pub key_trainer_stat_category_4_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_4_roi: Option<f64>,
-    pub key_trainer_stat_category_5: String,
-    pub key_trainer_stat_category_5_starts: Option<u32>,
-    pub key_trainer_stat_category_5_win_pct: Option<f64>,
-    pub key_trainer_stat_category_5_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_5_roi: Option<f64>,
-    pub key_trainer_stat_category_6: String,
-    pub key_trainer_stat_category_6_starts: Option<u32>,
-    pub key_trainer_stat_category_6_win_pct: Option<f64>,
-    pub key_trainer_stat_category_6_in_the_money_pct: Option<f64>,
-    pub key_trainer_stat_category_6_roi: Option<f64>,
     pub jockey_distance_turf_label: String,
     pub jockey_distance_turf_starts: Option<u32>,
     pub jockey_distance_turf_wins: Option<u32>,
@@ -229,6 +199,7 @@ pub struct Horse {
     pub todays_equibase_abbreviated_race_conditions: String,
     pub workouts: Vec<Workout>,
     pub past_performances: Vec<PastPerformance>,
+    pub key_trainer_stats: Vec<KeyTrainerStat>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -346,4 +317,13 @@ pub struct PastPerformance {
     pub sealed_track_indicator: String,
     pub previous_all_weather_surface_indicator: String,
     pub equibase_abbreviated_race_condition: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct KeyTrainerStat {
+    pub category: String,
+    pub starts: Option<u32>,
+    pub win_pct: Option<f64>,
+    pub in_the_money_pct: Option<f64>,
+    pub roi: Option<f64>,
 }

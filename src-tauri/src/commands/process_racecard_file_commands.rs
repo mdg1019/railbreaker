@@ -1,7 +1,7 @@
 use tokio::fs;
 use std::path::PathBuf;
 use crate::files::write_json_file;
-use crate::models::racecard::{Racecard, Race, Horse, Workout, PastPerformance};
+use crate::models::racecard::{Racecard, Race, Horse, Workout, PastPerformance, KeyTrainerStat};
 use crate::states::global_state::global_state;
 use crate::constants::single_file_indexes::*;
 
@@ -223,36 +223,6 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             places_fast_dirt: line[SF_PLACES_FAST_DIRT].parse::<u32>().ok(),
             shows_fast_dirt: line[SF_SHOWS_FAST_DIRT].parse::<u32>().ok(),
             earnings_fast_dirt: line[SF_EARNINGS_FAST_DIRT].parse::<u32>().ok(),
-            key_trainer_stat_category_1: line[SF_KEY_TRAINER_STAT_CATEGORY_1].clone(),
-            key_trainer_stat_category_1_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_1_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_1_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_1_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_1_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_1_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_1_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_1_ROI].parse::<f64>().ok(),
-            key_trainer_stat_category_2: line[SF_KEY_TRAINER_STAT_CATEGORY_2].clone(),
-            key_trainer_stat_category_2_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_2_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_2_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_2_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_2_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_2_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_2_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_2_ROI].parse::<f64>().ok(),
-            key_trainer_stat_category_3: line[SF_KEY_TRAINER_STAT_CATEGORY_3].clone(),
-            key_trainer_stat_category_3_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_3_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_3_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_3_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_3_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_3_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_3_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_3_ROI].parse::<f64>().ok(),
-            key_trainer_stat_category_4: line[SF_KEY_TRAINER_STAT_CATEGORY_4].clone(),
-            key_trainer_stat_category_4_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_4_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_4_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_4_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_4_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_4_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_4_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_4_ROI].parse::<f64>().ok(),
-            key_trainer_stat_category_5: line[SF_KEY_TRAINER_STAT_CATEGORY_5].clone(),
-            key_trainer_stat_category_5_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_5_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_5_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_5_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_5_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_5_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_5_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_5_ROI].parse::<f64>().ok(),
-            key_trainer_stat_category_6: line[SF_KEY_TRAINER_STAT_CATEGORY_6].clone(),
-            key_trainer_stat_category_6_starts: line[SF_KEY_TRAINER_STAT_CATEGORY_6_STARTS].parse::<u32>().ok(),
-            key_trainer_stat_category_6_win_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_6_WIN_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_6_in_the_money_pct: line[SF_KEY_TRAINER_STAT_CATEGORY_6_IN_THE_MONEY_PCT].parse::<f64>().ok(),
-            key_trainer_stat_category_6_roi: line[SF_KEY_TRAINER_STAT_CATEGORY_6_ROI].parse::<f64>().ok(),
             jockey_distance_turf_label: line[SF_JOCKEY_DISTANCE_TURF_LABEL].clone(),
             jockey_distance_turf_starts: line[SF_JOCKEY_DISTANCE_TURF_STARTS].parse::<u32>().ok(),
             jockey_distance_turf_wins: line[SF_JOCKEY_DISTANCE_TURF_WINS].parse::<u32>().ok(),
@@ -270,6 +240,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             todays_equibase_abbreviated_race_conditions: line[SF_TODAYS_EQUIBASE_ABBREVIATED_RACE_CONDITIONS].clone(),
             workouts: Vec::new(),
             past_performances: Vec::new(),
+            key_trainer_stats: Vec::new(),
         };
 
         for j in 0..12 {
@@ -393,6 +364,18 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             };
             
             horse.past_performances.push(pp);
+        }
+
+        for j in 0..6 {
+            let key_trainer_stat = KeyTrainerStat {
+                category: lines[0][SF_KEY_TRAINER_STAT + j * 5].clone(),
+                starts: lines[0][SF_KEY_TRAINER_STAT + 1 + j * 5].parse::<u32>().ok(),
+                win_pct: lines[0][SF_KEY_TRAINER_STAT + 2 + j * 5].parse::<f64>().ok(),
+                in_the_money_pct: lines[0][SF_KEY_TRAINER_STAT + 3 + j * 5].parse::<f64>().ok(),
+                roi: lines[0][SF_KEY_TRAINER_STAT + 4 + j * 5].parse::<f64>().ok(),
+            };
+
+            horse.key_trainer_stats.push(key_trainer_stat);
         }
 
         races[race_idx].horses.push(horse);
