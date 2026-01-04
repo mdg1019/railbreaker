@@ -22,8 +22,8 @@ const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false); 
 const racecard = ref<Racecard | null>(null);
 
-const showErrorDialog = ref(true);
-const errorMessage = ref("Simulated error message.");
+const showErrorDialog = ref(false);
+const errorMessage = ref("");
 
 document.documentElement.classList.add('dark');
 
