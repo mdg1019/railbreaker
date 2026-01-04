@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, onUnmounted, ref, nextTick } from "vue";
+import { onMounted, onUnmounted, ref, nextTick, watch } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
@@ -9,6 +9,7 @@ import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
+import RacecardSideMenu from "./components/RacecardSideMenu.vue";
 import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
@@ -22,8 +23,26 @@ const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false); 
 const racecard = ref<Racecard | null>(null);
 
+const race = ref(1);
+
+const isRacecardMenuOpen = ref(false);
+
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
+
+function handleSelectedRace(value: number) {
+    race.value = value;
+    isRacecardMenuOpen.value = false;
+}
+
+watch(racecard, (rc) => {
+    if (rc) {
+        isRacecardMenuOpen.value = false;
+        race.value = 1;
+    } else {
+        isRacecardMenuOpen.value = false;
+    }
+});
 
 document.documentElement.classList.add('dark');
 
@@ -109,6 +128,13 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
+        <RacecardSideMenu
+            v-if="racecard"
+            :racecard="racecard!"
+            v-model:open="isRacecardMenuOpen"
+            :selectedRace="race"
+            @update:selectedRace="handleSelectedRace"
+        />
         <div class="processing-zip" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
@@ -120,8 +146,7 @@ onUnmounted(() => {
             Processing Racecard File
         </div>
         <div v-if="racecard">
-            <h2>Racecard Data:</h2>
-            <pre>{{ racecard }}</pre>
+            Race: {{ race }}
         </div>
         <MessageDialog
             v-model="showErrorDialog"
