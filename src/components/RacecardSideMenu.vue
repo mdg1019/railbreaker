@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Racecard } from '../models/racecard'
+import Transformers from '../utils/transformers'
 
 const props = defineProps<{
   racecard: Racecard
@@ -41,7 +42,7 @@ function selectRace(raceNumber: number) {
           :class="{ selected: (race.race_number ?? idx + 1) === selectedRace }"
           @click="selectRace(race.race_number ?? idx + 1)"
         >
-          🐎 Race {{ race.race_number ?? idx + 1 }}
+          🐎 Race {{ race.race_number ?? idx + 1 }} — {{ Transformers.getRaceType(race) }}
         </button>
       </nav>
     </aside>

@@ -7,6 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
+import Transformers from "./utils/transformers";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
@@ -148,6 +149,7 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard">
             <div class="race-container-header">
                 <div class="track-name">{{ racecard.track }}</div>
+                <div class="race_type">{{ Transformers.getRaceType(racecard.races[race - 1]) }}</div>
                 <div class="race-date">{{ racecard.long_date }}</div>
                 <div class="race-number">Race {{ race }}</div>
             </div>
