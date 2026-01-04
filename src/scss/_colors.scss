@@ -6,6 +6,17 @@
     --dialog-red: #b91c1c;
     --dialog-purple: #6d28d9;
     --dialog-purple-hover: #4c1d95;
+
+    /* Modal dialog */
+    --modal-backdrop: rgba(0, 0, 0, 0.55);
+    --modal-bg: #2c2c2c;
+    --modal-fg: #f2f2f2;
+    --modal-border: #3a3a3a;
+    --modal-titlebar-bg: #1e1e1e;
+    --modal-action-bg: #323232;
+    --modal-action-hover-bg: #3a3a3a;
+    --ubuntu-blue: #3584e4;
+    --ubuntu-blue-ring: rgba(53, 132, 228, 0.55);
 }
 
 :root.dark {

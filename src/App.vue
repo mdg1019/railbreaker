@@ -22,12 +22,8 @@ const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false); 
 const racecard = ref<Racecard | null>(null);
 
-const showErrorDialog = ref(false);
-const errorMessage = ref("");
-
-function handleMenuOpen() {
-    console.log("Open menu clicked");
-}
+const showErrorDialog = ref(true);
+const errorMessage = ref("Simulated error message.");
 
 document.documentElement.classList.add('dark');
 
