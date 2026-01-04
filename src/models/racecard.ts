@@ -1,11 +1,13 @@
 export class Racecard {
   track: string;
   date: string;
+  long_date: string;
   races: Race[];
 
   constructor(data: any = {}) {
     this.track = data.track ?? '';
     this.date = data.date ?? '';
+    this.long_date = data.long_date ?? '';
     this.races = data.races ?? [];
   }
 
@@ -13,6 +15,7 @@ export class Racecard {
     return new Racecard({
       track: obj.track,
       date: obj.date,
+      long_date: obj.long_date,
       races: obj.races?.map((r: any) => Race.fromObject(r)) ?? []
     });
   }
@@ -21,6 +24,7 @@ export class Racecard {
     return {
       track: this.track,
       date: this.date,
+      long_date: this.long_date,
       races: this.races.map(r => r.toObject())
     };
   }

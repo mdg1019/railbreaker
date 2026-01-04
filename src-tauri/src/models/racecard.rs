@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct Racecard {
     pub track: String,
     pub date: String,
+    pub long_date: String,
     pub races: Vec<Race>,
 }
 

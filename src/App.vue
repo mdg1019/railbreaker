@@ -10,7 +10,6 @@ import { Racecard } from "./models/racecard";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
-import { mmddyyyyToWeekday, mmddyyyyToLongDate } from "./utils/dateUtils";
 import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
@@ -149,7 +148,7 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard">
             <div class="race-container-header">
                 <div class="track-name">{{ racecard.track }}</div>
-                <div class="race-date">{{ mmddyyyyToWeekday(racecard.date) }} {{ mmddyyyyToLongDate(racecard.date) }}</div>
+                <div class="race-date">{{ racecard.long_date }}</div>
                 <div class="race-number">Race {{ race }}</div>
             </div>
         </div>

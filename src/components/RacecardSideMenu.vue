@@ -121,7 +121,7 @@ function selectRace(raceNumber: number) {
 .tab {
   pointer-events: auto;
   position: fixed;
-  top: 50%;
+  top: 1rem;
   left: 0;
   height: 40px;
   padding: 0 0.75rem;
@@ -130,7 +130,7 @@ function selectRace(raceNumber: number) {
   border: 1px solid var(--modal-border);
   border-left: none;
   border-radius: 0 10px 10px 0;
-  transform: translateY(-50%);
+  transform: none;
   cursor: pointer;
   transition: left 0.2s ease, background 0.15s ease;
 }
