@@ -41,7 +41,7 @@ function selectRace(raceNumber: number) {
           :class="{ selected: (race.race_number ?? idx + 1) === selectedRace }"
           @click="selectRace(race.race_number ?? idx + 1)"
         >
-          Race {{ race.race_number ?? idx + 1 }}
+          🐎 Race {{ race.race_number ?? idx + 1 }}
         </button>
       </nav>
     </aside>
