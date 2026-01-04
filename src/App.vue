@@ -10,6 +10,7 @@ import { Racecard } from "./models/racecard";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
+import { mmddyyyyToWeekday, mmddyyyyToLongDate } from "./utils/dateUtils";
 import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
@@ -135,18 +136,22 @@ onUnmounted(() => {
             :selectedRace="race"
             @update:selectedRace="handleSelectedRace"
         />
-        <div class="processing-zip" v-if="isProcessingZip">
+        <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
             Processing ZIP File
         </div>
-        <div class="processing-racecard" v-if="isProcessingRacecard">
+        <div class="processing" v-if="isProcessingRacecard">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
             Processing Racecard File
         </div>
-        <div v-if="racecard">
-            Race: {{ race }}
+        <div class="race-container" v-if="racecard">
+            <div class="race-container-header">
+                <div class="track-name">{{ racecard.track }}</div>
+                <div class="race-date">{{ mmddyyyyToWeekday(racecard.date) }} {{ mmddyyyyToLongDate(racecard.date) }}</div>
+                <div class="race-number">Race {{ race }}</div>
+            </div>
         </div>
         <MessageDialog
             v-model="showErrorDialog"
@@ -157,20 +162,39 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-    .processing-zip {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+    .container {
+        padding: 1rem;
+    }
+
+    .race-container {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.5rem;
-        z-index: 1000;
+        box-sizing: border-box;
+
+        .race-container-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 1rem;
+
+            .track-name {
+                font-size: 2rem;
+                font-weight: 700;
+            }
+
+            .race-date {
+                opacity: 0.95;
+            }
+
+            .race-number {
+                font-size: 2rem;
+                font-weight: 700;
+            }
+        }
     }
-    .processing-racecard {
+
+    .processing {
         position: fixed;
         top: 0;
         left: 0;
