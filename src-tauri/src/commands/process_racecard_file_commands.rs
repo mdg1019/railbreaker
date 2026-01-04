@@ -245,7 +245,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
         for j in 0..12 {
             let workout = Workout {
-                date: line[SF_WORKOUT_DATE + j].clone(),
+                date: yyyymmdd_to_mmddyyyy(&lines[0][SF_WORKOUT_DATE])
+                    .unwrap_or_else(|| lines[0][SF_WORKOUT_DATE].clone()),
                 time: line[SF_WORKOUT_TIME + j].parse::<f64>().ok(),
                 track: line[SF_WORKOUT_TRACK + j].clone(),
                 distance: line[SF_WORKOUT_DISTANCE + j].parse::<i32>().ok(),
@@ -261,7 +262,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
         for j in 0..10 {
             let pp = PastPerformance { 
-                race_date: line[SF_PP_RACE_DATE + j].clone(),
+                race_date: yyyymmdd_to_mmddyyyy(&lines[0][SF_PP_RACE_DATE])
+                    .unwrap_or_else(|| lines[0][SF_PP_RACE_DATE].clone()),
                 days_since_last_race: line[SF_PP_NUMBER_OF_DAYS_SINCE_LAST_RACE + j].parse::<u32>().ok(),
                 track_code: line[SF_PP_TRACK_CODE + j].clone(),
                 bris_track_code: line[SF_PP_BRIS_TRACK_CODE + j].clone(),
@@ -384,7 +386,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
     let racecard = Racecard {
         track: track_name,
-        date: lines[0][SF_RACE_DATE].clone(),
+        date: yyyymmdd_to_mmddyyyy(&lines[0][SF_RACE_DATE])
+            .unwrap_or_else(|| lines[0][SF_RACE_DATE].clone()),
         races: races,
     };
 
@@ -394,6 +397,23 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
     let json_path = PathBuf::from(&path).with_extension("json");
     write_json_file(json_path, &racecard).await?;
-    // println!("{:?}", racecard);
+    
     Ok(racecard)
+}
+
+
+
+fn yyyymmdd_to_mmddyyyy(value: &str) -> Option<String> {
+    let value = value.trim();
+    if value.len() != 8 {
+        return None;
+    }
+    if !value.chars().all(|c| c.is_ascii_digit()) {
+        return None;
+    }
+
+    let year = value.get(0..4)?;
+    let month = value.get(4..6)?;
+    let day = value.get(6..8)?;
+    Some(format!("{}/{}/{}", month, day, year))
 }
