@@ -7,12 +7,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
-import Transformers from "./utils/transformers";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
-import "./scss/_main.scss";
 import RaceClassification from "./components/RaceClassification.vue";
+import Panel from "./components/Panel.vue";
+import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -21,8 +21,8 @@ let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
 let unlistenExit: (() => void);
 
-const isProcessingZip = ref(false); 
-const isProcessingRacecard = ref(false); 
+const isProcessingZip = ref(false);
+const isProcessingRacecard = ref(false);
 const racecard = ref<Racecard | null>(null);
 
 const race = ref(1);
@@ -86,10 +86,10 @@ onMounted(async () => {
                     name: "Zip Files",
                     extensions: ["zip"],
                 },
-            ],                
+            ],
             defaultPath: configFileStore.configState.lastDirectory
         });
-        
+
 
         if (file) {
             racecard.value = null;
@@ -101,7 +101,7 @@ onMounted(async () => {
                 let racecard_path = await invoke('process_zip_file', { path: file });
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = true;
-                racecard.value = await invoke<Racecard>('process_racecard_file', { path: racecard_path });                
+                racecard.value = await invoke<Racecard>('process_racecard_file', { path: racecard_path });
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
@@ -130,13 +130,8 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <RacecardSideMenu
-            v-if="racecard"
-            :racecard="racecard!"
-            v-model:open="isRacecardMenuOpen"
-            :selectedRace="race"
-            @update:selectedRace="handleSelectedRace"
-        />
+        <RacecardSideMenu v-if="racecard" :racecard="racecard!" v-model:open="isRacecardMenuOpen" :selectedRace="race"
+            @update:selectedRace="handleSelectedRace" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
@@ -148,65 +143,62 @@ onUnmounted(() => {
             Processing Racecard File
         </div>
         <div class="race-container" v-if="racecard">
-            <div class="race-container-header">
-                <div class="track-name">{{ racecard.track }}</div>
-                <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
-                <div class="race-date">{{ racecard.long_date }}</div>
-                <div class="race-number">Race {{ race }}</div>
-            </div>
+            <Panel>
+                <div class="race-container-header">
+                    <div class="track-name">{{ racecard.track }}</div>
+                    <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
+                    <div class="race-date">{{ racecard.long_date }}</div>
+                    <div class="race-number">Race {{ race }}</div>
+                </div>
+            </Panel>
         </div>
-        <MessageDialog
-            v-model="showErrorDialog"
-            :message="errorMessage"
-            title="Error"
-        />
+        <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>
 </template>
 
 <style lang="scss" scoped>
-    .container {
-        padding: 1rem;
-    }
+.container {
+    padding: 1rem;
+}
 
-    .race-container {
+.race-container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    .race-container-header {
         display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
+        align-items: baseline;
+        justify-content: center;
+        gap: 3rem;
 
-        .race-container-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            gap: 3rem;
-            margin-bottom: 1rem;
+        .track-name {
+            font-size: 2rem;
+            font-weight: 700;
+        }
 
-            .track-name {
-                font-size: 2rem;
-                font-weight: 700;
-            }
+        .race-date {
+            opacity: 0.95;
+        }
 
-            .race-date {
-                opacity: 0.95;
-            }
-
-            .race-number {
-                font-size: 2rem;
-                font-weight: 700;
-            }
+        .race-number {
+            font-size: 2rem;
+            font-weight: 700;
         }
     }
+}
 
-    .processing {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.5rem;
-        z-index: 1000;
-    }
+.processing {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    z-index: 1000;
+}
 </style>

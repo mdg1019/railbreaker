@@ -25,6 +25,7 @@ const race_classification = computed(() => tuple.value[1])
     font-family: "MGSans", sans-serif;
 }
 .prefix-adjust {
+    color: var(--accent-yellow);
     display: inline-block;
     transform: translateX(-0.10rem);
 }

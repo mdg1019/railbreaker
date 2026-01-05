@@ -43,11 +43,18 @@ function selectRace(raceNumber: number) {
           :class="{ selected: (race.race_number ?? idx + 1) === selectedRace }"
           @click="selectRace(race.race_number ?? idx + 1)"
         >
-          🐎 Race {{ race.race_number ?? idx + 1 }} — <RaceClassification :race="race" />
+          <div class="race-row">
+            <div class="race-left">
+              🐎 <span class="race-number">Race {{ race.race_number ?? idx + 1 }}:</span>
+            </div>
+            <div class="race-right">
+              <RaceClassification :race="race" />
+            </div>
+          </div>
         </button>
       </nav>
     </aside>
-
+    
     <button class="tab" type="button" :class="{ open }" @click="toggle">
       {{ open ? 'Close' : 'Races' }}
     </button>
@@ -55,6 +62,10 @@ function selectRace(raceNumber: number) {
 </template>
 
 <style scoped lang="scss">
+.race-number {
+    color: var(--accent-green-strong);
+}
+
 .racecard-menu {
   position: fixed;
   inset: 0;
@@ -88,15 +99,21 @@ function selectRace(raceNumber: number) {
 }
 
 .track {
+  color: var(--accent-green-strong);
   font-weight: 700;
 }
 
 .date {
+    color: var(--accent-green);
   opacity: 0.85;
   margin-top: 0.25rem;
 }
 
 .races {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-auto-rows: auto;
+  gap: 0.25rem 0;
   padding: 0.5rem 0;
   overflow: auto;
 }
@@ -108,16 +125,48 @@ function selectRace(raceNumber: number) {
   border: 0;
   width: 100%;
   text-align: left;
-  padding: 0.5rem 1rem;
+  padding: 0;
   cursor: pointer;
+  display: contents;
 }
 
-.race:hover {
+.race-row {
+  display: contents;
+}
+
+.race:hover .race-left,
+.race:hover .race-right {
   background: var(--modal-action-hover-bg);
 }
 
-.race.selected {
-  font-weight: 700;
+.race.selected .race-left,
+.race.selected .race-right {
+  background: var(--background-light);
+  border: 1px solid var(--modal-border);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.06);
+}
+
+.race-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px 0 0 8px;
+}
+
+.race-right {
+  display: block;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  overflow: hidden;
+}
+
+.race-right > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab {
@@ -128,7 +177,7 @@ function selectRace(raceNumber: number) {
   height: 40px;
   padding: 0 0.75rem;
   background: color-mix(in srgb, var(--modal-titlebar-bg) 82%, transparent);
-  color: var(--modal-fg);
+  color: var(--accent-yellow);
   border: 1px solid var(--modal-border);
   border-left: none;
   border-radius: 0 10px 10px 0;
