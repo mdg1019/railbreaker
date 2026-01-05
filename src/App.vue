@@ -30,6 +30,8 @@ const racecard = ref<Racecard | null>(null);
 
 const race = ref(1);
 
+const currentRacecardIndex = ref(0);
+
 const isRacecardMenuOpen = ref(false);
 
 const showErrorDialog = ref(false);
@@ -47,6 +49,12 @@ watch(racecard, (rc) => {
     } else {
         isRacecardMenuOpen.value = false;
     }
+});
+
+watch(currentRacecardIndex, (idx) => {
+    const entry = racecards.racecardEntries[idx];
+    racecard.value = entry?.racecard ?? null;
+    race.value = 1;
 });
 
 document.documentElement.classList.add('dark');
@@ -72,6 +80,7 @@ onMounted(async () => {
             try {
                 let openedRacecard = await invoke<Racecard>('load_racecard_file', { path: file });
                 racecards.addRacecard(openedRacecard);
+                currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
             } catch (error) {
@@ -108,6 +117,7 @@ onMounted(async () => {
                 isProcessingRacecard.value = true;               
                 let openedRacecard = await invoke<Racecard>('process_racecard_file', { path: racecard_path });
                 racecards.addRacecard(openedRacecard);
+                currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
             } catch (error) {
@@ -137,7 +147,7 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <RacecardSideMenu v-if="racecard" :racecard="racecard!" v-model:open="isRacecardMenuOpen" :selectedRace="race"
+        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards" v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen" :currentRace="race"
             @update:selectedRace="handleSelectedRace" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />

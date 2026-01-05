@@ -1,21 +1,33 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Racecard } from '../models/racecard'
-import Transformers from '../utils/transformers'
+import { computed, ref } from 'vue'
+import type { Racecards } from '../models/racecards'
 import RaceClassification from './RaceClassification.vue';
 
 const props = defineProps<{
-  racecard: Racecard
+  racecards: Racecards
+  currentRacecardIndex: number
+  currentRace: number
   open: boolean
-  selectedRace: number
 }>()
 
 const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
   (e: 'update:selectedRace', value: number): void
+  (e: 'update:currentRacecardIndex', value: number): void
 }>()
 
-const races = computed(() => props.racecard.races ?? [])
+const racecardEntry = computed(() => props.racecards.racecardEntries[props.currentRacecardIndex])
+
+const showDropdown = ref(false)
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function selectRacecardIndex(idx: number) {
+  emit('update:currentRacecardIndex', idx)
+  showDropdown.value = false
+}
 
 function toggle() {
   emit('update:open', !props.open)
@@ -30,17 +42,31 @@ function selectRace(raceNumber: number) {
   <div class="racecard-menu" aria-label="Racecard menu">
     <aside class="panel" :class="{ open }" aria-label="Races">
       <div class="header">
-        <div class="track">{{ racecard.track }}</div>
-        <div class="date">{{ racecard.date }}</div>
+        <div class="dropdown" @click.stop="toggleDropdown" tabindex="0" @blur="showDropdown = false">
+          <div class="dropdown-selected">
+            <div class="selected-text">
+              <div class="track">{{ racecardEntry?.racecard.track }}</div>
+              <div class="date">{{ racecardEntry?.racecard.date }}</div>
+            </div>
+            <div class="chev">{{ showDropdown ? '▴' : '▾' }}</div>
+          </div>
+
+          <ul v-if="showDropdown" class="dropdown-list">
+            <li v-for="(entry, idx) in racecards.racecardEntries" :key="entry.id" :class="{ active: idx === currentRacecardIndex }" @click.stop="selectRacecardIndex(idx)">
+              <div class="entry-track">{{ entry.racecard.track }}</div>
+              <div class="entry-date">{{ entry.racecard.date }}</div>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <nav class="races" aria-label="Race list">
         <button
           class="race"
           type="button"
-          v-for="(race, idx) in races"
+          v-for="(race, idx) in racecardEntry?.racecard.races"
           :key="race.race_number ?? idx"
-          :class="{ selected: (race.race_number ?? idx + 1) === selectedRace }"
+          :class="{ selected: (race.race_number ?? idx + 1) === currentRace }"
           @click="selectRace(race.race_number ?? idx + 1)"
         >
           <div class="race-row">
@@ -197,5 +223,64 @@ function selectRace(raceNumber: number) {
 .tab:focus-visible {
   outline: none;
   border-color: var(--ubuntu-blue);
+}
+
+.dropdown {
+  display: block;
+  width: 100%;
+}
+
+.dropdown-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dropdown-selected:hover {
+  background: var(--modal-action-hover-bg);
+}
+
+.selected-text .track {
+  font-weight: 700;
+}
+
+.chev {
+  color: var(--accent-green-strong);
+  margin-left: 0.5rem;
+}
+
+.dropdown-list {
+  margin: 0.5rem 0 0 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  max-height: 220px;
+  overflow: auto;
+  border-radius: 8px;
+  background: var(--bg-secondary, rgba(0,0,0,0.03));
+  border: 1px solid var(--modal-border);
+}
+
+.dropdown-list li {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover,
+.dropdown-list li.active {
+  background: var(--background-light);
+}
+
+.entry-track {
+  font-weight: 600;
+}
+
+.entry-date {
+  opacity: 0.85;
 }
 </style>
