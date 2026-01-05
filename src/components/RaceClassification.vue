@@ -16,7 +16,7 @@ const race_classification = computed(() => tuple.value[1])
 
 <template>
     <span class="container">
-        <span class="first-adjust">{{ prefix }}</span>{{ race_classification }}
+        <span class="prefix-adjust">{{ prefix }}</span>{{ race_classification }}
     </span>
 </template>
 
@@ -24,8 +24,8 @@ const race_classification = computed(() => tuple.value[1])
 .container {
     font-family: "MGSans", sans-serif;
 }
-.first-adjust {
+.prefix-adjust {
     display: inline-block;
-    transform: translateY(0.25rem);
+    transform: translateX(-0.10rem);
 }
 </style>

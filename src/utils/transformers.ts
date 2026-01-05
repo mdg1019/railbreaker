@@ -16,8 +16,12 @@ export default class Transformers {
 
     let prefix = "";
 
-    if (race.age_sex_restrictions[2] == "F") {
+    if (race.age_sex_restrictions[2].toLowerCase() == "f") {
       prefix = '\u00EA';
+    }
+
+    if (race.statebred_flag.toLowerCase() == "s") {
+      prefix += '\u00EB';
     }
 
     return [prefix, raceClassification];  }
