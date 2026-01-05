@@ -135,10 +135,16 @@ function selectRace(raceNumber: number) {
 }
 
 .header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
     gap: 0.5rem;
+}
+
+.header-row .delete-btn {
+    align-self: start;
+    justify-self: end;
+    margin-top: 0.5rem;
 }
 
 .delete-btn {
