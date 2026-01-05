@@ -14,6 +14,7 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void
     (e: 'update:selectedRace', value: number): void
     (e: 'update:currentRacecardIndex', value: number): void
+    (e: 'delete:racecard', index: number): void
 }>()
 
 const racecardEntry = computed(() => props.racecards.racecardEntries[props.currentRacecardIndex])
@@ -26,6 +27,11 @@ function toggleDropdown() {
 
 function selectRacecardIndex(idx: number) {
     emit('update:currentRacecardIndex', idx)
+    showDropdown.value = false
+}
+
+function deleteCurrentRacecard() {
+    emit('delete:racecard', props.currentRacecardIndex)
     showDropdown.value = false
 }
 
@@ -43,7 +49,8 @@ function selectRace(raceNumber: number) {
     <div class="racecard-menu" aria-label="Racecard menu">
         <aside class="panel" :class="{ open }" aria-label="Races">
             <div class="header">
-                <div class="dropdown" @click.stop="toggleDropdown" tabindex="0" @blur="showDropdown = false">
+                <div class="header-row">
+                    <div v-if="racecards.racecardEntries.length > 1" class="dropdown" @click.stop="toggleDropdown" tabindex="0" @blur="showDropdown = false">
                     <div class="dropdown-selected">
                         <div class="selected-text">
                             <div class="track">{{ racecardEntry?.racecard.track }}</div>
@@ -59,6 +66,16 @@ function selectRace(raceNumber: number) {
                             <div class="entry-date">{{ entry.racecard.date }}</div>
                         </li>
                     </ul>
+                    </div>
+                    <div v-else class="dropdown-static">
+                        <div class="dropdown-selected">
+                            <div class="selected-text">
+                                <div class="track">{{ racecardEntry?.racecard.track }}</div>
+                                <div class="date">{{ racecardEntry?.racecard.date }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="delete-btn" type="button" @click.stop="deleteCurrentRacecard" title="Delete racecard">✕</button>
                 </div>
             </div>
 
@@ -102,7 +119,7 @@ function selectRace(raceNumber: number) {
     top: 0;
     left: 0;
     height: 100vh;
-    width: 280px;
+    width: 360px;
     background: var(--bg);
     color: var(--fg);
     border-right: 1px solid var(--modal-border);
@@ -119,6 +136,26 @@ function selectRace(raceNumber: number) {
 .header {
     padding: 1rem;
     border-bottom: 1px solid var(--modal-border);
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.delete-btn {
+    background: transparent;
+    border: 2px solid var(--accent-green-strong);
+    color: var(--accent-red);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: color-mix(in srgb, var(--accent-green-strong) 12%, transparent);
 }
 
 .track {
@@ -210,7 +247,7 @@ function selectRace(raceNumber: number) {
 }
 
 .tab.open {
-    left: 280px;
+    left: 360px;
 }
 
 .tab:hover {

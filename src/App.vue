@@ -46,14 +46,27 @@ function handleSelectedRace(value: number) {
     isRacecardMenuOpen.value = false;
 }
 
+function handleDeleteRacecard(index: number) {
+    // delete the entry
+    racecards.deleteRacecardAt(index);
+    // if no racecards, clear selection
+    if (racecards.racecardEntries.length === 0) {
+        currentRacecardIndex.value = 0;
+        racecard.value = null;
+        race.value = 1;
+        return;
+    }
+
+    // prefer previous entry if exists, otherwise clamp to 0
+    const newIndex = index - 1 >= 0 ? index - 1 : 0;
+    currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
+}
+
 watch(racecard, (rc) => {
-    // keep the menu closed whenever racecard ref changes; do not
-    // unconditionally reset `race` here — handled by index watcher
     isRacecardMenuOpen.value = false;
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
-    // save last opened race for previous entry
     if (typeof oldIdx === 'number' && oldIdx >= 0) {
         const prev = racecards.racecardEntries[oldIdx];
         if (prev) prev.last_opened_race = race.value;
@@ -61,7 +74,6 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
 
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
-    // restore last opened race for the newly selected entry (default to 1)
     if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
         race.value = entry.last_opened_race;
     } else {
@@ -160,7 +172,7 @@ onUnmounted(() => {
 <template>
     <main class="container">
         <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards" v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen" :currentRace="race"
-            @update:selectedRace="handleSelectedRace" />
+            @update:selectedRace="handleSelectedRace" @delete:racecard="handleDeleteRacecard" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
