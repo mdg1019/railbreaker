@@ -7,6 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
+import { Racecards } from "./models/racecards";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
@@ -23,6 +24,8 @@ let unlistenExit: (() => void);
 
 const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false);
+
+const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
 
 const race = ref(1);
@@ -67,7 +70,9 @@ onMounted(async () => {
 
             isProcessingRacecard.value = true;
             try {
-                racecard.value = await invoke<Racecard>('load_racecard_file', { path: file });
+                let openedRacecard = await invoke<Racecard>('load_racecard_file', { path: file });
+                racecards.addRacecard(openedRacecard);
+                racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingRacecard.value = false;
@@ -97,11 +102,13 @@ onMounted(async () => {
 
             isProcessingZip.value = true;
 
-            try {
+            try { 
                 let racecard_path = await invoke('process_zip_file', { path: file });
                 isProcessingZip.value = false;
-                isProcessingRacecard.value = true;
-                racecard.value = await invoke<Racecard>('process_racecard_file', { path: racecard_path });
+                isProcessingRacecard.value = true;               
+                let openedRacecard = await invoke<Racecard>('process_racecard_file', { path: racecard_path });
+                racecards.addRacecard(openedRacecard);
+                racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;

@@ -9,7 +9,7 @@ use crate::constants::single_file_indexes::*;
 pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String> {
     let contents = fs::read_to_string(&path)
         .await
-        .map_err(|e| format!("Failed to racecard file: {}", e))?;
+        .map_err(|e| format!("Failed to read racecard file: {}", e))?;
 
     let lines: Vec<Vec<String>> = contents
         .lines()
@@ -19,7 +19,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 .collect()
         })
         .collect();
-
+    
     let number_of_columns = lines.first().ok_or("Racecard file is empty")?.len();
 
     for (i, line) in lines.iter().enumerate() {
