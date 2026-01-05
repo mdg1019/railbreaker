@@ -22,6 +22,7 @@ const racecardEntry = computed(() => props.racecards.racecardEntries[props.curre
 const showDropdown = ref(false)
 
 function toggleDropdown() {
+    if (props.racecards.racecardEntries.length <= 1) return
     showDropdown.value = !showDropdown.value
 }
 
@@ -50,30 +51,25 @@ function selectRace(raceNumber: number) {
         <aside class="panel" :class="{ open }" aria-label="Races">
             <div class="header">
                 <div class="header-row">
-                    <div v-if="racecards.racecardEntries.length > 1" class="dropdown" @click.stop="toggleDropdown" tabindex="0" @blur="showDropdown = false">
-                    <div class="dropdown-selected">
-                        <div class="selected-text">
-                            <div class="track">{{ racecardEntry?.racecard.track }}</div>
-                            <div class="date">{{ racecardEntry?.racecard.date }}</div>
-                        </div>
-                        <div class="chev">{{ showDropdown ? '▴' : '▾' }}</div>
-                    </div>
-
-                    <ul v-if="showDropdown" class="dropdown-list">
-                        <li v-for="(entry, idx) in racecards.racecardEntries" :key="entry.id"
-                            :class="{ active: idx === currentRacecardIndex }" @click.stop="selectRacecardIndex(idx)">
-                            <div class="entry-track">{{ entry.racecard.track }}</div>
-                            <div class="entry-date">{{ entry.racecard.date }}</div>
-                        </li>
-                    </ul>
-                    </div>
-                    <div v-else class="dropdown-static">
+                    <div class="dropdown" :class="{ 'dropdown-static': racecards.racecardEntries.length <= 1 }"
+                        @click.stop="toggleDropdown"
+                        :tabindex="racecards.racecardEntries.length > 1 ? 0 : -1"
+                        @blur="showDropdown = false">
                         <div class="dropdown-selected">
                             <div class="selected-text">
                                 <div class="track">{{ racecardEntry?.racecard.track }}</div>
                                 <div class="date">{{ racecardEntry?.racecard.date }}</div>
                             </div>
+                            <div v-if="racecards.racecardEntries.length > 1" class="chev">{{ showDropdown ? '▴' : '▾' }}</div>
                         </div>
+
+                        <ul v-if="racecards.racecardEntries.length > 1 && showDropdown" class="dropdown-list">
+                            <li v-for="(entry, idx) in racecards.racecardEntries" :key="entry.id"
+                                :class="{ active: idx === currentRacecardIndex }" @click.stop="selectRacecardIndex(idx)">
+                                <div class="entry-track">{{ entry.racecard.track }}</div>
+                                <div class="entry-date">{{ entry.racecard.date }}</div>
+                            </li>
+                        </ul>
                     </div>
                     <button class="delete-btn" type="button" @click.stop="deleteCurrentRacecard" title="Delete racecard">✕</button>
                 </div>
