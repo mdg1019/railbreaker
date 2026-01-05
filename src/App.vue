@@ -39,22 +39,34 @@ const errorMessage = ref("");
 
 function handleSelectedRace(value: number) {
     race.value = value;
+    const entry = racecards.racecardEntries[currentRacecardIndex.value];
+    if (entry) {
+        entry.last_opened_race = value;
+    }
     isRacecardMenuOpen.value = false;
 }
 
 watch(racecard, (rc) => {
-    if (rc) {
-        isRacecardMenuOpen.value = false;
-        race.value = 1;
-    } else {
-        isRacecardMenuOpen.value = false;
-    }
+    // keep the menu closed whenever racecard ref changes; do not
+    // unconditionally reset `race` here — handled by index watcher
+    isRacecardMenuOpen.value = false;
 });
 
-watch(currentRacecardIndex, (idx) => {
+watch(currentRacecardIndex, (idx, oldIdx) => {
+    // save last opened race for previous entry
+    if (typeof oldIdx === 'number' && oldIdx >= 0) {
+        const prev = racecards.racecardEntries[oldIdx];
+        if (prev) prev.last_opened_race = race.value;
+    }
+
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
-    race.value = 1;
+    // restore last opened race for the newly selected entry (default to 1)
+    if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
+        race.value = entry.last_opened_race;
+    } else {
+        race.value = 1;
+    }
 });
 
 document.documentElement.classList.add('dark');
