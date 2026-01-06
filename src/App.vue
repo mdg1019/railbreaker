@@ -8,12 +8,10 @@ import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
 import { Racecards } from "./models/racecards";
-import Transformers from "./utils/transformers";
+import RacecardHeader from "./components/RacecardHeader.vue";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
-import RaceClassification from "./components/RaceClassification.vue";
-import Panel from "./components/Panel.vue";
 import "./scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
@@ -186,14 +184,7 @@ onUnmounted(() => {
         </div>
         <div class="race-container" v-if="racecard">
             <Panel>
-                <div class="race-container-header">
-                    <div class="track-name color-accent-green-strong">{{ racecard.track }}</div>
-                    <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
-                    <div class="use-mgsans">{{ Transformers.getDistanceLength(racecard.races[race - 1].distance ?? 0) }}</div>
-                    <div>{{ Transformers.getAgeSexRestrictionString(racecard.races[race - 1].age_sex_restrictions) }}</div>
-                    <div class="race-date">{{ racecard.long_date }}</div>
-                    <div class="race-number color-accent-green-strong">Race {{ race }}</div>
-                </div>
+                <RacecardHeader :racecard="racecard" :race="race" />
             </Panel>
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
@@ -209,27 +200,6 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-
-    .race-container-header {
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        gap: 3rem;
-
-        .track-name {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .race-date {
-            opacity: 0.95;
-        }
-
-        .race-number {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-    }
 }
 
 .processing {
