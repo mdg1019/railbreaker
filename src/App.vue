@@ -8,6 +8,7 @@ import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
 import { Racecards } from "./models/racecards";
+import Transformers from "./utils/transformers";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
@@ -188,6 +189,7 @@ onUnmounted(() => {
                 <div class="race-container-header">
                     <div class="track-name color-accent-green-strong">{{ racecard.track }}</div>
                     <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
+                    <div class="use-mgsans">{{ Transformers.getDistanceLength(racecard.races[race - 1].distance ?? 0) }}</div>
                     <div class="race-date">{{ racecard.long_date }}</div>
                     <div class="race-number color-accent-green-strong">Race {{ race }}</div>
                 </div>
