@@ -6,9 +6,10 @@ import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
-import { Racecard } from "./models/racecard";
+import { Race, Racecard } from "./models/racecard";
 import { Racecards } from "./models/racecards";
 import RacecardHeader from "./components/RacecardHeader.vue";
+import RaceDetails from "./components/RaceDetails.vue";
 import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
@@ -183,9 +184,8 @@ onUnmounted(() => {
             Processing Racecard File
         </div>
         <div class="race-container" v-if="racecard">
-            <Panel>
-                <RacecardHeader :racecard="racecard" :race="race" />
-            </Panel>
+            <RacecardHeader :racecard="racecard" :race="race" />
+            <RaceDetails :racecard="racecard" :race="race" />
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>
