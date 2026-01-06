@@ -123,12 +123,17 @@ export default class Transformers {
 
     static capitalize(s: string): string {
         if (!s) return "";
-        
-        return s.toLowerCase().replace(/\w\S*/g, (txt) => {
+
+        return s.toLowerCase().replace(/\w\S*/g, (txt, offset, str) => {
+            const before = (str || "").slice(0, offset as number);
+            const lastNonSpace = before.replace(/\s+$/g, "").slice(-1);
+            if (lastNonSpace === ",") return txt;
             return txt.charAt(0).toUpperCase() + txt.slice(1);
         });
     }
-    
-}
 
+    static commas(s: string): string {
+        return s.replace(/;/g, ",");
+    }
+}
 

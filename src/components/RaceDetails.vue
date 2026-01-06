@@ -18,15 +18,32 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
             </div>
             <div class="race-details-center">
                 <div class="wager-list">
-                    <div v-if="currentRace.wager_type_line1 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line1) }}</div>
-                    <div v-if="currentRace.wager_type_line2 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line2) }}</div>
-                    <div v-if="currentRace.wager_type_line3 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line3) }}</div>
-                    <div v-if="currentRace.wager_type_line4 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line4) }}</div>
-                    <div v-if="currentRace.wager_type_line5 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line5) }}</div>
-                    <div v-if="currentRace.wager_type_line6 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line6) }}</div>
-                    <div v-if="currentRace.wager_type_line7 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line7) }}</div>
-                    <div v-if="currentRace.wager_type_line8 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line8) }}</div>
-                    <div v-if="currentRace.wager_type_line9 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line9) }}</div>
+                    <div v-if="currentRace.wager_type_line1 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line1) }}</div>
+                    <div v-if="currentRace.wager_type_line2 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line2) }}</div>
+                    <div v-if="currentRace.wager_type_line3 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line3) }}</div>
+                    <div v-if="currentRace.wager_type_line4 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line4) }}</div>
+                    <div v-if="currentRace.wager_type_line5 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line5) }}</div>
+                    <div v-if="currentRace.wager_type_line6 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line6) }}</div>
+                    <div v-if="currentRace.wager_type_line7 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line7) }}</div>
+                    <div v-if="currentRace.wager_type_line8 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line8) }}</div>
+                    <div v-if="currentRace.wager_type_line9 !== ''">{{
+                        Transformers.capitalize(currentRace.wager_type_line9) }}</div>
+                </div>
+                <div class="race-conditions">
+                    <div v-if="currentRace.race_conditions_line1 !== ''">
+                        {{ Transformers.commas(currentRace.race_conditions_line1 + currentRace.race_conditions_line2
+                            + currentRace.race_conditions_line3 + currentRace.race_conditions_line4 +
+                        currentRace.race_conditions_line5) }}
+                    </div>
+                    <div v-else>{{ Transformers.commas(currentRace.race_conditions) }}</div>
                 </div>
             </div>
             <div class="race-details-right">3</div>
@@ -56,20 +73,25 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
     align-items: center;
     text-align: left;
 }
+
 .race-details-right {
     flex: 0 0 25%;
 }
 
 .race-details-center {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
     text-align: left;
     align-items: flex-start;
+    gap: 1rem;
 }
 
 @media (max-width: 640px) {
     .race-details {
         flex-direction: column;
     }
+
     .race-details-left,
     .race-details-center,
     .race-details-right {
