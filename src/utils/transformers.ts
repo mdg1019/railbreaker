@@ -18,7 +18,7 @@ export default class Transformers {
         let prefix = "";
 
         if (race.age_sex_restrictions[2].toLowerCase() == "f") {
-            prefix = "\u00EA";
+            prefix += "\u00EA";
         }
 
         if (race.statebred_flag.toLowerCase() == "s") {
@@ -120,6 +120,15 @@ export default class Transformers {
 
         return result + " " + SEX_MAP[restriction[2]];
     }
+
+    static capitalize(s: string): string {
+        if (!s) return "";
+        
+        return s.toLowerCase().replace(/\w\S*/g, (txt) => {
+            return txt.charAt(0).toUpperCase() + txt.slice(1);
+        });
+    }
+    
 }
 
 

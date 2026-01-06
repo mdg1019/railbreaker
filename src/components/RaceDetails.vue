@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import type { Racecard } from "../models/racecard";
 import Panel from "./Panel.vue";
+import Transformers from "../utils/transformers";
 
 const props = defineProps<{ racecard: Racecard; race: number }>();
 
@@ -15,7 +16,19 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
             <div class="race-details-left">
                 <div class="race-number color-accent-green-strong">{{ props.race }}</div>
             </div>
-            <div class="race-details-center">2</div>
+            <div class="race-details-center">
+                <div class="wager-list">
+                    <div v-if="currentRace.wager_type_line1 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line1) }}</div>
+                    <div v-if="currentRace.wager_type_line2 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line2) }}</div>
+                    <div v-if="currentRace.wager_type_line3 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line3) }}</div>
+                    <div v-if="currentRace.wager_type_line4 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line4) }}</div>
+                    <div v-if="currentRace.wager_type_line5 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line5) }}</div>
+                    <div v-if="currentRace.wager_type_line6 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line6) }}</div>
+                    <div v-if="currentRace.wager_type_line7 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line7) }}</div>
+                    <div v-if="currentRace.wager_type_line8 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line8) }}</div>
+                    <div v-if="currentRace.wager_type_line9 !== ''">{{ Transformers.capitalize(currentRace.wager_type_line9) }}</div>
+                </div>
+            </div>
             <div class="race-details-right">3</div>
         </div>
     </Panel>
@@ -36,9 +49,12 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 }
 
 .race-details-left {
-    font-size: 8rem;
+    font-size: 5rem;
     text-align: left;
     flex: 0 0 5%;
+    display: flex;
+    align-items: center;
+    text-align: left;
 }
 .race-details-right {
     flex: 0 0 25%;
@@ -46,6 +62,8 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 
 .race-details-center {
     flex: 1 1 auto;
+    text-align: left;
+    align-items: flex-start;
 }
 
 @media (max-width: 640px) {

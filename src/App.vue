@@ -28,7 +28,7 @@ const isProcessingRacecard = ref(false);
 const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
 
-const race = ref(1);
+const raceNumber = ref(1);
 
 const currentRacecardIndex = ref(0);
 
@@ -38,7 +38,7 @@ const showErrorDialog = ref(false);
 const errorMessage = ref("");
 
 function handleSelectedRace(value: number) {
-    race.value = value;
+    raceNumber.value = value;
     const entry = racecards.racecardEntries[currentRacecardIndex.value];
     if (entry) {
         entry.last_opened_race = value;
@@ -53,7 +53,7 @@ function handleDeleteRacecard(index: number) {
     if (racecards.racecardEntries.length === 0) {
         currentRacecardIndex.value = 0;
         racecard.value = null;
-        race.value = 1;
+        raceNumber.value = 1;
         return;
     }
 
@@ -69,15 +69,15 @@ watch(racecard, (rc) => {
 watch(currentRacecardIndex, (idx, oldIdx) => {
     if (typeof oldIdx === 'number' && oldIdx >= 0) {
         const prev = racecards.racecardEntries[oldIdx];
-        if (prev) prev.last_opened_race = race.value;
+        if (prev) prev.last_opened_race = raceNumber.value;
     }
 
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
     if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
-        race.value = entry.last_opened_race;
+        raceNumber.value = entry.last_opened_race;
     } else {
-        race.value = 1;
+        raceNumber.value = 1;
     }
 });
 
@@ -171,7 +171,7 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards" v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen" :currentRace="race"
+        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards" v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen" :currentRace="raceNumber"
             @update:selectedRace="handleSelectedRace" @delete:racecard="handleDeleteRacecard" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
@@ -184,8 +184,8 @@ onUnmounted(() => {
             Processing Racecard File
         </div>
         <div class="race-container" v-if="racecard">
-            <RacecardHeader :racecard="racecard" :race="race" />
-            <RaceDetails :racecard="racecard" :race="race" />
+            <RacecardHeader :racecard="racecard" :race="raceNumber" />
+            <RaceDetails :racecard="racecard" :race="raceNumber" />
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>
