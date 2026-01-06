@@ -190,6 +190,7 @@ onUnmounted(() => {
                     <div class="track-name color-accent-green-strong">{{ racecard.track }}</div>
                     <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
                     <div class="use-mgsans">{{ Transformers.getDistanceLength(racecard.races[race - 1].distance ?? 0) }}</div>
+                    <div>{{ Transformers.getAgeSexRestrictionString(racecard.races[race - 1].age_sex_restrictions) }}</div>
                     <div class="race-date">{{ racecard.long_date }}</div>
                     <div class="race-number color-accent-green-strong">Race {{ race }}</div>
                 </div>
