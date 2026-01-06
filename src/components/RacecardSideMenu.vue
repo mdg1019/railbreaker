@@ -152,6 +152,7 @@ function selectRace(raceNumber: number) {
     border: 2px solid var(--accent-green-strong);
     color: var(--accent-red);
     padding: 0.25rem 0.5rem;
+    transform: translateY(.75rem);
     border-radius: 6px;
     cursor: pointer;
 }

@@ -186,10 +186,10 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard">
             <Panel>
                 <div class="race-container-header">
-                    <div class="track-name">{{ racecard.track }}</div>
+                    <div class="track-name color-accent-green-strong">{{ racecard.track }}</div>
                     <RaceClassification class="race_type" :race="racecard.races[race - 1]" />
                     <div class="race-date">{{ racecard.long_date }}</div>
-                    <div class="race-number">Race {{ race }}</div>
+                    <div class="race-number color-accent-green-strong">Race {{ race }}</div>
                 </div>
             </Panel>
         </div>
