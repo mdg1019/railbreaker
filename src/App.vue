@@ -35,6 +35,8 @@ const currentRacecardIndex = ref(0);
 
 const isRacecardMenuOpen = ref(false);
 
+const raceContainerRef = ref<HTMLElement | null>(null);
+
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
 
@@ -80,6 +82,12 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
     } else {
         raceNumber.value = 1;
     }
+});
+
+watch(raceNumber, async (newVal, oldVal) => {
+    await nextTick();
+    // scroll the race container to the top of the viewport when the race changes
+    raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 document.documentElement.classList.add('dark');
@@ -184,7 +192,7 @@ onUnmounted(() => {
             <br />
             Processing Racecard File
         </div>
-        <div class="race-container" v-if="racecard">
+        <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />
             <RaceDetails :racecard="racecard" :race="raceNumber" />
             <Horse
