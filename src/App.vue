@@ -14,6 +14,7 @@ import EqualizerLoader from "./components/EqualizerLoader.vue";
 import MessageDialog from "./components/MessageDialog.vue";
 import RacecardSideMenu from "./components/RacecardSideMenu.vue";
 import "./scss/_main.scss";
+import Horse from "./components/Horse.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -103,7 +104,9 @@ onMounted(async () => {
             isProcessingRacecard.value = true;
             try {
                 let openedRacecard = await invoke<Racecard>('load_racecard_file', { path: file });
+                console.log("opened racecard")
                 racecards.addRacecard(openedRacecard);
+                console.log(racecards.racecardEntries);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
@@ -186,6 +189,11 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />
             <RaceDetails :racecard="racecard" :race="raceNumber" />
+            <Horse
+                v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
+                :key="horse.program_number || horse.post_position || idx"
+                :horse="horse"
+            ></Horse>
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>

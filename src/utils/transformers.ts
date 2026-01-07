@@ -110,8 +110,6 @@ export default class Transformers {
             "F": "Fillies",
         };
 
-        console.log("Restriction:", restriction);
-
         let result = AGE_MAP[restriction[0]];
 
         result += restriction[1] == "U" ? "&up" : "yo";
@@ -147,6 +145,22 @@ export default class Transformers {
         }
 
         return result;
+    }
+
+    static createOddsString(odds: number | null): string {
+        if (odds === null || odds === undefined) {
+            return "-";
+        }
+
+        for (let i = 1; i <= 10; i++) {
+            let numerator = odds * i;
+
+            if (Number.isInteger(numerator)) {
+                return `${numerator}/${i}`;
+            }
+        }
+
+        return "-";
     }
 }
 
