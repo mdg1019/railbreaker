@@ -65,6 +65,11 @@ export class Race {
   wager_type_line7: string;
   wager_type_line8: string;
   wager_type_line9: string;
+  two_f_bris_pace_par: number | null;
+  four_f_bris_pace_par: number | null;
+  six_f_bris_pace_par: number | null;
+  bris_speed_for_class: number | null;
+  bris_late_pace_par: number | null;
   horses: Horse[];
 
   constructor(data: any = {}) {
@@ -102,6 +107,11 @@ export class Race {
     this.wager_type_line7 = data.wager_type_line7 ?? '';
     this.wager_type_line8 = data.wager_type_line8 ?? '';
     this.wager_type_line9 = data.wager_type_line9 ?? '';
+    this.two_f_bris_pace_par = data.two_f_bris_pace_par ?? null;
+    this.four_f_bris_pace_par = data.four_f_bris_pace_par ?? null;
+    this.six_f_bris_pace_par = data.six_f_bris_pace_par ?? null;
+    this.bris_speed_for_class = data.bris_speed_for_class ?? null;
+    this.bris_late_pace_par = data.bris_late_pace_par ?? null;
     this.horses = data.horses ?? [];
   }
 
@@ -148,6 +158,11 @@ export class Race {
       wager_type_line7: this.wager_type_line7,
       wager_type_line8: this.wager_type_line8,
       wager_type_line9: this.wager_type_line9,
+      two_f_bris_pace_par: this.two_f_bris_pace_par,
+      four_f_bris_pace_par: this.four_f_bris_pace_par,
+      six_f_bris_pace_par: this.six_f_bris_pace_par,
+      bris_speed_for_class: this.bris_speed_for_class,
+      bris_late_pace_par: this.bris_late_pace_par,
       horses: this.horses.map(h => h.toObject())
     };
   }
@@ -230,11 +245,6 @@ export class Horse {
   lifetime_record_earnings: number | null;
   bris_run_style: string;
   quirin_speed_points: number | null;
-  two_f_bris_pace_par: number | null;
-  four_f_bris_pace_par: number | null;
-  six_f_bris_pace_par: number | null;
-  bris_speed_for_class: number | null;
-  bris_late_pace_par: number | null;
   trainer_jockey_combo_starts: number | null;
   trainer_jockey_combo_wins: number | null;
   trainer_jockey_combo_places: number | null;
@@ -384,11 +394,6 @@ export class Horse {
     this.lifetime_record_earnings = data.lifetime_record_earnings ?? null;
     this.bris_run_style = data.bris_run_style ?? '';
     this.quirin_speed_points = data.quirin_speed_points ?? null;
-    this.two_f_bris_pace_par = data.two_f_bris_pace_par ?? null;
-    this.four_f_bris_pace_par = data.four_f_bris_pace_par ?? null;
-    this.six_f_bris_pace_par = data.six_f_bris_pace_par ?? null;
-    this.bris_speed_for_class = data.bris_speed_for_class ?? null;
-    this.bris_late_pace_par = data.bris_late_pace_par ?? null;
     this.trainer_jockey_combo_starts = data.trainer_jockey_combo_starts ?? null;
     this.trainer_jockey_combo_wins = data.trainer_jockey_combo_wins ?? null;
     this.trainer_jockey_combo_places = data.trainer_jockey_combo_places ?? null;
@@ -549,11 +554,6 @@ export class Horse {
       lifetime_record_earnings: this.lifetime_record_earnings,
       bris_run_style: this.bris_run_style,
       quirin_speed_points: this.quirin_speed_points,
-      two_f_bris_pace_par: this.two_f_bris_pace_par,
-      four_f_bris_pace_par: this.four_f_bris_pace_par,
-      six_f_bris_pace_par: this.six_f_bris_pace_par,
-      bris_speed_for_class: this.bris_speed_for_class,
-      bris_late_pace_par: this.bris_late_pace_par,
       trainer_jockey_combo_starts: this.trainer_jockey_combo_starts,
       trainer_jockey_combo_wins: this.trainer_jockey_combo_wins,
       trainer_jockey_combo_places: this.trainer_jockey_combo_places,
