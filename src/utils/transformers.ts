@@ -135,5 +135,18 @@ export default class Transformers {
     static commas(s: string): string {
         return s.replace(/;/g, ",");
     }
+
+    static buildRaceConditions(race: Race): string {
+        let result = race.race_conditions_line1 + race.race_conditions_line2 + race.race_conditions_line3 + race.race_conditions_line4 + race.race_conditions_line5 + race.race_conditions_line6;
+
+        result = this.commas(result).trim();
+        let pursePosition = result.toLowerCase().indexOf("purse");
+
+        if (pursePosition >= 0) {
+            result = result.slice(pursePosition);
+        }
+
+        return result;
+    }
 }
 

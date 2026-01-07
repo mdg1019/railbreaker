@@ -3,6 +3,7 @@ import { computed } from "vue";
 import type { Racecard } from "../models/racecard";
 import Panel from "./Panel.vue";
 import Transformers from "../utils/transformers";
+import RaceClassification from "./RaceClassification.vue";
 
 const props = defineProps<{ racecard: Racecard; race: number }>();
 
@@ -39,9 +40,9 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
                 </div>
                 <div class="race-conditions">
                     <div v-if="currentRace.race_conditions_line1 !== ''">
-                        {{ Transformers.commas(currentRace.race_conditions_line1 + currentRace.race_conditions_line2
-                            + currentRace.race_conditions_line3 + currentRace.race_conditions_line4 +
-                        currentRace.race_conditions_line5) }}
+                        <span class="distance">{{ Transformers.getDistanceLength(currentRace?.distance ?? 0) + ". " }}</span>
+                        <span class="race-classification"><RaceClassification :race="currentRace" /></span>
+                        {{ Transformers.buildRaceConditions(currentRace) }}
                     </div>
                     <div v-else>{{ Transformers.commas(currentRace.race_conditions) }}</div>
                 </div>
@@ -79,12 +80,33 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 }
 
 .race-details-center {
+    color: var(--accent-yellow);
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     text-align: left;
     align-items: flex-start;
     gap: 1rem;
+}
+
+.distance {
+    color: var(--accent-green);
+}
+
+.race-classification {
+    color: var(--accent-green);
+    position: relative;
+    text-decoration: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--accent-green);
+        bottom: 0px;
+    }
 }
 
 @media (max-width: 640px) {

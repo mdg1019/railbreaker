@@ -3,7 +3,9 @@ import { computed } from 'vue'
 import type { Race } from '../models/racecard'
 import Transformers from '../utils/transformers'
 
-const props = defineProps<{ race: Race | null }>()
+const props = withDefaults(defineProps<{ race: Race | null; prefixColor?: string }>(), {
+    prefixColor: 'var(--accent-yellow)'
+})
 
 const tuple = computed(() => {
     if (!props.race) return ['', false]
@@ -16,7 +18,7 @@ const race_classification = computed(() => tuple.value[1])
 
 <template>
     <span class="container">
-        <span class="prefix-adjust">{{ prefix }}</span>{{ race_classification }}
+        <span class="prefix-adjust" :style="{ color: props.prefixColor }">{{ prefix }}</span>{{ race_classification }}
     </span>
 </template>
 
@@ -25,7 +27,6 @@ const race_classification = computed(() => tuple.value[1])
     font-family: "MGSans", sans-serif;
 }
 .prefix-adjust {
-    color: var(--accent-yellow);
     display: inline-block;
     transform: translateX(-0.10rem);
 }

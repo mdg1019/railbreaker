@@ -194,6 +194,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .container {
     padding: 1rem;
+    font-family: "MGSans", sans-serif;
 }
 
 .race-container {
