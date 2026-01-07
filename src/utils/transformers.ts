@@ -141,8 +141,7 @@ export default class Transformers {
         if (!s) return "";
 
         return s.toLowerCase().replace(/\w\S*/g, (txt, offset, str) => {
-            // preserve surrounding punctuation while evaluating the core word
-            const m = txt.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+             const m = txt.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
             if (m) {
                 const prefix = m[1] || "";
                 const core = m[2] || "";
@@ -157,6 +156,27 @@ export default class Transformers {
 
             return txt.charAt(0).toUpperCase() + txt.slice(1);
         });
+    }
+
+    static capitalizeWords(s: string): string {
+        if (!s) return "";
+
+        return s
+            .trim()
+            .split(/\s+/)
+            .map((word) => {
+                const m = word.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+                if (m) {
+                    const prefix = m[1] || "";
+                    const core = m[2] || "";
+                    const suffix = m[3] || "";
+
+                    return prefix + core.charAt(0).toUpperCase() + core.slice(1).toLowerCase() + suffix;
+                }
+
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            })
+            .join(" ");
     }
 
     static commas(s: string): string {
@@ -212,11 +232,9 @@ export default class Transformers {
             "le",
             "du",
             "st",
+            "der",
         ]);
-
-        // use the shared static `capitalize` so TITLE_EXCEPTIONS are respected
-
-        const handleMcMac = (word: string): string => {
+       const handleMcMac = (word: string): string => {
             const lower = word.toLowerCase();
 
             if (lower.startsWith("mc") && lower.length > 2) {
@@ -270,4 +288,6 @@ export default class Transformers {
             })
             .join(" ");
     }
+
+    
 }
