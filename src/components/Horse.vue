@@ -21,6 +21,7 @@ const props = defineProps<{ horse: Horse }>();
                     <div class="color-accent-green">Own: 
                         <span class="color-accent-yellow">{{ Transformers.capitalizeFullName(props.horse.todays_owner) }}</span>
                     </div>
+                    <div class="owners_silks color-accent-green">{{ props.horse.owners_silks }}</div>
                 </div>
             </div>
             <div class="horse-body">
@@ -56,6 +57,10 @@ const props = defineProps<{ horse: Horse }>();
         gap: 0.25rem;
         justify-content: flex-start;
         align-self: flex-start;
+
+        .owners_silks {
+            font-size: 1.2rem;
+        }
     }
 }
 
