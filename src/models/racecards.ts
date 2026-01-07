@@ -9,8 +9,7 @@ export class Racecards {
   }
 
   addRacecard(racecard: Racecard): void {
-    console.log(racecard);
-    this.racecardEntries.push(new RacecardEntry(racecard));
+   this.racecardEntries.push(new RacecardEntry(racecard));
   }
   
   deleteRacecardAt(index: number): void {

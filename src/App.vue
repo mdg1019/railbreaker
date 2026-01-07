@@ -104,9 +104,7 @@ onMounted(async () => {
             isProcessingRacecard.value = true;
             try {
                 let openedRacecard = await invoke<Racecard>('load_racecard_file', { path: file });
-                console.log("opened racecard")
-                racecards.addRacecard(openedRacecard);
-                console.log(racecards.racecardEntries);
+               racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
