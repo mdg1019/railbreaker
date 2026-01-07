@@ -89,6 +89,11 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
                 six_f_bris_pace_par: line[SF_SIX_F_BRIS_PACE_PAR].parse::<u32>().ok(),
                 bris_speed_for_class: line[SF_BRIS_SPEED_FOR_CLASS].parse::<u32>().ok(),
                 bris_late_pace_par: line[SF_BRIS_LATE_PACE_PAR].parse::<u32>().ok(),
+                post_times: line[SF_POST_TIMES].clone(),
+                post_time_pacific_military: line[SF_POST_TIME_PACIFIC_MILITARY].clone(),
+                todays_equibase_abbreviated_race_conditions: line
+                [SF_TODAYS_EQUIBASE_ABBREVIATED_RACE_CONDITIONS]
+                .clone(),
                 horses: Vec::new(),
             };
             races.push(race);
@@ -267,7 +272,6 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             jockey_distance_turf_earnings: line[SF_JOCKEY_DISTANCE_TURF_EARNINGS]
                 .parse::<u32>()
                 .ok(),
-            post_times: line[SF_POST_TIMES].clone(),
             trainer_jockey_combo_starts_meet: line[SF_TRAINER_JOCKEY_COMBO_STARTS_MEET]
                 .parse::<u32>()
                 .ok(),
@@ -283,10 +287,6 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             trainer_jockey_combo_roi_meet: line[SF_TRAINER_JOCKEY_COMBO_ROI_MEET]
                 .parse::<f64>()
                 .ok(),
-            post_time_pacific_military: line[SF_POST_TIME_PACIFIC_MILITARY].clone(),
-            todays_equibase_abbreviated_race_conditions: line
-                [SF_TODAYS_EQUIBASE_ABBREVIATED_RACE_CONDITIONS]
-                .clone(),
             workouts: Vec::new(),
             past_performances: Vec::new(),
             key_trainer_stats: Vec::new(),

@@ -46,6 +46,7 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
                     </div>
                     <div v-else>{{ Transformers.commas(currentRace.race_conditions) }}</div>
                 </div>
+                <div class="post-times">Post Times: {{ currentRace.post_times }}</div>
             </div>
             <div class="race-details-right">
                 <div class="right-c2-r1">E1</div>
@@ -149,6 +150,10 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
     text-align: left;
     align-items: flex-start;
     gap: 1rem;
+}
+
+.post-times {
+    color: var(--accent-green);
 }
 
 .distance {

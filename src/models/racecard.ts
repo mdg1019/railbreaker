@@ -69,7 +69,10 @@ export class Race {
   four_f_bris_pace_par: number | null;
   six_f_bris_pace_par: number | null;
   bris_speed_for_class: number | null;
+  post_times: string;
+  post_time_pacific_military: string;
   bris_late_pace_par: number | null;
+  todays_equibase_abbreviated_race_conditions: string;
   horses: Horse[];
 
   constructor(data: any = {}) {
@@ -112,6 +115,9 @@ export class Race {
     this.six_f_bris_pace_par = data.six_f_bris_pace_par ?? null;
     this.bris_speed_for_class = data.bris_speed_for_class ?? null;
     this.bris_late_pace_par = data.bris_late_pace_par ?? null;
+    this.post_times = data.post_times ?? '';
+    this.post_time_pacific_military = data.post_time_pacific_military ?? '';
+    this.todays_equibase_abbreviated_race_conditions = data.todays_equibase_abbreviated_race_conditions ?? '';
     this.horses = data.horses ?? [];
   }
 
@@ -163,6 +169,9 @@ export class Race {
       six_f_bris_pace_par: this.six_f_bris_pace_par,
       bris_speed_for_class: this.bris_speed_for_class,
       bris_late_pace_par: this.bris_late_pace_par,
+      post_times: this.post_times,
+      post_time_pacific_military: this.post_time_pacific_military,
+      todays_equibase_abbreviated_race_conditions: this.todays_equibase_abbreviated_race_conditions,
       horses: this.horses.map(h => h.toObject())
     };
   }
@@ -305,14 +314,11 @@ export class Horse {
   jockey_distance_turf_shows: number | null;
   jockey_distance_turf_roi: number | null;
   jockey_distance_turf_earnings: number | null;
-  post_times: string;
   trainer_jockey_combo_starts_meet: number | null;
   trainer_jockey_combo_wins_meet: number | null;
   trainer_jockey_combo_places_meet: number | null;
   trainer_jockey_combo_shows_meet: number | null;
   trainer_jockey_combo_roi_meet: number | null;
-  post_time_pacific_military: string;
-  todays_equibase_abbreviated_race_conditions: string;
   workouts: Workout[];
   past_performances: PastPerformance[];
   key_trainer_stats: KeyTrainerStat[];
@@ -454,14 +460,11 @@ export class Horse {
     this.jockey_distance_turf_shows = data.jockey_distance_turf_shows ?? null;
     this.jockey_distance_turf_roi = data.jockey_distance_turf_roi ?? null;
     this.jockey_distance_turf_earnings = data.jockey_distance_turf_earnings ?? null;
-    this.post_times = data.post_times ?? '';
     this.trainer_jockey_combo_starts_meet = data.trainer_jockey_combo_starts_meet ?? null;
     this.trainer_jockey_combo_wins_meet = data.trainer_jockey_combo_wins_meet ?? null;
     this.trainer_jockey_combo_places_meet = data.trainer_jockey_combo_places_meet ?? null;
     this.trainer_jockey_combo_shows_meet = data.trainer_jockey_combo_shows_meet ?? null;
     this.trainer_jockey_combo_roi_meet = data.trainer_jockey_combo_roi_meet ?? null;
-    this.post_time_pacific_military = data.post_time_pacific_military ?? '';
-    this.todays_equibase_abbreviated_race_conditions = data.todays_equibase_abbreviated_race_conditions ?? '';
     this.workouts = data.workouts ?? [];
     this.past_performances = data.past_performances ?? [];
     this.key_trainer_stats = data.key_trainer_stats ?? [];
@@ -614,14 +617,11 @@ export class Horse {
       jockey_distance_turf_shows: this.jockey_distance_turf_shows,
       jockey_distance_turf_roi: this.jockey_distance_turf_roi,
       jockey_distance_turf_earnings: this.jockey_distance_turf_earnings,
-      post_times: this.post_times,
       trainer_jockey_combo_starts_meet: this.trainer_jockey_combo_starts_meet,
       trainer_jockey_combo_wins_meet: this.trainer_jockey_combo_wins_meet,
       trainer_jockey_combo_places_meet: this.trainer_jockey_combo_places_meet,
       trainer_jockey_combo_shows_meet: this.trainer_jockey_combo_shows_meet,
       trainer_jockey_combo_roi_meet: this.trainer_jockey_combo_roi_meet,
-      post_time_pacific_military: this.post_time_pacific_military,
-      todays_equibase_abbreviated_race_conditions: this.todays_equibase_abbreviated_race_conditions,
       workouts: this.workouts.map(w => w.toObject()),
       past_performances: this.past_performances.map(p => p.toObject()),
       key_trainer_stats: this.key_trainer_stats.map(k => k.toObject())
