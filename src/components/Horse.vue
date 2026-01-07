@@ -14,7 +14,7 @@ const props = defineProps<{ horse: Horse }>();
                     <div class="program_number">{{ props.horse.post_position }}</div>
                     <div class="odds">{{ Transformers.createOddsString(props.horse.morning_line_odds) }}</div>
                 </div>
-                <div class="horse-name">{{ props.horse.horse_name }}</div>
+                <div class="horse-name">{{ Transformers.capitalize(props.horse.horse_name) }}</div>
             </div>
             <div class="horse-body">
                 <!-- additional horse info can go here -->
