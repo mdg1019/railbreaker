@@ -47,7 +47,15 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
                     <div v-else>{{ Transformers.commas(currentRace.race_conditions) }}</div>
                 </div>
             </div>
-            <div class="race-details-right">3</div>
+            <div class="race-details-right">
+                <div class="right-c2-r1">E1</div>
+                <div class="right-c3-r1">E2/Late</div>
+                <div class="right-c4-r1">Speed</div>
+                <div class="right-c1-r2">Pars:</div> 
+                <div class="right-c2-r2">{{ currentRace.two_f_bris_pace_par ?? '-' }}</div>  
+                <div class="right-c3-r2">{{ (currentRace.six_f_bris_pace_par ?? currentRace.four_f_bris_pace_par ?? '-') + '/' + (currentRace.bris_late_pace_par ?? '-') }}</div>
+                <div class="right-c4-r2">{{ currentRace.bris_speed_for_class ?? '-' }}</div>
+            </div>
         </div>
     </Panel>
 </template>
@@ -77,6 +85,60 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 
 .race-details-right {
     flex: 0 0 25%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 0.5rem;
+    align-items: start;
+
+    .right-c2-r1 {
+        color: var(--accent-green);
+        font-weight: 600;
+        grid-column: 2 / span 1;
+        grid-row: 1 / span 1;
+    }
+
+    .right-c3-r1 {
+        color: var(--accent-green);
+        font-weight: 600;
+        grid-column: 3 / span 1;
+        grid-row: 1 / span 1;
+    }
+
+    .right-c4-r1 {
+        color: var(--accent-green);
+        font-weight: 600;
+        grid-column: 4 / span 1;
+        grid-row: 1 / span 1;
+    }
+
+    .right-c1-r2 {
+        color: var(--accent-green);
+        font-weight: 600;
+        grid-column: 1 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    .right-c2-r2 {
+        color: var(--accent-yellow);
+        font-weight: 600;
+        grid-column: 2 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    .right-c3-r2 {
+        color: var(--accent-yellow);
+        font-weight: 600;
+        grid-column: 3 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    .right-c4-r2 {
+        color: var(--accent-yellow);
+        font-weight: 600;
+        grid-column: 4 / span 1;
+        grid-row: 2 / span 1;
+    }
 }
 
 .race-details-center {
@@ -117,6 +179,14 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
     .race-details-left,
     .race-details-center,
     .race-details-right {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        gap: 0.5rem;
+    }
+
+    .race-details-left,
+    .race-details-center {
         flex: none;
         width: 100%;
     }
