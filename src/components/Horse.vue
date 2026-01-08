@@ -26,7 +26,9 @@ const props = defineProps<{ horse: Horse }>();
                                     <span class="color-accent-yellow">({{ props.horse.bris_run_style }} {{
                                         props.horse.quirin_speed_points }})</span>
                                 </div>
-                                <div v-if="props.horse.claiming_price_of_horse" class="claiming-price color-accent-yellow">{{ Transformers.createDollarString(props.horse.claiming_price_of_horse) }}</div>
+                                <div v-if="props.horse.claiming_price_of_horse"
+                                    class="claiming-price color-accent-yellow">{{
+                                        Transformers.createDollarString(props.horse.claiming_price_of_horse) }}</div>
                             </div>
                             <div class="color-accent-green">Own:
                                 <span class="color-accent-yellow">{{
@@ -78,15 +80,16 @@ const props = defineProps<{ horse: Horse }>();
     align-items: center;
 
     &-left {
-        display: flex;
-        flex-direction: column;
+        flex: 0 0 25%;
+
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
         gap: 1.5rem;
-        align-items: flex-start;
+        align-items: start;
 
         &-top {
-            display: flex;
-            flex-direction: row;
-            gap: 2rem;
+            display: contents;
         }
     }
 
@@ -95,6 +98,17 @@ const props = defineProps<{ horse: Horse }>();
         flex-direction: column;
         gap: 0.5rem;
         align-items: center;
+        grid-column: 1;
+        grid-row: 1;
+
+        .program-number {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .odds {
+            font-size: 1.4rem;
+        }
     }
 
     .header-col2 {
@@ -102,7 +116,9 @@ const props = defineProps<{ horse: Horse }>();
         flex-direction: column;
         gap: 0.25rem;
         justify-content: flex-start;
-        align-self: flex-start;
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
 
         .owners_silks {
             font-size: 1.2rem;
@@ -120,26 +136,18 @@ const props = defineProps<{ horse: Horse }>();
             margin-left: auto;
             text-align: right;
         }
+
+        .horse-name {
+            font-size: 2rem;
+            font-weight: 500;
+        }
     }
 
     .jockey-info {
-        align-self: flex-start;
+        grid-column: 1 / -1;
+        grid-row: 2;
         text-align: left;
         width: 100%;
     }
-}
-
-.program-number {
-    font-size: 3rem;
-    font-weight: 700;
-}
-
-.odds {
-    font-size: 1.4rem;
-}
-
-.horse-name {
-    font-size: 2rem;
-    font-weight: 500;
 }
 </style>
