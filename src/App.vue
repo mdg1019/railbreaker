@@ -31,6 +31,8 @@ const racecard = ref<Racecard | null>(null);
 
 const raceNumber = ref(1);
 
+const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
+
 const currentRacecardIndex = ref(0);
 
 const isRacecardMenuOpen = ref(false);
@@ -50,9 +52,7 @@ function handleSelectedRace(value: number) {
 }
 
 function handleDeleteRacecard(index: number) {
-    // delete the entry
     racecards.deleteRacecardAt(index);
-    // if no racecards, clear selection
     if (racecards.racecardEntries.length === 0) {
         currentRacecardIndex.value = 0;
         racecard.value = null;
@@ -60,13 +60,69 @@ function handleDeleteRacecard(index: number) {
         return;
     }
 
-    // prefer previous entry if exists, otherwise clamp to 0
     const newIndex = index - 1 >= 0 ? index - 1 : 0;
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
+function ordinal(n: number): string {
+    const s = ["th", "st", "nd", "rd"], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function computePrimePowerComparisons() {
+    const result: Array<[number | string, string, string]> = [];
+    if (!racecard.value) {
+        primePowerComparisons.value = result;
+        return
+    }
+    const raceIdx = raceNumber.value - 1;
+    const race = racecard.value.races?.[raceIdx];
+    if (!race || !Array.isArray(race.horses)) {
+        primePowerComparisons.value = result;
+        return
+    }
+
+    const entries: { post: number | string; rating: number }[] = [];
+    race.horses.forEach((h: any, idx: number) => {
+        const r = h.bris_prime_power_rating;
+        if (r === null || r === undefined) return;
+        if (Number(r) === 0) return;
+        const post = h.post_position ?? h.program_number ?? idx + 1;
+        entries.push({ post, rating: Number(r) });
+    });
+
+    if (entries.length === 0) {
+        primePowerComparisons.value = result;
+    }
+
+    entries.sort((a, b) => b.rating - a.rating);
+
+    const N = entries.length;
+    const tier = Math.ceil(N / 3);
+
+    entries.forEach((e, i) => {
+        const position = i + 1; 
+        let color = "var(--accent-yellow)";
+        if (position <= tier) {
+            color = "var(--accent-green)";
+        } else if (position > 2 * tier) {
+            color = "var(--accent-red)";
+        }
+
+        const tuple: [number | string, string, string] = [e.post, ordinal(position), color];
+        result.push(tuple);
+    });
+
+    primePowerComparisons.value = result;
+}
+
 watch(racecard, (rc) => {
     isRacecardMenuOpen.value = false;
+});
+
+watch([racecard, raceNumber], () => {
+    computePrimePowerComparisons();
+    console.log("Prime Power Comparisons:", primePowerComparisons.value);
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
@@ -86,7 +142,6 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
 
 watch(raceNumber, async (newVal, oldVal) => {
     await nextTick();
-    // scroll the race container to the top of the viewport when the race changes
     raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -199,6 +254,7 @@ onUnmounted(() => {
                 v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.program_number || horse.post_position || idx"
                 :horse="horse"
+                :primePowerComparisons="primePowerComparisons"
             ></Horse>
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />

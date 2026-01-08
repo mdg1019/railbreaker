@@ -10,6 +10,7 @@ Please remember that the main purpose of the app is to be used while betting fro
 - Load a previously unzipped racecard file.
 - Load multiple racecards. (Racecard selection is changed in the sliding-left menu.)
 - Partial display of racecard info. (Where I'm at now.)
+- App is responsive. It may need tweaking when I complete the racecard. I'll probably set a minimum width for the app so the display stays legible.
 
 #### Things to do:
 

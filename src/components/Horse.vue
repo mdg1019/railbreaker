@@ -3,7 +3,7 @@ import type { Horse } from "../models/racecard";
 import Panel from "./Panel.vue";
 import Transformers from "../utils/transformers";
 
-const props = defineProps<{ horse: Horse }>();
+const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]> }>();
 </script>
 
 <template>
@@ -93,9 +93,17 @@ const props = defineProps<{ horse: Horse }>();
                     </div>
                     </div>
                     <div class="horse-header-center-right">
-                        <div class="prime-power color-accent-green">Prime Power: 
-                            <span class="color-accent-yellow">{{ Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}</span>
-                        </div>
+                        <div v-if="props.horse.bris_prime_power_rating !== null" class="prime-power color-accent-green">Prime Power: 
+                                <span class="color-accent-yellow">{{ Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}</span>
+                                &nbsp;
+                                <span v-if="props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)">
+                                    <span :style="{ color: props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[2] ?? 'inherit' }">
+                                        {{
+                                            props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[1] ?? ''
+                                        }}
+                                    </span>
+                                </span>
+                            </div>
                     </div>
                 </div>
 
