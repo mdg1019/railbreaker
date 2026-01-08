@@ -56,6 +56,15 @@ const props = defineProps<{ horse: Horse }>();
 
                 </div>
 
+                <div class="horse-header-center">
+                    <div class="horse-header-center-left">
+                        left
+                    </div>
+                    <div class="horse-header-center-right">
+                        right
+                    </div>
+                </div>
+
             </div>
 
             <div class="horse-body">
@@ -90,6 +99,30 @@ const props = defineProps<{ horse: Horse }>();
 
         &-top {
             display: contents;
+        }
+    }
+
+    &-center{
+        flex: 0 0 25%;
+        min-width: 160px;
+        align-self: start;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: auto;
+
+        &-left {
+            grid-column: 1;
+            grid-row: 1;
+            align-self: start;
+        }
+
+        &-right {
+            grid-column: 1 / 3;
+            grid-row: 1;
+            z-index: 1;
+            justify-self: end;
+            text-align: right;
+            align-self: start;
         }
     }
 
