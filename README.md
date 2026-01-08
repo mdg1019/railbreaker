@@ -2,7 +2,7 @@
 
 Is a Rust/Tauri app for handicapping horse races. It uses the single-file data files from Brisnet.
 
-Please remember that the main purpose of the app is to be used while betting from home or where ever your laptop will go. So printouts aren't a huge priority, but I will get to those eventually. You can use BRISNet's Custom PP Generator in the meantime.
+Please remember that the main purpose of the app is to be used while betting from home or wherever your laptop will go. So printouts aren't a huge priority, but I will get to those eventually. You can use Brisnet's Custom PP Generator in the meantime.
 
 #### Railbreaker can do this at present:
 
