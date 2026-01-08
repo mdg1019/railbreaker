@@ -218,6 +218,22 @@ export default class Transformers {
         return "-";
     }
 
+    static createPercentageString(num: number | null | undefined, denom: number | null | undefined): string {
+        if (num === null || num === undefined) return "-";
+        if (denom === null || denom === undefined) return "-";
+        if (denom === 0) return "-";
+
+        const pct = Math.round((num / denom) * 100);
+        return `${pct}%`;
+    }
+
+    static createDollarString(num: number | null | undefined): string {
+        if (num === null || num === undefined) return "-";
+
+        const rounded = Math.round(num);
+        return "$" + rounded.toLocaleString("en-US");
+    }
+
     static capitalizeFullName(input: string): string {
         if (!input) return "";
 
