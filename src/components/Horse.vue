@@ -68,9 +68,34 @@ const props = defineProps<{ horse: Horse }>();
                                 Transformers.capitalizeWords(props.horse.sire) }}</span>
                             <span class="color-accent-yellow"> ({{ Transformers.capitalizeWords(props.horse.sires_sire) }})</span>
                         </div>
+                        <div>
+                            <span class="color-accent-green">Brdr: </span>
+                            <span class="color-accent-yellow">{{
+                                Transformers.capitalizeWords(props.horse.breeder) }}</span>
+                            <span class="color-accent-yellow"> ({{ props.horse.state_country_where_bred }})</span>
+                        </div> 
+
+                    <div class="trainer-info">
+                        <span class="color-accent-green">Trnr: </span>
+                        <span class="trainer color-accent-yellow">{{
+                            Transformers.capitalizeWords(props.horse.todays_trainer) }}</span>
+                        <span class="trainer-meet color-accent-yellow">
+                            ({{ props.horse.trainer_starts }} {{ props.horse.trainer_wins }}-{{ props.horse.trainer_places
+                            }}-{{ props.horse.trainer_shows }} {{
+                                Transformers.createPercentageString(props.horse.trainer_wins, props.horse.trainer_starts) }})
+                        </span>
+                        <span class="trainer-previous-year color-accent-yellow">
+                            {{ props.horse.current_year_record_year }}:
+                            ({{ props.horse.trainer_wins_previous_year }}/{{ props.horse.trainer_starts_previous_year }}
+                            {{ Transformers.createPercentageString(props.horse.trainer_wins_previous_year,
+                                props.horse.trainer_starts_previous_year) }})
+                        </span>
+                    </div>
                     </div>
                     <div class="horse-header-center-right">
-                        right
+                        <div class="prime-power color-accent-green">Prime Power: 
+                            <span class="color-accent-yellow">{{ Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -120,7 +145,7 @@ const props = defineProps<{ horse: Horse }>();
         grid-auto-rows: auto;
 
         &-left {
-            grid-column: 1;
+            grid-column: 1 / 3;
             grid-row: 1;
             align-self: start;
 

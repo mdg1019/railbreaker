@@ -275,6 +275,13 @@ export default class Transformers {
         return `${years} (${this.MONTH_ABBREVIATIONS[month - 1]})`;
     }
 
+    static formatOneDecimal(value: number | null | undefined): string {
+        if (value === null || value === undefined) return "";
+        if (Number.isNaN(value)) return "";
+
+        return value.toFixed(1);
+    }
+
     static capitalizeFullName(input: string): string {
         if (!input) return "";
 

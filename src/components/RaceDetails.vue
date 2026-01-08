@@ -15,7 +15,7 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
     <Panel>
         <div class="race-details">
             <div class="race-details-left">
-                <div class="race-number color-accent-green-strong">{{ props.race }}</div>
+                <div class="race-number color-accent-yellow">{{ props.race }}</div>
             </div>
             <div class="race-details-center">
                 <div class="wager-list">
