@@ -24,6 +24,20 @@ export default class Transformers {
         "vs",
         "v",
     ]);
+    static MONTH_ABBREVIATIONS: string[] = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
     static getRaceClassification(race: Race): [string, string] {
         if (!race) return ["", ""];
 
@@ -139,22 +153,27 @@ export default class Transformers {
 
     static capitalize(s: string): string {
         if (!s) return "";
-
         return s.toLowerCase().replace(/\w\S*/g, (txt, offset, str) => {
-             const m = txt.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
-            if (m) {
-                const prefix = m[1] || "";
-                const core = m[2] || "";
-                const suffix = m[3] || "";
+            // Capitalize parts separated by '/' as well (e.g. "smith/jones" -> "Smith/Jones")
+            return txt
+                .split("/")
+                .map((part) => {
+                    const m = part.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+                    if (m) {
+                        const prefix = m[1] || "";
+                        const core = m[2] || "";
+                        const suffix = m[3] || "";
 
-                if (this.TITLE_EXCEPTIONS.has(core)) {
-                    return prefix + core + suffix;
-                }
+                        if (this.TITLE_EXCEPTIONS.has(core)) {
+                            return prefix + core + suffix;
+                        }
 
-                return prefix + core.charAt(0).toUpperCase() + core.slice(1) + suffix;
-            }
+                        return prefix + core.charAt(0).toUpperCase() + core.slice(1) + suffix;
+                    }
 
-            return txt.charAt(0).toUpperCase() + txt.slice(1);
+                    return part.charAt(0).toUpperCase() + part.slice(1);
+                })
+                .join("/");
         });
     }
 
@@ -165,16 +184,22 @@ export default class Transformers {
             .trim()
             .split(/\s+/)
             .map((word) => {
-                const m = word.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
-                if (m) {
-                    const prefix = m[1] || "";
-                    const core = m[2] || "";
-                    const suffix = m[3] || "";
+                // support capitalization after '/' (e.g. Smith/Jones -> Smith/Jones)
+                return word
+                    .split("/")
+                    .map((part) => {
+                        const m = part.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+                        if (m) {
+                            const prefix = m[1] || "";
+                            const core = m[2] || "";
+                            const suffix = m[3] || "";
 
-                    return prefix + core.charAt(0).toUpperCase() + core.slice(1).toLowerCase() + suffix;
-                }
+                            return prefix + core.charAt(0).toUpperCase() + core.slice(1).toLowerCase() + suffix;
+                        }
 
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+                    })
+                    .join("/");
             })
             .join(" ");
     }
@@ -232,6 +257,22 @@ export default class Transformers {
 
         const rounded = Math.round(num);
         return "$" + rounded.toLocaleString("en-US");
+    }
+
+    static createAgeString(birthMonth: number | null | undefined, birthYearTwoDigits: number | null | undefined): string {
+        
+        if (birthMonth === null || birthMonth === undefined) return "";
+        if (birthYearTwoDigits === null || birthYearTwoDigits === undefined) return "";
+
+        const month = Math.floor(birthMonth);
+        const year = 2000 + Math.floor(birthYearTwoDigits);
+
+        if (month < 1 || month > 12 || year < 0 || year > 9999) return "";
+
+        const now = new Date();
+        const years = now.getFullYear() - year;
+
+        return `${years} (${this.MONTH_ABBREVIATIONS[month - 1]})`;
     }
 
     static capitalizeFullName(input: string): string {

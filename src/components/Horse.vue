@@ -58,7 +58,16 @@ const props = defineProps<{ horse: Horse }>();
 
                 <div class="horse-header-center">
                     <div class="horse-header-center-left">
-                        left
+                        <div class="color-accent-yellow">{{ Transformers.capitalizeWords(props.horse.horses_color) }}.
+                                {{ props.horse.sex.toLowerCase() }}.
+                                {{ Transformers.createAgeString(props.horse.horses_foaling_month, props.horse.year_of_birth) }}
+                        </div>
+                        <div>
+                            <span class="color-accent-green">Sire: </span>
+                            <span class="color-accent-yellow">{{
+                                Transformers.capitalizeWords(props.horse.sire) }}</span>
+                            <span class="color-accent-yellow"> ({{ Transformers.capitalizeWords(props.horse.sires_sire) }})</span>
+                        </div>
                     </div>
                     <div class="horse-header-center-right">
                         right
@@ -85,7 +94,7 @@ const props = defineProps<{ horse: Horse }>();
 .horse-header {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 1rem;
     align-items: center;
 
     &-left {
@@ -114,6 +123,11 @@ const props = defineProps<{ horse: Horse }>();
             grid-column: 1;
             grid-row: 1;
             align-self: start;
+
+            display: flex;
+            flex-direction: column;
+            font-size: 1.2rem;
+            gap: 0.25rem;
         }
 
         &-right {
