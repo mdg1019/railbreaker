@@ -93,17 +93,34 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                     </div>
                     </div>
                     <div class="horse-header-center-right">
-                        <div v-if="props.horse.bris_prime_power_rating !== null" class="prime-power color-accent-green">Prime Power: 
-                                <span class="color-accent-yellow">{{ Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}</span>
-                                &nbsp;
+                        <div>
+                            <span v-if="props.horse.bris_prime_power_rating !== null" class="prime-power color-accent-green">Prime Power: 
+                                <span :style="{ color: props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[2] ?? 'inherit' }">{{ Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}
                                 <span v-if="props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)">
-                                    <span :style="{ color: props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[2] ?? 'inherit' }">
-                                        {{
-                                            props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[1] ?? ''
-                                        }}
+                                    <span>
+                                        {{ props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[1] ?? '' }}
                                     </span>
                                 </span>
-                            </div>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="blinkers color-accent-yellow">
+                            <span v-show="props.horse.equipment_change === 1">Blinkers on</span>
+                            <span v-show="props.horse.equipment_change === 2">Blinkers off</span>
+                        </div>
+                        <div>
+                            <span>
+                                <span v-if="props.horse.todays_medication_new === 1 
+                                || props.horse.todays_medication_new === 3
+                                || props.horse.todays_medication_new === 4
+                                || props.horse.todays_medication_new === 5" 
+                                    :style="{ color: props.horse.todays_medication_new === 4 || props.horse.todays_medication_new === 5 ? 'var(--accent-red)' : 'var(--accent-yellow)' }">L</span>
+                                <span v-if="props.horse.todays_medication_new === 2
+                                || props.horse.todays_medication_new === 3
+                                || props.horse.todays_medication_new === 5" class="color-accent-yellow">B</span>
+                            </span>
+                            <span class="color-accent-yellow">{{ props.horse.weight }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -170,6 +187,19 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             justify-self: end;
             text-align: right;
             align-self: start;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.25rem;
+                        align-items: flex-end;
+        }
+
+        .blinkers {
+            display: block;
+            text-align: right;
+            justify-self: end;
+            min-width: 2rem;
+            min-height: 1rem;
+            visibility: visible;
         }
     }
 
