@@ -80,7 +80,6 @@ export default class Transformers {
         };
 
         let isAbout = false;
-        let isMiles = false;
 
         if (distance < 0) {
             isAbout = true;
@@ -90,7 +89,6 @@ export default class Transformers {
         let value = 0;
 
         if (distance >= 1760) {
-            isMiles = true;
             value = distance / 1760;
         } else {
             value = distance / 220;
@@ -153,7 +151,7 @@ export default class Transformers {
 
     static capitalize(s: string): string {
         if (!s) return "";
-        return s.toLowerCase().replace(/\w\S*/g, (txt, offset, str) => {
+        return s.toLowerCase().replace(/\w\S*/g, (txt, _offset, _str) => {
             // Capitalize parts separated by '/' as well (e.g. "smith/jones" -> "Smith/Jones")
             return txt
                 .split("/")

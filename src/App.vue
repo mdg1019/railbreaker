@@ -6,7 +6,7 @@ import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
-import { Race, Racecard } from "./models/racecard";
+import { Racecard } from "./models/racecard";
 import { Racecards } from "./models/racecards";
 import RacecardHeader from "./components/RacecardHeader.vue";
 import RaceDetails from "./components/RaceDetails.vue";
@@ -116,7 +116,7 @@ function computePrimePowerComparisons() {
     primePowerComparisons.value = result;
 }
 
-watch(racecard, (rc) => {
+watch(racecard, (_rc) => {
     isRacecardMenuOpen.value = false;
 });
 
@@ -140,7 +140,7 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
     }
 });
 
-watch(raceNumber, async (newVal, oldVal) => {
+watch(raceNumber, async (_newVal, _oldVal) => {
     await nextTick();
     raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
