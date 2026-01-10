@@ -124,6 +124,22 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                     </div>
                 </div>
 
+                <div class="horse-header-right">
+                    <div class="horse-header-right-left">
+                        <div class="horse-header-right-left-label">Life:</div>
+                        <div class="horse-header-right-left-lifetime-starts">
+                            {{ props.horse.lifetime_record_starts }}
+                        </div>
+                        <div class="horse-header-right-left-lifetime-wins">
+                            {{ props.horse.lifetime_record_wins }}
+                        </div>
+                        <div class="horse-header-right-left-lifetime-spacer-1"> - </div>
+                    </div>
+ 
+                    <div class="horse-header-right-right">
+                    </div>
+                </div>  
+
             </div>
 
             <div class="horse-body">
@@ -200,6 +216,67 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             min-width: 2rem;
             min-height: 1rem;
             visibility: visible;
+        }
+    }
+
+    &-right {
+        flex: 0 0 10%;
+
+        align-self: start;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto;
+        gap: 1.5rem;
+        align-items: start;
+
+        &-left {
+            grid-column: 1;
+            grid-row: 1;
+            display: grid;
+            grid-template-columns: auto auto auto auto;
+            grid-template-rows: auto auto;
+
+            &-label {
+                grid-column: 1;
+                grid-row: 1;
+                padding: 0.5rem 0rem 0.25rem 0.5rem;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+                border-left: 1px solid var(--accent-yellow);
+            }
+
+            &-lifetime-starts {
+                grid-column: 2;
+                grid-row: 1;
+                padding: 0.5rem 0rem 0.25rem 0.5rem;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+            }
+
+            &-lifetime-wins {
+                grid-column: 3;
+                grid-row: 1;
+                padding: 0.5rem 0rem 0.25rem 0.5rem;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+            }
+
+            &-lifetime-spacer-1 {
+                grid-column: 4;
+                grid-row: 1;
+                padding: 0.5rem 0rem 0.25rem 0em;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+            }
+        }
+        
+        &-right {
+            grid-column: 2;
+            grid-row: 1 / -1;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            gap: 1.5rem;
         }
     }
 
