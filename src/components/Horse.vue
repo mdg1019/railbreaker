@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Horse } from "../models/racecard";
+import HorseRecord from "./HorseRecord.vue";
 import Panel from "./Panel.vue";
 import Transformers from "../utils/transformers";
 
@@ -124,26 +125,20 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                     </div>
                 </div>
 
-                <div class="horse-header-right">
-                    <div class="horse-header-right-left">
-                        <div class="horse-header-right-left-label">Life:</div>
-                        <div class="horse-header-right-left-lifetime-starts">
-                            {{ props.horse.lifetime_record_starts }}
-                        </div>
-                        <div class="horse-header-right-left-lifetime-wins">
-                            {{ props.horse.lifetime_record_wins }}
-                        </div>
-                        <div class="horse-header-right-left-lifetime-spacer-1">-</div>
-                        <div class="horse-header-right-left-lifetime-places">
-                            {{ props.horse.lifetime_record_places }}
-                        </div>
-                        <div class="horse-header-right-left-lifetime-spacer-2">-</div>
-                    </div>
- 
-                    <div class="horse-header-right-right">
-                    </div>
-                </div>  
+            <div class="horse-header-right">
+                    <HorseRecord
+                        label="Life:"
+                        :starts="props.horse.lifetime_record_starts ?? 0"
+                        :wins="props.horse.lifetime_record_wins ?? 0"
+                        :places="props.horse.lifetime_record_places ?? 0"
+                        :shows="props.horse.lifetime_record_shows ?? 0"
+                        :has-border="true"
+                        class="life">
+                    </HorseRecord>
+                </div>
 
+                <div class="horse-header-right-right">
+                </div>
             </div>
 
             <div class="horse-body">
@@ -228,82 +223,13 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
 
         align-self: start;
         display: grid;
-        grid-template-columns: auto auto;
+        grid-template-columns: auto;
         grid-template-rows: auto;
-        gap: 1.5rem;
-        align-items: start;
+        gap: 0;
 
-        &-left {
-            flex: 0 0 50%;
+        &-life {
             grid-column: 1;
             grid-row: 1;
-            display: grid;
-            grid-template-columns: auto minmax(1rem, min-content) minmax(1rem, min-content) 1rem minmax(1rem, min-content) 1rem;
-            grid-template-rows: auto auto;
-            gap: 0;
-
-            &-label {
-                grid-column: 1;
-                grid-row: 1;
-                padding: 0.5rem 0rem 0.25rem 0.5rem;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-                border-left: 1px solid var(--accent-yellow);
-            }
-
-            &-lifetime-starts {
-                grid-column: 2;
-                grid-row: 1;
-                padding: 0.5rem 1.25rem 0.25rem 0;
-                text-align: right;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-            }
-
-            &-lifetime-wins {
-                grid-column: 3;
-                grid-row: 1;
-                padding: 0.5rem 0rem 0.25rem 0;
-                text-align: right;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-            }
-
-            &-lifetime-spacer-1 {
-                grid-column: 4;
-                grid-row: 1;
-                padding: 0.5rem 0 0.25rem 0.25rem;
-                text-align: center;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-            }
-
-            &-lifetime-places {
-                grid-column: 5;
-                grid-row: 1;
-                text-align: right;
-                padding: 0.5rem 0 0.25rem 0.25rem;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-            }
-
-            &-lifetime-spacer-2 {
-                grid-column: 6;
-                grid-row: 1;
-                padding: 0.5rem 0 0.25rem 0;
-                text-align: center;
-                border-top: 1px solid var(--accent-yellow);
-                border-bottom: 1px solid var(--accent-yellow);
-            }
-        }
-        
-        &-right {
-            grid-column: 2;
-            grid-row: 1 / -1;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-template-rows: auto auto;
-            gap: 1.5rem;
         }
     }
 
