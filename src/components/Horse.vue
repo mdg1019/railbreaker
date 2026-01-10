@@ -114,10 +114,10 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                                 || props.horse.todays_medication_new === 3
                                 || props.horse.todays_medication_new === 4
                                 || props.horse.todays_medication_new === 5" 
-                                    :style="{ color: props.horse.todays_medication_new === 4 || props.horse.todays_medication_new === 5 ? 'var(--accent-red)' : 'var(--accent-yellow)' }">L</span>
+                                    :style="{ color: props.horse.todays_medication_new === 4 || props.horse.todays_medication_new === 5 ? 'var(--accent-red)' : 'var(--accent-green)' }">L</span>
                                 <span v-if="props.horse.todays_medication_new === 2
                                 || props.horse.todays_medication_new === 3
-                                || props.horse.todays_medication_new === 5" class="color-accent-yellow">B</span>
+                                || props.horse.todays_medication_new === 5" class="color-accent-green">B</span>
                             </span>
                             <span class="color-accent-yellow">{{ props.horse.weight }}</span>
                         </div>
