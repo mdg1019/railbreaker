@@ -133,7 +133,11 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                         <div class="horse-header-right-left-lifetime-wins">
                             {{ props.horse.lifetime_record_wins }}
                         </div>
-                        <div class="horse-header-right-left-lifetime-spacer-1"> - </div>
+                        <div class="horse-header-right-left-lifetime-spacer-1">-</div>
+                        <div class="horse-header-right-left-lifetime-places">
+                            {{ props.horse.lifetime_record_places }}
+                        </div>
+                        <div class="horse-header-right-left-lifetime-spacer-2">-</div>
                     </div>
  
                     <div class="horse-header-right-right">
@@ -178,7 +182,7 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
     }
 
     &-center{
-        flex: 0 0 25%;
+        flex: 0 0 33%;
         min-width: 160px;
         align-self: start;
         display: grid;
@@ -220,7 +224,7 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
     }
 
     &-right {
-        flex: 0 0 10%;
+        flex: 0 0 25%;
 
         align-self: start;
         display: grid;
@@ -230,11 +234,13 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
         align-items: start;
 
         &-left {
+            flex: 0 0 50%;
             grid-column: 1;
             grid-row: 1;
             display: grid;
-            grid-template-columns: auto auto auto auto;
+            grid-template-columns: auto minmax(1rem, min-content) minmax(1rem, min-content) 1rem minmax(1rem, min-content) 1rem;
             grid-template-rows: auto auto;
+            gap: 0;
 
             &-label {
                 grid-column: 1;
@@ -248,7 +254,8 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             &-lifetime-starts {
                 grid-column: 2;
                 grid-row: 1;
-                padding: 0.5rem 0rem 0.25rem 0.5rem;
+                padding: 0.5rem 1.25rem 0.25rem 0;
+                text-align: right;
                 border-top: 1px solid var(--accent-yellow);
                 border-bottom: 1px solid var(--accent-yellow);
             }
@@ -256,7 +263,8 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             &-lifetime-wins {
                 grid-column: 3;
                 grid-row: 1;
-                padding: 0.5rem 0rem 0.25rem 0.5rem;
+                padding: 0.5rem 0rem 0.25rem 0;
+                text-align: right;
                 border-top: 1px solid var(--accent-yellow);
                 border-bottom: 1px solid var(--accent-yellow);
             }
@@ -264,7 +272,26 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             &-lifetime-spacer-1 {
                 grid-column: 4;
                 grid-row: 1;
-                padding: 0.5rem 0rem 0.25rem 0em;
+                padding: 0.5rem 0 0.25rem 0.25rem;
+                text-align: center;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+            }
+
+            &-lifetime-places {
+                grid-column: 5;
+                grid-row: 1;
+                text-align: right;
+                padding: 0.5rem 0 0.25rem 0.25rem;
+                border-top: 1px solid var(--accent-yellow);
+                border-bottom: 1px solid var(--accent-yellow);
+            }
+
+            &-lifetime-spacer-2 {
+                grid-column: 6;
+                grid-row: 1;
+                padding: 0.5rem 0 0.25rem 0;
+                text-align: center;
                 border-top: 1px solid var(--accent-yellow);
                 border-bottom: 1px solid var(--accent-yellow);
             }
