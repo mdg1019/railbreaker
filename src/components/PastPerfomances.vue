@@ -21,6 +21,8 @@ const props = defineProps<{
             <div></div>
             <div></div>
             <div></div>
+            <div></div>
+            <div></div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">          
@@ -32,6 +34,8 @@ const props = defineProps<{
                     {{ props.horse.past_performances[i].alternate_comment_line }}( as of  {{  props.horse.past_performances[i].claimed_and_trainer_switches_1 }} ): ( {{ props.horse.past_performances[i].claimed_and_trainer_switches_2 }}  {{ props.horse.past_performances[i].claimed_and_trainer_switches_3 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_4 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_5 }}  
                     {{ Transformers.createPercentageString(Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_3), Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_2))  }} )
                 </div>
+                <div></div>
+                <div></div>
                 <div></div>
                 <div></div>
                 <div></div>
@@ -51,6 +55,8 @@ const props = defineProps<{
                 }">                    
                     {{ Transformers.formatDateShort(props.horse.past_performances[i].race_date) }}{{ props.horse.past_performances[i].track_code }}<span class="use-superscript">{{ props.horse.past_performances[i].race_number }}</span>
                 </div>
+                <div>{{ Transformers.getSurfaceString(props.horse.past_performances[i]) }}</div>
+                <div></div>
                 <div></div>
                 <div></div>
                 <div></div>
@@ -68,7 +74,7 @@ const props = defineProps<{
     font-size: 1.4rem;
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: minmax(7rem, min-content) auto auto auto auto auto auto auto;
+    grid-template-columns: minmax(7rem, min-content) auto auto auto auto auto auto auto auto auto;
     grid-template-rows: repeat(11, auto);
 }
 

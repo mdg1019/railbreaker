@@ -1,9 +1,4 @@
-import type { Race } from "../models/racecard";
-
-// function match<T, R>(value: T, cases: Array<[(v: T)=>boolean, (v: T)=>R]>, otherwise: ()=>R): R {
-//   for (const [pred, fn] of cases) if (pred(value)) return fn(value);
-//   return otherwise();
-// }
+import type { Race, PastPerformance } from "../models/racecard";
 
 export default class Transformers {
     static TITLE_EXCEPTIONS = new Set([
@@ -79,10 +74,7 @@ export default class Transformers {
             0.9375: "\u00CE", // 15/16
         };
 
-        let isAbout = false;
-
         if (distance < 0) {
-            isAbout = true;
             distance = -distance;
         }
 
@@ -101,10 +93,6 @@ export default class Transformers {
 
         let result = String(whole) + fracStr;
 
-        if (isAbout) {
-            result = "~" + result;
-        }
-
         return result;
     }
 
@@ -112,15 +100,40 @@ export default class Transformers {
         let result = this.getDistanceString(distance);
 
         if (distance === 1760) {
-            return result + " Mile";
+            result += " Mile";
+        } else if (distance > 1760) {
+            result += " Miles";
+        } else result += " Furlongs";
+
+
+        if (distance < 0) {
+            result += "*";
         }
 
-        if (distance > 1760) {
-            return result + " Miles";
+        return result;
+    }   
+    
+    static getShortLength(distance: number): string {
+        let result = this.getDistanceString(distance);
+
+        if (distance === 1760) {
+            result += " Mile";
+        } else if (distance > 1760) {
+            result += " Miles";
+        } else result += " Furlongs";
+
+        if (result.length === 1) {
+            result += "f";
         }
 
-        return result + " Furlongs";
+        if (distance < 0) {
+            result += "*";
+        }
+
+        return result;
     }
+
+
 
     static getAgeSexRestrictionString(restriction: string): string {
         const AGE_MAP: { [k: string]: string } = {
@@ -386,5 +399,25 @@ export default class Transformers {
         if (cleaned === "") return null;
         const n = Number(cleaned);
         return Number.isFinite(n) ? n : null;
+    }
+
+    static getSurfaceString(pp: PastPerformance) : string {
+        let result = "";
+
+        if (pp.previous_all_weather_surface_indicator === "A") {
+            return "\u00f1";
+        }
+
+        switch (pp.surface) {
+            case "T":
+                return "\u00db";
+            case "t":
+                return "\u00dc"
+            case "d":
+                return "\u00dd";
+        }
+
+        return result;
+        
     }
 }
