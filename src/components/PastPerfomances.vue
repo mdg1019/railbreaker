@@ -23,7 +23,23 @@ const props = defineProps<{
             <div></div>
         </div>
 
-        <template v-for="(_, i) in Array(10)" :key="i">
+        <template v-for="(_, i) in Array(10)" :key="i">          
+            <div
+                class="claimed-row"
+                v-if="props.horse.past_performances[i].alternate_comment_line !== ''"
+            >
+                 <div class="color-accent-purple">                    
+                    {{ props.horse.past_performances[i].alternate_comment_line }}( as of  {{  props.horse.past_performances[i].claimed_and_trainer_switches_1 }} ): ( {{ props.horse.past_performances[i].claimed_and_trainer_switches_2 }}  {{ props.horse.past_performances[i].claimed_and_trainer_switches_3 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_4 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_5 }}  
+                    {{ Transformers.createPercentageString(Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_3), Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_2))  }} )
+                </div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
             <div
                 class="perf-row"
                 v-if="props.horse.past_performances && props.horse.past_performances[i] && props.horse.past_performances[i].race_date !== ''"
@@ -42,7 +58,7 @@ const props = defineProps<{
                 <div></div>
                 <div></div>
                 <div></div>
-            </div>
+            </div>  
         </template>
     </div>
 </template>
@@ -59,5 +75,9 @@ const props = defineProps<{
 .title-row,
 .perf-row {
     display: contents;
+}
+
+.claimed-row {
+    grid-column: 2 / -1;
 }
 </style>

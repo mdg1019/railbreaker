@@ -19,7 +19,7 @@ Please remember that the main purpose of the app is to be used while betting fro
 - Useful highlighting of the racecard info.
 - Provide printouts of racecards.
 
-#### Racecard (Obviously needs more work.):
+#### Racecard (Working on PPs now):
 
 ![racecard](images/racecard.png)
 

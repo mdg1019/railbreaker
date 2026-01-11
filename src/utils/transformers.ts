@@ -377,4 +377,14 @@ export default class Transformers {
 
         return `${String(day).padStart(2, "0")}${monthAbbr}${yy}`;
     }  
+    
+    static parseNumberOrNull(value: any): number | null {
+        if (value === null || value === undefined) return null;
+        const s = String(value).trim();
+        if (s === "") return null;
+        const cleaned = s.replace(/[^0-9.-]/g, "");
+        if (cleaned === "") return null;
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : null;
+    }
 }
