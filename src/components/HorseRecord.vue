@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Transformers from '../utils/transformers';
 
-
 const props = defineProps<{
     label: string,
     starts: number,
@@ -11,12 +10,17 @@ const props = defineProps<{
     earnings: number,
     speedRating: number,
     pedigree: string,
+    firstColumn: boolean,
     hasBorder: boolean;
 }>();
+
+const cols = props.firstColumn ?
+    'minmax(4rem, min-content) minmax(2rem, min-content) minmax(2rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(8rem, min-content) minmax(4rem, min-content)' :
+    'minmax(6rem, min-content) minmax(2rem, min-content) minmax(2rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(1rem, min-content) minmax(8rem, min-content) minmax(4rem, min-content)';
 </script>
 
 <template>
-    <div class="container" :class="{ 'has-border': hasBorder }">
+    <div class="container" :class="{ 'has-border': hasBorder }" :style="{ gridTemplateColumns: cols }">
         <div class="label color-accent-green">
             {{ label }}
             <span class="pedigree">{{ pedigree !== '' ? ` (${pedigree})` : '' }}</span>
@@ -35,7 +39,7 @@ const props = defineProps<{
         <div class="shows">
             {{ shows }}
         </div>
-        <div class="earnings">{{ earnings !== 0 ? Transformers.createDollarString(earnings) : '' }}</div>
+        <div class="earnings">{{ earnings !== 0 ? Transformers.createDollarString(earnings) : '$0' }}</div>
         <div class="speed-rating">{{ speedRating != 0 ? speedRating : '' }}</div>
     </div>
 
@@ -43,17 +47,17 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 .container {
-    display: grid !important;
-    grid-template-columns:
-        minmax(6rem, max-content) 
-        minmax(2rem, max-content) 
-        minmax(2rem, max-content) 
-        minmax(1rem, max-content) 
-        minmax(2rem, max-content) 
-        minmax(1rem, max-content) 
-        minmax(2rem, max-content) 
-        minmax(10rem, max-content) 
-        minmax(4rem, max-content) !important;
+    display: grid;
+    // grid-template-columns:
+    //     minmax(6rem, min-content) 
+    //     minmax(2rem, min-content) 
+    //     minmax(2rem, min-content) 
+    //     minmax(1rem, min-content) 
+    //     minmax(1rem, min-content) 
+    //     minmax(1rem, min-content) 
+    //     minmax(1rem, min-content) 
+    //     minmax(10rem, min-content) 
+    //     minmax(4rem, min-content);
     grid-template-rows: auto;
     gap: 0;
 }
@@ -67,21 +71,23 @@ const props = defineProps<{
     gap: 1rem;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
-        border-left: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
+        border-left: 2px solid var(--ubuntu-blue);
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
     }
 }
 
 .starts {
     grid-column: 2;
     grid-row: 1;
-    padding: 0.5rem 1.25rem 0.25rem 0;
+    padding: 0.5rem 0.25rem 0.25rem 0;
     text-align: right;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -92,8 +98,8 @@ const props = defineProps<{
     text-align: right;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -104,8 +110,8 @@ const props = defineProps<{
     text-align: center;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -116,8 +122,8 @@ const props = defineProps<{
     padding: 0.5rem 0 0.25rem 0.25rem;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -128,8 +134,8 @@ const props = defineProps<{
     padding: 0.5rem 0 0.25rem 0.25rem;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -140,8 +146,8 @@ const props = defineProps<{
     padding: 0.5rem 0 0.25rem 0;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
     }
 }
 
@@ -152,9 +158,11 @@ const props = defineProps<{
     padding: 0.5rem 0.75rem 0.25rem 0;
 
     .has-border & {
-        border-top: 1px solid var(--accent-yellow);
-        border-bottom: 1px solid var(--accent-yellow);
-        border-right: 1px solid var(--accent-yellow);
+        border-top: 2px solid var(--ubuntu-blue);
+        border-bottom: 2px solid var(--ubuntu-blue);
+        border-right: 2px solid var(--ubuntu-blue);
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
     }
 }
 </style>

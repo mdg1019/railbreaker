@@ -99,7 +99,7 @@ function selectRace(raceNumber: number) {
 
 <style scoped lang="scss">
 .race-number {
-    color: var(--accent-green-strong);
+    color: var(--accent-green);
 }
 
 .racecard-menu {
@@ -149,7 +149,7 @@ function selectRace(raceNumber: number) {
 
 .delete-btn {
     background: transparent;
-    border: 2px solid var(--accent-green-strong);
+    border: 2px solid var(--accent-green);
     color: var(--accent-red);
     padding: 0.25rem 0.5rem;
     transform: translateY(.75rem);
@@ -158,11 +158,11 @@ function selectRace(raceNumber: number) {
 }
 
 .delete-btn:hover {
-    background: color-mix(in srgb, var(--accent-green-strong) 12%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .track {
-    color: var(--accent-green-strong);
+    color: var(--accent-green);
     font-weight: 700;
 }
 
@@ -285,7 +285,7 @@ function selectRace(raceNumber: number) {
 }
 
 .chev {
-    color: var(--accent-green-strong);
+    color: var(--accent-green);
     margin-left: 0.5rem;
 }
 

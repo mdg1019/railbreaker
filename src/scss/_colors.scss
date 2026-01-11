@@ -1,8 +1,6 @@
 @use "sass:color";
 
 :root {
-    // --bg: #ffffff;
-    // --fg: #000000;
     --bg: #121212;
     --fg: #ffffff;
     --dialog-red: #b91c1c;
@@ -19,27 +17,10 @@
     --ubuntu-blue-ring: rgba(53, 132, 228, 0.55);
     --background-light: #282828;
     --accent-yellow: #f5c242;
-    --accent-yellow-contrast: #1b1b1b;
-    --accent-yellow-strong: #b07f18;
     --accent-green: #22c55e;
-    --accent-green-strong: #16a34a;
-    --accent-green-contrast: #052b12;
     --accent-red: #ef4444;
-    --accent-red-strong: #8b1d1d;
-    --accent-red-contrast: #2b0a0a;
-    --accent-purple: #7c3aed;
-    --accent-purple-strong: #4c1d95;
-    --accent-purple-contrast: #1b0626;
-    
+    --accent-purple: #7c3aed;   
 }
-
-// :root.dark {
-//     --bg: #121212;
-//     --fg: #ffffff;
-//     --background-light: #1b1b1b;
-//     --accent-yellow: #f7d66b;
-//     --accent-yellow-contrast: #121212;
-// }
 
 $hyperlink-active-color: rgba(color.scale(blue, $lightness: 30%), 0.8);
 $hyperlink-color: rgba(color.scale(blue, $lightness: 20%), 1);
@@ -47,40 +28,15 @@ $hyperlink-color: rgba(color.scale(blue, $lightness: 20%), 1);
 .color-accent-yellow {
     color: var(--accent-yellow);
 }
-.color-accent-yellow-contrast {
-    color: var(--accent-yellow-contrast);
-}
-.color-accent-yellow-strong {
-    color: var(--accent-yellow-strong);
-}
 
 .color-accent-green {
     color: var(--accent-green);
-}
-.color-accent-green-contrast {
-    color: var(--accent-green-contrast);
-}
-
-.color-accent-green-strong {
-    color: var(--accent-green-strong);
 }
 
 .color-accent-red {
     color: var(--accent-red);
 }
-.color-accent-red-contrast {
-    color: var(--accent-red-contrast);
-}
-.color-accent-red-strong {
-    color: var(--accent-red-strong);
-}
 
 .color-accent-purple {
     color: var(--accent-purple);
-}
-.color-accent-purple-contrast {
-    color: var(--accent-purple-contrast);
-}
-.color-accent-purple-strong {
-    color: var(--accent-purple-strong);
 }
