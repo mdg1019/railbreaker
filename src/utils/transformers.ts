@@ -351,5 +351,30 @@ export default class Transformers {
             .join(" ");
     }
 
-    
+     static formatDateShort(dateStr: string): string {
+        if (!dateStr) return "";
+
+        const m = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+        if (!m) return "";
+
+        const month = parseInt(m[1], 10);
+        const day = parseInt(m[2], 10);
+        let yearStr = m[3];
+
+        if (Number.isNaN(month) || Number.isNaN(day)) return "";
+
+       if (yearStr.length === 2) {
+            yearStr = "20" + yearStr;
+        }
+
+        const year = parseInt(yearStr, 10);
+        if (Number.isNaN(year)) return "";
+        if (month < 1 || month > 12) return "";
+        if (day < 1 || day > 31) return "";
+
+        const monthAbbr = this.MONTH_ABBREVIATIONS[month - 1] || "";
+        const yy = String(year).slice(-2);
+
+        return `${String(day).padStart(2, "0")}${monthAbbr}${yy}`;
+    }  
 }

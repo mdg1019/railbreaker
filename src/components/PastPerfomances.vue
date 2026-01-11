@@ -28,7 +28,13 @@ const props = defineProps<{
                 class="perf-row"
                 v-if="props.horse.past_performances && props.horse.past_performances[i] && props.horse.past_performances[i].race_date !== ''"
             >
-                <div>{{ props.horse.past_performances[i].race_date }}</div>
+                 <div class="color-accent-yellow" :style="{
+                    borderBottom: (i === 0 && props.horse.past_performances?.[i]?.days_since_last_race && props.horse.past_performances[i].days_since_last_race > 45)
+                        ? '1px solid var(--accent-red)'
+                        : undefined
+                }">                    
+                    {{ Transformers.formatDateShort(props.horse.past_performances[i].race_date) }}{{ props.horse.past_performances[i].track_code }}<span class="use-superscript">{{ props.horse.past_performances[i].race_number }}</span>
+                </div>
                 <div></div>
                 <div></div>
                 <div></div>
@@ -46,11 +52,10 @@ const props = defineProps<{
     font-size: 1.4rem;
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: auto auto auto auto auto auto auto auto;
+    grid-template-columns: minmax(7rem, min-content) auto auto auto auto auto auto auto;
     grid-template-rows: repeat(11, auto);
 }
 
-/* make the row wrappers disappear so their children participate in the parent's grid */
 .title-row,
 .perf-row {
     display: contents;
