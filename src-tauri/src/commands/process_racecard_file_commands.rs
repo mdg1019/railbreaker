@@ -313,8 +313,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
         for j in 0..10 {
             let pp = PastPerformance {
-                race_date: yyyymmdd_to_mmddyyyy(&lines[0][SF_PP_RACE_DATE])
-                    .unwrap_or_else(|| lines[0][SF_PP_RACE_DATE].clone()),
+                race_date: yyyymmdd_to_mmddyyyy(&line[SF_PP_RACE_DATE + j])
+                    .unwrap_or_else(|| "".to_string()),
                 days_since_last_race: line[SF_PP_NUMBER_OF_DAYS_SINCE_LAST_RACE + j]
                     .parse::<u32>()
                     .ok(),
