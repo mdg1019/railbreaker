@@ -4,6 +4,7 @@ import Panel from "./Panel.vue";
 import HorseHeaderLeft from "./HorseHeaderLeft.vue";
 import HorseHeaderRight from "./HorseHeaderRight.vue";
 import HorseHeaderCenter from "./HorseHeaderCenter.vue";
+import PastPerfomances from "./PastPerfomances.vue";
 
 const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]> }>();
 </script>
@@ -23,7 +24,8 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
             </div>
 
             <div class="horse-body">
-                <!-- additional horse info can go here -->
+                <div class="horizontal-line"></div>
+                <PastPerfomances :horse="props.horse" />
             </div>
         </div>
     </Panel>
@@ -42,5 +44,13 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
     flex-direction: row;
     gap: 1rem;
     align-items: center;
+}
+
+.horizontal-line {
+    height: calc(2px + 0.5rem);
+    margin-top: 0.5rem;
+    border-bottom: 2px solid var(--ubuntu-blue);  
+    width: calc(100% + 2 * 1rem);
+    margin: 0 calc(-1 * 1rem);
 }
 </style>
