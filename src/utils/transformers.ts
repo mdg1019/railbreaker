@@ -424,4 +424,31 @@ export default class Transformers {
 
         return result;       
     }
+
+    static getFractionalTimeString(time: number | null): [string, string] {
+        if (time === null || time === undefined) {
+            return ["", ""];
+        }
+
+        if (!Number.isFinite(time)) return ["", ""];
+
+        let totalSeconds = Math.abs(time);
+
+        let minutes = Math.floor(totalSeconds / 60);
+        let remaining = totalSeconds - minutes * 60;
+
+        let seconds = Math.floor(remaining);
+        let fractional = remaining - seconds;
+
+        let fifths = Math.floor(fractional * 5);
+
+        let main: string;
+        if (minutes === 0) {
+            main = ":" +String(seconds).padStart(2, "0");
+        } else {
+            main = `${minutes}:${String(seconds).padStart(2, "0")}`;
+        }
+
+        return [main, fifths === 0 ? " " : String(fifths)];
+    }
 }

@@ -26,7 +26,7 @@ const props = defineProps<{
                                 class="claiming-price color-accent-yellow">{{
                                     Transformers.createDollarString(props.horse.claiming_price_of_horse) }}</div>
                         </div>
-                        <div class="color-accent-green">Own:
+                        <div class="owner color-accent-green">Own:
                             <span class="color-accent-yellow">{{
                                 Transformers.capitalizeFullName(props.horse.todays_owner) }}</span>
                         </div>
@@ -101,6 +101,10 @@ const props = defineProps<{
     }
 
     .odds {
+        font-size: 1.4rem;
+    }
+
+    .owner {
         font-size: 1.4rem;
     }
 
