@@ -15,7 +15,7 @@ const props = defineProps<{
         >
             <div>DATE TRK</div>
             <div></div>
-            <div></div>
+            <div>DIST</div>
             <div></div>
             <div></div>
             <div></div>
@@ -48,15 +48,15 @@ const props = defineProps<{
                 class="perf-row"
                 v-if="props.horse.past_performances && props.horse.past_performances[i] && props.horse.past_performances[i].race_date !== ''"
             >
-                 <div class="color-accent-yellow" :style="{
+                 <div :style="{
                     borderBottom: (i === 0 && props.horse.past_performances?.[i]?.days_since_last_race && props.horse.past_performances[i].days_since_last_race > 45)
                         ? '1px solid var(--accent-red)'
                         : undefined
                 }">                    
                     {{ Transformers.formatDateShort(props.horse.past_performances[i].race_date) }}{{ props.horse.past_performances[i].track_code }}<span class="use-superscript">{{ props.horse.past_performances[i].race_number }}</span>
                 </div>
-                <div>{{ Transformers.getSurfaceString(props.horse.past_performances[i]) }}</div>
-                <div></div>
+                <div class="color-accent-yellow surface-indicator">{{ Transformers.getSurfaceString(props.horse.past_performances[i]) }}</div>
+                <div>{{ Transformers.getShortLength(props.horse.past_performances[i].distance) }} <span>{{ props.horse.past_performances[i].track_condition.toLowerCase() }}</span><span v-if="props.horse.past_performances[i].sealed_track_indicator" class="use-superscript">s</span></div>
                 <div></div>
                 <div></div>
                 <div></div>
@@ -74,7 +74,7 @@ const props = defineProps<{
     font-size: 1.4rem;
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: minmax(7rem, min-content) auto auto auto auto auto auto auto auto auto;
+    grid-template-columns: minmax(7rem, max-content) minmax(2rem, max-content) max-content auto auto auto auto auto auto auto;
     grid-template-rows: repeat(11, auto);
 }
 
@@ -85,5 +85,16 @@ const props = defineProps<{
 
 .claimed-row {
     grid-column: 2 / -1;
+}
+
+.surface-indicator {
+    padding-right: 0.25rem;
+    text-align: right;
+}
+
+.use-superscript {
+    vertical-align: super;
+    font-size: 0.7em;
+    line-height: 0;
 }
 </style>

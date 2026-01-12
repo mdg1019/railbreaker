@@ -120,14 +120,12 @@ export default class Transformers {
         return result;
     }   
     
-    static getShortLength(distance: number): string {
-        let result = this.getDistanceString(distance);
+    static getShortLength(distance: number | null): string {
+        if (distance === null || distance === undefined) {
+            return "";
+        }
 
-        if (distance === 1760) {
-            result += " Mile";
-        } else if (distance > 1760) {
-            result += " Miles";
-        } else result += " Furlongs";
+        let result = this.getDistanceString(distance);
 
         if (result.length === 1) {
             result += "f";
