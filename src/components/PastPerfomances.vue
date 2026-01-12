@@ -28,7 +28,7 @@ const props = defineProps<{
         <template v-for="(_, i) in Array(10)" :key="i">          
             <div
                 class="claimed-row"
-                v-if="props.horse.past_performances[i].alternate_comment_line !== ''"
+                v-if="props.horse.past_performances[i].alternate_comment_line.startsWith('Claimed')"
             >
                  <div class="color-accent-purple">                    
                     {{ props.horse.past_performances[i].alternate_comment_line }}( as of  {{  props.horse.past_performances[i].claimed_and_trainer_switches_1 }} ): ( {{ props.horse.past_performances[i].claimed_and_trainer_switches_2 }}  {{ props.horse.past_performances[i].claimed_and_trainer_switches_3 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_4 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_5 }}  
