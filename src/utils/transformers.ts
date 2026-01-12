@@ -80,6 +80,13 @@ export default class Transformers {
 
         let value = 0;
 
+        switch (distance) {
+            case 1800: // 1 mile 40 yards
+                return "1\u00D9";
+            case 1830: // 1 mile 70 yards
+                return "1\u00DA";
+        }
+
         if (distance >= 1760) {
             value = distance / 1760;
         } else {
@@ -417,7 +424,6 @@ export default class Transformers {
                 return "\u00dd";
         }
 
-        return result;
-        
+        return result;       
     }
 }
