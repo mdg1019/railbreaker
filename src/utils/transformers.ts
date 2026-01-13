@@ -60,7 +60,9 @@ export default class Transformers {
         let classification = pp.race_classication;
 
         let lowercasePrefixes = classification.match(/^([a-z]+)/);
-        classification = classification.slice(lowercasePrefixes ? lowercasePrefixes[0].length : 0)
+        classification = classification.slice(
+            lowercasePrefixes ? lowercasePrefixes[0].length : 0
+        );
 
         if (lowercasePrefixes && lowercasePrefixes[0].indexOf("f") !== -1) {
             prefix += "\u00EA";
@@ -80,7 +82,9 @@ export default class Transformers {
             classification = mcClassification;
         } else {
             if (classification === "MdSpWt") {
-                classification = "Mdn " + (pp.purse ? Math.floor(pp.purse / 1000) + "k" : "");
+                classification =
+                    "Mdn " +
+                    (pp.purse ? Math.floor(pp.purse / 1000) + "k" : "");
             }
         }
 
@@ -165,14 +169,13 @@ export default class Transformers {
             result += " Miles";
         } else result += " Furlongs";
 
-
         if (distance < 0) {
             result += "*";
         }
 
         return result;
-    }   
-    
+    }
+
     static getShortLength(distance: number | null): string {
         if (distance === null || distance === undefined) {
             return "";
@@ -190,8 +193,6 @@ export default class Transformers {
 
         return result;
     }
-
-
 
     static getAgeSexRestrictionString(restriction: string): string {
         const AGE_MAP: { [k: string]: string } = {
@@ -227,7 +228,9 @@ export default class Transformers {
             return txt
                 .split("/")
                 .map((part) => {
-                    const m = part.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+                    const m = part.match(
+                        /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
+                    );
                     if (m) {
                         const prefix = m[1] || "";
                         const core = m[2] || "";
@@ -237,7 +240,12 @@ export default class Transformers {
                             return prefix + core + suffix;
                         }
 
-                        return prefix + core.charAt(0).toUpperCase() + core.slice(1) + suffix;
+                        return (
+                            prefix +
+                            core.charAt(0).toUpperCase() +
+                            core.slice(1) +
+                            suffix
+                        );
                     }
 
                     return part.charAt(0).toUpperCase() + part.slice(1);
@@ -257,16 +265,26 @@ export default class Transformers {
                 return word
                     .split("/")
                     .map((part) => {
-                        const m = part.match(/^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/);
+                        const m = part.match(
+                            /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
+                        );
                         if (m) {
                             const prefix = m[1] || "";
                             const core = m[2] || "";
                             const suffix = m[3] || "";
 
-                            return prefix + core.charAt(0).toUpperCase() + core.slice(1).toLowerCase() + suffix;
+                            return (
+                                prefix +
+                                core.charAt(0).toUpperCase() +
+                                core.slice(1).toLowerCase() +
+                                suffix
+                            );
                         }
 
-                        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+                        return (
+                            part.charAt(0).toUpperCase() +
+                            part.slice(1).toLowerCase()
+                        );
                     })
                     .join("/");
             })
@@ -312,7 +330,10 @@ export default class Transformers {
         return "-";
     }
 
-    static createPercentageString(num: number | null | undefined, denom: number | null | undefined): string {
+    static createPercentageString(
+        num: number | null | undefined,
+        denom: number | null | undefined
+    ): string {
         if (num === null || num === undefined) return "-";
         if (denom === null || denom === undefined) return "-";
         if (denom === 0) return "-";
@@ -328,10 +349,13 @@ export default class Transformers {
         return "$" + rounded.toLocaleString("en-US");
     }
 
-    static createAgeString(birthMonth: number | null | undefined, birthYearTwoDigits: number | null | undefined): string {
-        
+    static createAgeString(
+        birthMonth: number | null | undefined,
+        birthYearTwoDigits: number | null | undefined
+    ): string {
         if (birthMonth === null || birthMonth === undefined) return "";
-        if (birthYearTwoDigits === null || birthYearTwoDigits === undefined) return "";
+        if (birthYearTwoDigits === null || birthYearTwoDigits === undefined)
+            return "";
 
         const month = Math.floor(birthMonth);
         const year = 2000 + Math.floor(birthYearTwoDigits);
@@ -367,7 +391,7 @@ export default class Transformers {
             "st",
             "der",
         ]);
-       const handleMcMac = (word: string): string => {
+        const handleMcMac = (word: string): string => {
             const lower = word.toLowerCase();
 
             if (lower.startsWith("mc") && lower.length > 2) {
@@ -422,7 +446,7 @@ export default class Transformers {
             .join(" ");
     }
 
-     static formatDateShort(dateStr: string): string {
+    static formatDateShort(dateStr: string): string {
         if (!dateStr) return "";
 
         const m = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
@@ -434,7 +458,7 @@ export default class Transformers {
 
         if (Number.isNaN(month) || Number.isNaN(day)) return "";
 
-       if (yearStr.length === 2) {
+        if (yearStr.length === 2) {
             yearStr = "20" + yearStr;
         }
 
@@ -447,8 +471,8 @@ export default class Transformers {
         const yy = String(year).slice(-2);
 
         return `${String(day).padStart(2, "0")}${monthAbbr}${yy}`;
-    }  
-    
+    }
+
     static parseNumberOrNull(value: any): number | null {
         if (value === null || value === undefined) return null;
         const s = String(value).trim();
@@ -459,7 +483,7 @@ export default class Transformers {
         return Number.isFinite(n) ? n : null;
     }
 
-    static getSurfaceString(pp: PastPerformance) : string {
+    static getSurfaceString(pp: PastPerformance): string {
         let result = "";
 
         if (pp.code_for_prior_races.toLowerCase() === "x") {
@@ -474,12 +498,12 @@ export default class Transformers {
             case "T":
                 return "\u00db";
             case "t":
-                return "\u00dc"
+                return "\u00dc";
             case "d":
                 return "\u00dd";
         }
 
-        return result;       
+        return result;
     }
 
     static getFractionalTimeString(time: number | null): [string, string] {
@@ -501,11 +525,44 @@ export default class Transformers {
 
         let main: string;
         if (minutes === 0) {
-            main = ":" +String(seconds).padStart(2, "0");
+            main = ":" + String(seconds).padStart(2, "0");
         } else {
             main = `${minutes}:${String(seconds).padStart(2, "0")}`;
         }
 
         return [main, fifths === 0 ? " " : String(fifths)];
+    }
+
+    static getE1E2AndLatePaceString(
+        pp: PastPerformance
+    ): [string, string, string] {
+        if (!pp.distance) return ["", "", ""];
+
+        let e1 = "";
+        let e2 = "";
+        let latePace = "";
+
+        let distance = pp.distance;
+
+        if (distance < 0) distance = -distance;
+
+        if (distance < 1760) {
+            if (!pp.bris_4f_pace) {
+                e1 = "";
+                e2 = pp.bris_2f_pace ? String(pp.bris_2f_pace) : "";
+            } else {
+                e1 = pp.bris_2f_pace ? String(pp.bris_2f_pace) : "";
+                e2 = pp.bris_4f_pace ? String(pp.bris_4f_pace) : "";
+            }
+        } else {
+            e1 = pp.bris_4f_pace ? String(pp.bris_4f_pace) : "";
+            e2 = pp.bris_6f_pace ? String(pp.bris_6f_pace) : "";
+        }
+
+        latePace = pp.bris_late_pace ? String(pp.bris_late_pace) : "";
+
+        console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
+
+        return [e1, e2, latePace];
     }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Horse } from "../models/racecard";
+import { PastPerformance, type Horse } from "../models/racecard";
 import Transformers from '../utils/transformers';
 
 const props = defineProps<{
@@ -31,6 +31,12 @@ const race_classification = computed(() => {
   const pps = props.horse?.past_performances || [];
   return pps.map(pp => Transformers.getPPRaceClassification(pp));
 });
+
+const e1_e2_lp = computed(() => {
+  const pps = props.horse?.past_performances || [];
+  return pps.map(pp => Transformers.getE1E2AndLatePaceString(pp));
+});
+
 </script>
 
 <template>
@@ -47,8 +53,8 @@ const race_classification = computed(() => {
             <div></div>
             <div></div>
             <div>RACETYPE</div>
-            <div></div>
-            <div></div>
+            <div>E1</div>
+            <div>E2</div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">          
@@ -56,11 +62,13 @@ const race_classification = computed(() => {
                     class="claimed-row"
                     v-if="props.horse.past_performances?.[i]?.alternate_comment_line?.startsWith('Claimed')"
             >
-                 <div class="color-accent-purple">                    
-                    {{ props.horse.past_performances[i].alternate_comment_line }}( as of  {{  props.horse.past_performances[i].claimed_and_trainer_switches_1 }} ): ( {{ props.horse.past_performances[i].claimed_and_trainer_switches_2 }}  {{ props.horse.past_performances[i].claimed_and_trainer_switches_3 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_4 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_5 }}  
-                    {{ Transformers.createPercentageString(Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_3), Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_2))  }} )
-                </div>
                 <div></div>
+                <div class="claimed-cell">
+                    <div class="color-accent-purple" title="{{ props.horse.past_performances[i].alternate_comment_line }}">                    
+                        {{ props.horse.past_performances[i].alternate_comment_line }}( as of  {{  props.horse.past_performances[i].claimed_and_trainer_switches_1 }} ): ( {{ props.horse.past_performances[i].claimed_and_trainer_switches_2 }}  {{ props.horse.past_performances[i].claimed_and_trainer_switches_3 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_4 }}-{{ props.horse.past_performances[i].claimed_and_trainer_switches_5 }}  
+                        {{ Transformers.createPercentageString(Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_3), Transformers.parseNumberOrNull(props.horse.past_performances[i].claimed_and_trainer_switches_2))  }} )
+                    </div>
+                </div>
                 <div></div>
                 <div></div>
                 <div></div>
@@ -88,7 +96,7 @@ const race_classification = computed(() => {
                 <div>{{ fraction_3[i]?.[0] }}<span class="use-superscript">{{ fraction_3[i]?.[1] }}</span></div>
                 <div>{{ final_time[i]?.[0] }}<span class="use-superscript">{{ final_time[i]?.[1] }}</span></div>
                 <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{ race_classification[i]?.[1] }}</div>
-                <div></div>
+                <div>{{ e1_e2_lp[i]?.[0] }}</div>
                 <div></div>
             </div>  
         </template>
@@ -100,7 +108,27 @@ const race_classification = computed(() => {
     font-size: 1.4rem;
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: minmax(8rem, max-content) minmax(2rem, max-content) minmax(3rem, max-content) minmax(4rem, max-content) minmax(3rem, max-content) minmax(3rem, max-content) minmax(3rem, max-content) auto auto auto;
+    grid-template-columns: 
+        // DATETRK
+        minmax(8rem, max-content)
+        // Surface Prefix
+        minmax(2rem, max-content)
+        // DIST 
+        minmax(3rem, max-content)
+        // Fraction # 1
+        minmax(4rem, max-content) 
+        // Fraction # 2
+        minmax(3rem, max-content) 
+        // Fraction # 3
+        minmax(3rem, max-content) 
+        // Final Time
+        minmax(3rem, max-content) 
+        // RACETYPE
+        minmax(8rem, max-content) 
+        // E1
+        minmax(3rem, max-content) 
+        // E2
+        minmax(3rem, max-content);
     grid-template-rows: repeat(11, auto);
 }
 
@@ -110,11 +138,18 @@ const race_classification = computed(() => {
 }
 
 .claimed-row {
-    grid-column: 2 / -1;
+    display: contents;
 }
 
+.claimed-cell {
+    position: relative;
+    min-height: 1.6rem;
+}
 
-.claimed-row .color-accent-purple {
+.claimed-cell > .color-accent-purple {
+    position: absolute;
+    left: 0;
+    top: 0;
     max-height: 1.6rem;
     overflow: hidden;
     text-overflow: ellipsis;
