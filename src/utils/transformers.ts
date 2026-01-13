@@ -74,12 +74,36 @@ export default class Transformers {
             prefix += "\u00EC";
         }
 
-        const newClass = classification.replace(/^Md\s*(\d+)/, "MC$1");
+        let mcClassification = classification.replace(/^Md\s*(\d+)/, "MC$1");
 
-        if (newClass !== classification) {
-            return [prefix, newClass];
+        if (mcClassification !== classification) {
+            classification = mcClassification;
+        } else {
+            if (classification === "MdSpWt") {
+                classification = "Mdn " + (pp.purse ? Math.floor(pp.purse / 1000) + "k" : "");
+            }
         }
-        classification = newClass;
+
+        let claimed = false;
+
+        if (pp.claiming_price && pp.claiming_price > 0) {
+            if (classification.endsWith("c")) {
+                classification = classification.slice(0, -1);
+                claimed = true;
+            }
+        }
+
+        if (classification.endsWith("l")) {
+            classification = classification.slice(0, -1) + "L";
+        }
+
+        if (claimed) {
+            classification += "-c";
+        }
+
+        if (pp.high_claiming_price_of_race && !pp.claiming_price) {
+            classification += "-N";
+        }
 
         return [prefix, classification];
     }
