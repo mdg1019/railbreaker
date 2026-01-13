@@ -409,6 +409,10 @@ export default class Transformers {
     static getSurfaceString(pp: PastPerformance) : string {
         let result = "";
 
+        if (pp.code_for_prior_races.toLowerCase() === "x") {
+            return "\u00f2";
+        }
+
         if (pp.previous_all_weather_surface_indicator === "A") {
             return "\u00f1";
         }
