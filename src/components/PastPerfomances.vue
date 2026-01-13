@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { PastPerformance, type Horse } from "../models/racecard";
+import { type Horse } from "../models/racecard";
 import Transformers from '../utils/transformers';
 
 const props = defineProps<{
@@ -114,17 +114,27 @@ const e1_e2_lp = computed(() => {
     display: grid;
     grid-template-columns:
         // 1. DATETRK
-        minmax(9rem, max-content) // 2. Surface Prefix — narrow minimum so gap is small
-        minmax(1rem, min-content) // 3. DIST 
-        minmax(3rem, max-content) // 4. Fraction # 1
-        minmax(4rem, max-content) // 5. Fraction # 2
-        minmax(3rem, max-content) // 6. Fraction # 3
-        minmax(3rem, max-content) // 7. Final Time
-        minmax(3rem, max-content) // 8. RACETYPE
-        minmax(8rem, max-content) // 9. E1
-        minmax(3rem, max-content) // 10. E2
-        minmax(3rem, max-content) // 11. LP
-        minmax(3rem, max-content);
+        9rem 
+        // 2. Surface Prefix — narrow minimum so gap is small
+        1rem
+        // 3. DIST 
+        3rem 
+        // 4. Fraction # 1
+        4rem 
+        // 5. Fraction # 2
+        3rem 
+        // 6. Fraction # 3
+        3rem 
+        // 7. Final Time
+        3rem 
+        // 8. RACETYPE
+        8rem 
+        // 9. E1
+        3rem 
+        // 10. E2
+        3rem 
+        // 11. LP
+        3rem;
 }
 
 .claimed-row {
