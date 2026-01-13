@@ -37,7 +37,7 @@ export default class Transformers {
         if (!race) return ["", ""];
 
         let raceClassification = race.todays_race_classification;
-        
+
         if (race.race_type == "M" && raceClassification.startsWith("Md ")) {
             raceClassification = "MC " + raceClassification.slice(3);
         }
@@ -59,19 +59,23 @@ export default class Transformers {
         let prefix = "";
         let classification = pp.race_classication;
 
-        if (classification.startsWith("f")) {
+        let lowercasePrefixes = classification.match(/^([a-z]+)/);
+        classification = classification.slice(lowercasePrefixes ? lowercasePrefixes[0].length : 0)
+
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("f") !== -1) {
             prefix += "\u00EA";
-            classification = classification.slice(1).trim();
         }
 
-        if (classification.startsWith("s")) {
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("s") !== -1) {
             prefix += "\u00EB";
-            classification = classification.slice(1).trim();
         }
 
-        // Convert Md<number> or "Md <number>" to MC<number> and return early
-        // if the conversion actually changed the string.
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("r") !== -1) {
+            prefix += "\u00EC";
+        }
+
         const newClass = classification.replace(/^Md\s*(\d+)/, "MC$1");
+
         if (newClass !== classification) {
             return [prefix, newClass];
         }
