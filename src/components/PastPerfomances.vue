@@ -26,6 +26,11 @@ const final_time = computed(() => {
   const pps = props.horse?.past_performances || [];
   return pps.map(pp => Transformers.getFractionalTimeString(pp?.final_time ?? null));
 });
+
+const race_classification = computed(() => {
+  const pps = props.horse?.past_performances || [];
+  return pps.map(pp => Transformers.getPPRaceClassification(pp));
+});
 </script>
 
 <template>
@@ -41,7 +46,7 @@ const final_time = computed(() => {
             <div></div>
             <div></div>
             <div></div>
-            <div></div>
+            <div>RACETYPE</div>
             <div></div>
             <div></div>
         </div>
@@ -82,7 +87,7 @@ const final_time = computed(() => {
                 <div>{{ fraction_2[i]?.[0] }}<span class="use-superscript">{{ fraction_2[i]?.[1] }}</span></div>
                 <div>{{ fraction_3[i]?.[0] }}<span class="use-superscript">{{ fraction_3[i]?.[1] }}</span></div>
                 <div>{{ final_time[i]?.[0] }}<span class="use-superscript">{{ final_time[i]?.[1] }}</span></div>
-               <div></div>
+                <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{ race_classification[i]?.[1] }}</div>
                 <div></div>
                 <div></div>
             </div>  

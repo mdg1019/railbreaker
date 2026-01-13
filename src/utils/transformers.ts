@@ -37,7 +37,7 @@ export default class Transformers {
         if (!race) return ["", ""];
 
         let raceClassification = race.todays_race_classification;
-
+        
         if (race.race_type == "M" && raceClassification.startsWith("Md ")) {
             raceClassification = "MC " + raceClassification.slice(3);
         }
@@ -53,6 +53,31 @@ export default class Transformers {
         }
 
         return [prefix, raceClassification];
+    }
+
+    static getPPRaceClassification(pp: PastPerformance): [string, string] {
+        let prefix = "";
+        let classification = pp.race_classication;
+
+        if (classification.startsWith("f")) {
+            prefix += "\u00EA";
+            classification = classification.slice(1).trim();
+        }
+
+        if (classification.startsWith("s")) {
+            prefix += "\u00EB";
+            classification = classification.slice(1).trim();
+        }
+
+        // Convert Md<number> or "Md <number>" to MC<number> and return early
+        // if the conversion actually changed the string.
+        const newClass = classification.replace(/^Md\s*(\d+)/, "MC$1");
+        if (newClass !== classification) {
+            return [prefix, newClass];
+        }
+        classification = newClass;
+
+        return [prefix, classification];
     }
 
     static getDistanceString(distance: number): string {
