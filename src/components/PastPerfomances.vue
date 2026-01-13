@@ -54,6 +54,7 @@ const e1_e2_lp = computed(() => {
             <div>E1</div>
             <div>E2</div>
             <div>LP</div>
+            <div>SPD</div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">
@@ -102,6 +103,7 @@ const e1_e2_lp = computed(() => {
                 <div>{{ e1_e2_lp[i]?.[0] }}</div>
                 <div>{{ e1_e2_lp[i]?.[1] }}</div>
                 <div>{{ e1_e2_lp[i]?.[2] }}</div>
+                <div>{{ props.horse.past_performances[i].bris_speed_rating }}</div>
             </div>
         </template>
     </div>
@@ -134,6 +136,8 @@ const e1_e2_lp = computed(() => {
         // 10. E2
         3rem 
         // 11. LP
+        3rem
+        // 12. SPD
         3rem;
 }
 
