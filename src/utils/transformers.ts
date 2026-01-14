@@ -1,5 +1,13 @@
 import type { Race, PastPerformance } from "../models/racecard";
 
+export class PositionLengthsBehind {
+    constructor(    
+        public position: string,
+        public lengthsBehind: string,
+        public fraction: string
+    ) {}
+}
+
 export default class Transformers {
     static TITLE_EXCEPTIONS = new Set([
         "and",
@@ -564,5 +572,50 @@ export default class Transformers {
         console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
 
         return [e1, e2, latePace];
+    }
+
+    static getPositionAndLengthsBehindStrings(position: number | null, lengthsBehind: number | null): PositionLengthsBehind {
+        if (position === null || position === undefined) {
+            return new PositionLengthsBehind("", "", "");
+        }
+
+        if (lengthsBehind === null || lengthsBehind === undefined) {
+            return new PositionLengthsBehind(position.toString(), "", "");
+        }
+        
+        let positionStr = position.toString();
+        
+        switch (lengthsBehind) {
+            case 0: return new PositionLengthsBehind(positionStr, "", "\u00F0");
+            case 0.05: return new PositionLengthsBehind(positionStr, "", "\u00EF");
+
+            case 0.07:
+            case 0.1: return new PositionLengthsBehind(positionStr, "", "\u00ED");
+            case 0.25: return new PositionLengthsBehind(positionStr, "", "\u00EE");
+        }
+
+
+        let lengthsBehindInt = Math.floor(lengthsBehind);
+        let lengthsBehindFraction = lengthsBehind - lengthsBehindInt;
+
+        lengthsBehindFraction = Math.round(lengthsBehindFraction * 4) / 4;
+
+        if (lengthsBehindFraction === 1) {
+            lengthsBehindInt += 1;
+            lengthsBehindFraction = 0;
+        }
+
+        let lengthsBehindStr = lengthsBehindInt === 0 ? "" : lengthsBehindInt.toString();
+
+        switch (lengthsBehindFraction) {
+            case 0: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
+            case 0.25: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00C3");
+            case 0.5: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00C7");
+            case 0.75: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00CB");
+        }
+ 
+        console.log(`Lengths Behind: ${lengthsBehind}, Int: ${lengthsBehindInt}, Fraction: ${lengthsBehindFraction}`);
+
+        return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
     }
 }

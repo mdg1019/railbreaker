@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { type Horse } from "../models/racecard";
-import Transformers from '../utils/transformers';
+import Transformers, { PositionLengthsBehind } from '../utils/transformers';
 
 const props = defineProps<{
     horse: Horse;
@@ -37,6 +37,26 @@ const e1_e2_lp = computed(() => {
     return pps.map(pp => Transformers.getE1E2AndLatePaceString(pp));
 });
 
+const firstCallPositions = computed(() => {
+    const pps = props.horse?.past_performances || [];
+    return pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.first_call_position),
+        Transformers.parseNumberOrNull(pp.first_call_between_lengths)
+    ));
+});
+
+function positionClass(position: string) {
+    switch (position) {
+        case '1':
+            return 'color-accent-red';
+        case '2':
+            return 'color-accent-green';
+        case '3':
+            return 'color-accent-yellow';
+        default:
+            return '';
+    }
+}
 </script>
 
 <template>
@@ -51,10 +71,14 @@ const e1_e2_lp = computed(() => {
             <div></div>
             <div></div>
             <div>RACETYPE</div>
-            <div>E1</div>
-            <div>E2</div>
-            <div>LP</div>
-            <div>SPD</div>
+            <div class="right-align">E1</div>
+            <div class="right-align">E2</div>
+            <div class="right-align">LP</div>
+            <div class="right-align">SPD</div>
+            <div class="right-align">PP</div>
+            <div class="right-align">ST</div>
+            <div class="right-align">1C</div>
+            <div></div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">
@@ -100,10 +124,14 @@ const e1_e2_lp = computed(() => {
                 <div>{{ final_time[i]?.[0] }}<span class="use-superscript">{{ final_time[i]?.[1] }}</span></div>
                 <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{
                     race_classification[i]?.[1] }}</div>
-                <div>{{ e1_e2_lp[i]?.[0] }}</div>
-                <div>{{ e1_e2_lp[i]?.[1] }}</div>
-                <div>{{ e1_e2_lp[i]?.[2] }}</div>
-                <div>{{ props.horse.past_performances[i].bris_speed_rating }}</div>
+                <div class="right-align">{{ e1_e2_lp[i]?.[0] }}</div>
+                <div class="right-align">{{ e1_e2_lp[i]?.[1] }}</div>
+                <div class="right-align">{{ e1_e2_lp[i]?.[2] }}</div>
+                <div class="right-align">{{ props.horse.past_performances[i].bris_speed_rating }}</div>
+                <div class="right-align">{{ props.horse.past_performances[i].post_position }}</div>
+                <div class="right-align" :class="positionClass(props.horse.past_performances[i].start_call_position.toString())">{{ props.horse.past_performances[i].start_call_position }}</div>
+                <div class="right-align" :class="positionClass(firstCallPositions[i].position)">{{ firstCallPositions[i]?.position }}</div>
+                <div :class="positionClass(firstCallPositions[i].position)"><span class="use-superscript">{{ firstCallPositions[i]?.lengthsBehind }}</span>{{ firstCallPositions[i]?.fraction }}</div>
             </div>
         </template>
     </div>
@@ -130,7 +158,7 @@ const e1_e2_lp = computed(() => {
         // 7. Final Time
         3rem 
         // 8. RACETYPE
-        8rem 
+        6rem 
         // 9. E1
         3rem 
         // 10. E2
@@ -138,6 +166,14 @@ const e1_e2_lp = computed(() => {
         // 11. LP
         3rem
         // 12. SPD
+        3rem
+        // 13. PP
+        3rem
+        // 14. ST
+        3rem
+        // 15. 1C Position
+        3rem
+        // 16. 1C Lengths
         3rem;
 }
 
@@ -168,11 +204,15 @@ const e1_e2_lp = computed(() => {
 
 .use-superscript {
     vertical-align: super;
-    font-size: 0.7em;
+    font-size: 0.8em;
     line-height: 0;
 }
 
 .left-padding {
     padding-left: 1rem;
+}
+
+.right-align {
+    text-align: right;
 }
 </style>
