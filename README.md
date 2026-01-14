@@ -9,8 +9,9 @@ Please remember that the main purpose of the app is to be used while betting fro
 - Unzip and load a racecard file.
 - Load a previously unzipped racecard file.
 - Load multiple racecards. (Racecard selection is changed in the sliding-left menu.)
-- Partial display of racecard info. (Where I'm at now.)
-- App is responsive. It may need tweaking when I complete the racecard. I'll probably set a minimum width for the app so the display stays legible.
+- Still need to add workouts, trainer stats, and trainer jockey stats.
+- App is responsive. It may need tweaking when I complete the racecard.
+- Added a tooltip to the comments. When clicking on a comment, you can see the extended comment if one is available. I'll be adding more helpful tooltips like this where I think they'd be useful.
 
 #### Things to do:
 
@@ -19,7 +20,7 @@ Please remember that the main purpose of the app is to be used while betting fro
 - Useful highlighting of the racecard info.
 - Provide printouts of racecards.
 
-#### Racecard (Working on PPs now):
+#### Racecard (PPs are complete. Note the tooltip to see the extended trip comments.):
 
 ![racecard](images/racecard.png)
 
