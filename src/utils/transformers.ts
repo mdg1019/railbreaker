@@ -453,6 +453,27 @@ export default class Transformers {
             })
             .join(" ");
     }
+    static getJockeyName(input: string): string {
+        if (!input) return "";
+
+        const tokens = input.trim().split(/\s+/).filter(Boolean);
+        if (tokens.length === 0) return "";
+
+        const rawLast = tokens[0].replace(/[^A-Za-z'\-]/g, "");
+        const last = rawLast ? this.capitalize(rawLast) : "";
+
+        const initials: string[] = [];
+        for (let i = 1; i < tokens.length; i++) {
+            const cleaned = tokens[i].replace(/[^A-Za-z]/g, "");
+            if (cleaned.length > 0) {
+                initials.push(cleaned.charAt(0).toUpperCase());
+            }
+        }
+
+        if (initials.length === 0) return last;
+
+        return `${last} ${initials.join(" ")}`;
+    }
 
     static formatDateShort(dateStr: string): string {
         if (!dateStr) return "";

@@ -109,6 +109,9 @@ function positionClass(position: string) {
             <div></div>
             <div class="right-align move-right">FIN</div>
             <div></div>
+            <div>JOCKEY</div>
+            <div></div>
+            <div class="right-align">ODDS</div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">
@@ -173,6 +176,11 @@ function positionClass(position: string) {
                 <div class="right-align" :class="positionClass(finishPositions[i].position)">{{ finishPositions[i]?.position }}</div>
                 <div :class="positionClass(finishPositions[i].position)"><span class="use-superscript">{{ finishPositions[i]?.lengthsBehind }}</span>{{ finishPositions[i]?.fraction }}<span v-if="props.horse.past_performances[i].finish_position !== props.horse.past_performances[i].money_position">*</span></div>
 
+                <div>{{ Transformers.getJockeyName(props.horse.past_performances[i].jockey) }}<span class="use-superscript">{{ props.horse.past_performances[i].weight }}</span></div>
+
+                <div><span v-if="props.horse.past_performances[i].equipment === 'b'">b</span><span v-if="props.horse.past_performances[i].front_bandages_indicator === '1'">f</span></div>
+
+                <div class="right-align">{{ props.horse.past_performances[i].odds?.toFixed(2) }}</div>
             </div>
         </template>
     </div>
@@ -227,7 +235,13 @@ function positionClass(position: string) {
         // 19. Finish Position
         3rem
         // 20. Finish Lengths
-        1rem;
+        3rem
+        // 21. Jockey
+        10rem
+        // 22. Bandages/Favorite indicator
+        1rem
+        // 23. Odds
+        4rem;
 }
 
 .claimed-row {
