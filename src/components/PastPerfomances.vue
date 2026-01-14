@@ -114,6 +114,8 @@ function positionClass(position: string) {
             <div></div>
             <div class="right-align">ODDS</div>
             <div class="move-right-large">Top Finishers</div>
+            <div class="right-align">Comments</div>
+            <div></div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">
@@ -185,6 +187,10 @@ function positionClass(position: string) {
                 <div class="right-align">{{ props.horse.past_performances[i].odds?.toFixed(2) }}</div>
 
                 <Finishers :pp="props.horse.past_performances[i]" class="move-right-large"/>
+
+                <div class="comment">{{ props.horse.past_performances[i].trip_comment }}</div>
+
+                <div class="right-align">{{ props.horse.past_performances[i].entrants }}</div>
             </div>
         </template>
     </div>
@@ -201,7 +207,7 @@ function positionClass(position: string) {
         // 2. Surface Prefix — narrow minimum so gap is small
         1rem
         // 3. DIST 
-        3rem 
+        4rem 
         // 4. Fraction # 1
         4rem 
         // 5. Fraction # 2
@@ -247,7 +253,11 @@ function positionClass(position: string) {
         // 23. Odds
         4rem
         // 24. Top Finishers
-        30rem;
+        30rem
+        // 25. Comments
+        22rem
+        // 26. Entries
+        2rem;
 }
 
 .claimed-row {
@@ -303,5 +313,16 @@ function positionClass(position: string) {
 
 .border-right {
     border-right: 1px solid var(--ubuntu-blue);
+}
+
+.comment {
+    z-index: 1;
+    justify-self: end;
+    text-align: right;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-end;
 }
 </style>

@@ -14,10 +14,10 @@
             {
                 "label": "main",
                 "title": "RailBreaker",
-                "width": 1428,
-                "height": 600,
-                "minWidth": 1428,
-                "minHeight": 600,
+                "width": 1648,
+                "height": 968,
+                "minWidth": 1648,
+                "minHeight": 968,
                 "transparent": false,
                 "visible": false,
                 "maximized": false
