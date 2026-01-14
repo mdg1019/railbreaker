@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { type Horse } from "../models/racecard";
-import Transformers, { PositionLengthsBehind } from '../utils/transformers';
+import Transformers from '../utils/transformers';
+import Finishers from './Finishers.vue';
 
 const props = defineProps<{
     horse: Horse;
@@ -112,6 +113,7 @@ function positionClass(position: string) {
             <div>JOCKEY</div>
             <div></div>
             <div class="right-align">ODDS</div>
+            <div class="move-right-large">Top Finishers</div>
         </div>
 
         <template v-for="(_, i) in Array(10)" :key="i">
@@ -181,6 +183,8 @@ function positionClass(position: string) {
                 <div><span v-if="props.horse.past_performances[i].equipment === 'b'">b</span><span v-if="props.horse.past_performances[i].front_bandages_indicator === '1'">f</span></div>
 
                 <div class="right-align">{{ props.horse.past_performances[i].odds?.toFixed(2) }}</div>
+
+                <Finishers :pp="props.horse.past_performances[i]" class="move-right-large"/>
             </div>
         </template>
     </div>
@@ -241,7 +245,9 @@ function positionClass(position: string) {
         // 22. Bandages/Favorite indicator
         1rem
         // 23. Odds
-        4rem;
+        4rem
+        // 24. Top Finishers
+        30rem;
 }
 
 .claimed-row {
@@ -286,7 +292,16 @@ function positionClass(position: string) {
 .move-right {
     transform: translateX(0.4rem);
 }
+
 .move-right-small {
     transform: translateX(0.2rem);
+}
+
+.move-right-large {
+    transform: translateX(0.8rem);
+}
+
+.border-right {
+    border-right: 1px solid var(--ubuntu-blue);
 }
 </style>
