@@ -207,7 +207,7 @@ function positionClass(position: string) {
         // 7. Final Time
         3rem 
         // 8. RACETYPE
-        6rem 
+        8rem 
         // 9. E1
         3rem 
         // 10. E2
