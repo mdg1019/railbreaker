@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { type Horse } from "../models/racecard";
 import Transformers from '../utils/transformers';
 import Finishers from './Finishers.vue';
+import Tooltip from './Tooltip.vue';
 
 const props = defineProps<{
     horse: Horse;
@@ -188,7 +189,11 @@ function positionClass(position: string) {
 
                 <Finishers :pp="props.horse.past_performances[i]" class="move-right-large"/>
 
-                <div class="comment">{{ props.horse.past_performances[i].trip_comment }}</div>
+                <div class="comment">
+                    <Tooltip :text="props.horse.past_performances[i].extended_start_comment">
+                         {{ props.horse.past_performances[i].trip_comment }}
+                    </Tooltip>
+                </div>
 
                 <div class="right-align">{{ props.horse.past_performances[i].entrants }}</div>
             </div>
