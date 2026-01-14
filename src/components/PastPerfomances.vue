@@ -45,6 +45,30 @@ const firstCallPositions = computed(() => {
     ));
 });
 
+const secondCallPositions = computed(() => {
+    const pps = props.horse?.past_performances || [];
+    return pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.second_call_position),
+        Transformers.parseNumberOrNull(pp.second_call_between_lengths)
+    ));
+});
+
+const stretchCallPositions = computed(() => {
+    const pps = props.horse?.past_performances || [];
+    return pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.stretch_call_position),
+        Transformers.parseNumberOrNull(pp.stretch_call_between_lengths)
+    ));
+});
+
+const finishPositions = computed(() => {
+    const pps = props.horse?.past_performances || [];
+    return pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.finish_position),
+        Transformers.parseNumberOrNull(pp.finish_between_lengths)
+    ));
+});
+
 function positionClass(position: string) {
     switch (position) {
         case '1':
@@ -76,8 +100,14 @@ function positionClass(position: string) {
             <div class="right-align">LP</div>
             <div class="right-align">SPD</div>
             <div class="right-align">PP</div>
-            <div class="right-align">ST</div>
-            <div class="right-align">1C</div>
+            <div class="right-align move-right-small">ST</div>
+            <div class="right-align move-right">1C</div>
+            <div></div>
+            <div class="right-align move-right">2C</div>
+            <div></div>
+            <div class="right-align move-right">Str</div>
+            <div></div>
+            <div class="right-align move-right">FIN</div>
             <div></div>
         </div>
 
@@ -130,8 +160,19 @@ function positionClass(position: string) {
                 <div class="right-align">{{ props.horse.past_performances[i].bris_speed_rating }}</div>
                 <div class="right-align">{{ props.horse.past_performances[i].post_position }}</div>
                 <div class="right-align" :class="positionClass(props.horse.past_performances[i].start_call_position.toString())">{{ props.horse.past_performances[i].start_call_position }}</div>
+
                 <div class="right-align" :class="positionClass(firstCallPositions[i].position)">{{ firstCallPositions[i]?.position }}</div>
                 <div :class="positionClass(firstCallPositions[i].position)"><span class="use-superscript">{{ firstCallPositions[i]?.lengthsBehind }}</span>{{ firstCallPositions[i]?.fraction }}</div>
+
+                <div class="right-align" :class="positionClass(secondCallPositions[i].position)">{{ secondCallPositions[i]?.position }}</div>
+                <div :class="positionClass(secondCallPositions[i].position)"><span class="use-superscript">{{ secondCallPositions[i]?.lengthsBehind }}</span>{{ secondCallPositions[i]?.fraction }}</div>
+
+                <div class="right-align" :class="positionClass(stretchCallPositions[i].position)">{{ stretchCallPositions[i]?.position }}</div>
+                <div :class="positionClass(stretchCallPositions[i].position)"><span class="use-superscript">{{ stretchCallPositions[i]?.lengthsBehind }}</span>{{ stretchCallPositions[i]?.fraction }}</div>
+
+                <div class="right-align" :class="positionClass(finishPositions[i].position)">{{ finishPositions[i]?.position }}</div>
+                <div :class="positionClass(finishPositions[i].position)"><span class="use-superscript">{{ finishPositions[i]?.lengthsBehind }}</span>{{ finishPositions[i]?.fraction }}</div>
+
             </div>
         </template>
     </div>
@@ -174,7 +215,19 @@ function positionClass(position: string) {
         // 15. 1C Position
         3rem
         // 16. 1C Lengths
-        3rem;
+        1rem
+        // 17. 2C Position
+        3rem
+        // 18. 2C Lengths
+        1rem
+        // 19. Stretch Position
+        3rem
+        // 20. Stretch Lengths
+        1rem
+        // 19. Finish Position
+        3rem
+        // 20. Finish Lengths
+        1rem;
 }
 
 .claimed-row {
@@ -214,5 +267,12 @@ function positionClass(position: string) {
 
 .right-align {
     text-align: right;
+}
+
+.move-right {
+    transform: translateX(0.4rem);
+}
+.move-right-small {
+    transform: translateX(0.2rem);
 }
 </style>
