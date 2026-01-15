@@ -185,12 +185,12 @@ function positionClass(position: string) {
 
                 <div><span v-if="props.horse.past_performances[i].equipment === 'b'">b</span><span v-if="props.horse.past_performances[i].front_bandages_indicator === '1'">f</span></div>
 
-                <div class="right-align">{{ props.horse.past_performances[i].odds?.toFixed(2) }}</div>
+                <div class="right-align">{{props.horse.past_performances[i].favorite_indicator === "1" ? "*" : "" }}{{ props.horse.past_performances[i].odds?.toFixed(2) }}</div>
 
                 <Finishers :pp="props.horse.past_performances[i]" class="move-right-large"/>
 
                 <div class="comment">
-                    <Tooltip :text="props.horse.past_performances[i].extended_start_comment">
+                    <Tooltip :text="Transformers.stripLeadingDate(props.horse.past_performances[i].extended_start_comment)">
                          {{ props.horse.past_performances[i].trip_comment }}
                     </Tooltip>
                 </div>

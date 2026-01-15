@@ -639,4 +639,13 @@ export default class Transformers {
 
         return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
     }
+
+    static stripLeadingDate(value: string): string {
+        if (!value) return "";
+
+        const match = value.match(/^\s*\d{2}-\d{2}-\d{2}(?:\s+|$)/);
+        if (!match) return value.trim();
+
+        return value.slice(match[0].length).trim();
+    }
 }
