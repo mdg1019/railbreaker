@@ -294,8 +294,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
 
         for j in 0..12 {
             let workout = Workout {
-                date: yyyymmdd_to_mmddyyyy(&lines[0][SF_WORKOUT_DATE])
-                    .unwrap_or_else(|| lines[0][SF_WORKOUT_DATE].clone()),
+                date: yyyymmdd_to_mmddyyyy(&line[SF_WORKOUT_DATE + j])
+                    .unwrap_or_else(|| line[SF_WORKOUT_DATE + j].clone()),
                 time: line[SF_WORKOUT_TIME + j].parse::<f64>().ok(),
                 track: line[SF_WORKOUT_TRACK + j].clone(),
                 distance: line[SF_WORKOUT_DISTANCE + j].parse::<i32>().ok(),

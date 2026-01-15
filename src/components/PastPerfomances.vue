@@ -59,25 +59,25 @@ function positionClass(position: string) {
             <div></div>
             <div></div>
             <div>RACETYPE</div>
-            <div class="right-align">E1</div>
-            <div class="right-align">E2</div>
-            <div class="right-align">LP</div>
-            <div class="right-align">SPD</div>
-            <div class="right-align">PP</div>
-            <div class="right-align move-right-small">ST</div>
-            <div class="right-align move-right">1C</div>
+            <div class="align-right">E1</div>
+            <div class="align-right">E2</div>
+            <div class="align-right">LP</div>
+            <div class="align-right">SPD</div>
+            <div class="align-right">PP</div>
+            <div class="align-right move-right-small">ST</div>
+            <div class="align-right move-right">1C</div>
             <div></div>
-            <div class="right-align move-right">2C</div>
+            <div class="align-right move-right">2C</div>
             <div></div>
-            <div class="right-align move-right">Str</div>
+            <div class="align-right move-right">Str</div>
             <div></div>
-            <div class="right-align move-right">FIN</div>
+            <div class="align-right move-right">FIN</div>
             <div></div>
             <div>JOCKEY</div>
             <div></div>
-            <div class="right-align">ODDS</div>
+            <div class="align-right">ODDS</div>
             <div class="move-right-large">Top Finishers</div>
-            <div class="right-align">Comments</div>
+            <div class="align-right">Comments</div>
             <div></div>
         </div>
 
@@ -124,30 +124,30 @@ function positionClass(position: string) {
                 <div>{{ final_time[i]?.[0] }}<span class="use-superscript">{{ final_time[i]?.[1] }}</span></div>
                 <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{
                     race_classification[i]?.[1] }}</div>
-                <div class="right-align">{{ e1_e2_lp[i]?.[0] }}</div>
-                <div class="right-align">{{ e1_e2_lp[i]?.[1] }}</div>
-                <div class="right-align">{{ e1_e2_lp[i]?.[2] }}</div>
-                <div class="right-align">{{ pps[i].bris_speed_rating }}</div>
-                <div class="right-align">{{ pps[i].post_position }}</div>
-                <div class="right-align" :class="positionClass(pps[i].start_call_position.toString())">{{ pps[i].start_call_position }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.[0] }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.[1] }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.[2] }}</div>
+                <div class="align-right">{{ pps[i].bris_speed_rating }}</div>
+                <div class="align-right">{{ pps[i].post_position }}</div>
+                <div class="align-right" :class="positionClass(pps[i].start_call_position.toString())">{{ pps[i].start_call_position }}</div>
 
-                <div class="right-align" :class="positionClass(firstCallPositions[i].position)">{{ firstCallPositions[i]?.position }}</div>
+                <div class="align-right" :class="positionClass(firstCallPositions[i].position)">{{ firstCallPositions[i]?.position }}</div>
                 <div :class="positionClass(firstCallPositions[i].position)"><span class="use-superscript">{{ firstCallPositions[i]?.lengthsBehind }}</span>{{ firstCallPositions[i]?.fraction }}</div>
 
-                <div class="right-align" :class="positionClass(secondCallPositions[i].position)">{{ secondCallPositions[i]?.position }}</div>
+                <div class="align-right" :class="positionClass(secondCallPositions[i].position)">{{ secondCallPositions[i]?.position }}</div>
                 <div :class="positionClass(secondCallPositions[i].position)"><span class="use-superscript">{{ secondCallPositions[i]?.lengthsBehind }}</span>{{ secondCallPositions[i]?.fraction }}</div>
 
-                <div class="right-align" :class="positionClass(stretchCallPositions[i].position)">{{ stretchCallPositions[i]?.position }}</div>
+                <div class="align-right" :class="positionClass(stretchCallPositions[i].position)">{{ stretchCallPositions[i]?.position }}</div>
                 <div :class="positionClass(stretchCallPositions[i].position)"><span class="use-superscript">{{ stretchCallPositions[i]?.lengthsBehind }}</span>{{ stretchCallPositions[i]?.fraction }}</div>
 
-                <div class="right-align" :class="positionClass(finishPositions[i].position)">{{ finishPositions[i]?.position }}</div>
+                <div class="align-right" :class="positionClass(finishPositions[i].position)">{{ finishPositions[i]?.position }}</div>
                 <div :class="positionClass(finishPositions[i].position)"><span class="use-superscript">{{ finishPositions[i]?.lengthsBehind }}</span>{{ finishPositions[i]?.fraction }}<span v-if="pps[i].finish_position !== pps[i].money_position">*</span></div>
 
                 <div>{{ Transformers.getJockeyName(pps[i].jockey) }}<span class="use-superscript">{{ pps[i].weight }}</span></div>
 
                 <div><span v-if="pps[i].equipment === 'b'">b</span><span v-if="pps[i].front_bandages_indicator === '1'">f</span></div>
 
-                <div class="right-align">{{pps[i].favorite_indicator === "1" ? "*" : "" }}{{ pps[i].odds?.toFixed(2) }}</div>
+                <div class="align-right">{{pps[i].favorite_indicator === "1" ? "*" : "" }}{{ pps[i].odds?.toFixed(2) }}</div>
 
                 <Finishers :pp="pps[i]" class="move-right-large"/>
 
@@ -157,7 +157,7 @@ function positionClass(position: string) {
                     </Tooltip>
                 </div>
 
-                <div class="right-align">{{ pps[i].entrants }}</div>
+                <div class="align-right">{{ pps[i].entrants }}</div>
             </div>
         </template>
     </div>
@@ -260,10 +260,6 @@ function positionClass(position: string) {
 
 .left-padding {
     padding-left: 1rem;
-}
-
-.right-align {
-    text-align: right;
 }
 
 .move-right {

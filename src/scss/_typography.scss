@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'Lato-Regular';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MGSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/MGSans.ttf') format('truetype');
+}
+
+
+@font-face {
+  font-family: 'MGSansCondensed';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/MGSansCondensed.ttf') format('truetype');
+}
+
+.use-mgsans {
+  font-family: 'MGSans', sans-serif;
+}

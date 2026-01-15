@@ -6,6 +6,7 @@ import HorseHeaderRight from "./HorseHeaderRight.vue";
 import HorseHeaderCenter from "./HorseHeaderCenter.vue";
 import PastPerfomances from "./PastPerfomances.vue";
 import Workout from "./Workout.vue";
+import Workouts from "./Workouts.vue";
 
 const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]> }>();
 </script>
@@ -28,11 +29,7 @@ const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number |
                 <div class="horizontal-line"></div>
                 <PastPerfomances :horse="props.horse" />
                 
-                <div v-if="props.horse.workouts.length > 0" class="workouts">
-                    <div v-for="(workout, i) in props.horse.workouts" :key="i" class="workout-item">
-                        <Workout :workout="workout" />
-                    </div>
-                </div>
+                <Workouts :workouts="props.horse.workouts" />
             </div>
         </div>
     </Panel>

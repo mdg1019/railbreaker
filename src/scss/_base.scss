@@ -1,27 +1,7 @@
 @use './_mixins';
 @use './_colors';
-
-@font-face {
-  font-family: 'Lato-Regular';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../assets/fonts/Lato-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'MGSans';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../assets/fonts/MGSans.ttf') format('truetype');
-}
-
-
-@font-face {
-  font-family: 'MGSansCondensed';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../assets/fonts/MGSansCondensed.ttf') format('truetype');
-}
+@use './layout';
+@use './typography';
 
 *,
 *::after,
@@ -83,13 +63,4 @@ a:active {
 
 a:active {
   color: colors.$hyperlink-active-color;
-}
-
-.use-mgsans {
-  font-family: 'MGSans', sans-serif;
-}
-
-.use-superscript {
-  font-size: 1rem;
-  vertical-align: super;
 }
