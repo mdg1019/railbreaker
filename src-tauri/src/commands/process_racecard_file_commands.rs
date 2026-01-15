@@ -206,7 +206,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
             trainer_jockey_combo_wins: line[SF_TRAINER_JOCKEY_COMBO_WINS].parse::<u32>().ok(),
             trainer_jockey_combo_places: line[SF_TRAINER_JOCKEY_COMBO_PLACES].parse::<u32>().ok(),
             trainer_jockey_combo_shows: line[SF_TRAINER_JOCKEY_COMBO_SHOWS].parse::<u32>().ok(),
-            trainer_two_dollar_roi: line[SF_TRAINER_TWO_DOLLAR_ROI].parse::<u32>().ok(),
+            trainer_jockey_combo_roi: line[SF_TRAINER_JOCKEY_COMBO_ROI].parse::<f64>().ok(),
             days_since_last_race: line[SF_DAYS_SINCE_LAST_RACE].parse::<u32>().ok(),
             lifetime_all_weather_starts: line[SF_LIFETIME_ALL_WEATHER_STARTS].parse::<u32>().ok(),
             lifetime_all_weather_wins: line[SF_LIFETIME_ALL_WEATHER_WINS].parse::<u32>().ok(),

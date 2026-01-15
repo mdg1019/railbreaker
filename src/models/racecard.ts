@@ -258,7 +258,7 @@ export class Horse {
   trainer_jockey_combo_wins: number | null;
   trainer_jockey_combo_places: number | null;
   trainer_jockey_combo_shows: number | null;
-  trainer_two_dollar_roi: number | null;
+  trainer_jockey_combo_roi: number | null;
   days_since_last_race: number | null;
   lifetime_all_weather_starts: number | null;
   lifetime_all_weather_wins: number | null;
@@ -404,7 +404,7 @@ export class Horse {
     this.trainer_jockey_combo_wins = data.trainer_jockey_combo_wins ?? null;
     this.trainer_jockey_combo_places = data.trainer_jockey_combo_places ?? null;
     this.trainer_jockey_combo_shows = data.trainer_jockey_combo_shows ?? null;
-    this.trainer_two_dollar_roi = data.trainer_two_dollar_roi ?? null;
+    this.trainer_jockey_combo_roi = data.trainer_two_dollar_roi ?? null;
     this.days_since_last_race = data.days_since_last_race ?? null;
     this.lifetime_all_weather_starts = data.lifetime_all_weather_starts ?? null;
     this.lifetime_all_weather_wins = data.lifetime_all_weather_wins ?? null;
@@ -561,7 +561,7 @@ export class Horse {
       trainer_jockey_combo_wins: this.trainer_jockey_combo_wins,
       trainer_jockey_combo_places: this.trainer_jockey_combo_places,
       trainer_jockey_combo_shows: this.trainer_jockey_combo_shows,
-      trainer_two_dollar_roi: this.trainer_two_dollar_roi,
+      trainer_two_dollar_roi: this.trainer_jockey_combo_roi,
       days_since_last_race: this.days_since_last_race,
       lifetime_all_weather_starts: this.lifetime_all_weather_starts,
       lifetime_all_weather_wins: this.lifetime_all_weather_wins,

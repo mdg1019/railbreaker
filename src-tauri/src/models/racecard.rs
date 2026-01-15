@@ -137,7 +137,7 @@ pub struct Horse {
     pub trainer_jockey_combo_wins: Option<u32>,
     pub trainer_jockey_combo_places: Option<u32>,
     pub trainer_jockey_combo_shows: Option<u32>,
-    pub trainer_two_dollar_roi: Option<u32>,
+    pub trainer_jockey_combo_roi: Option<f64>,
     pub days_since_last_race: Option<u32>,
     pub lifetime_all_weather_starts: Option<u32>,
     pub lifetime_all_weather_wins: Option<u32>,
