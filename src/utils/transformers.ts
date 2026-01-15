@@ -8,6 +8,15 @@ export class PositionLengthsBehind {
     ) {}
 }
 
+
+
+export class FractionalTime {
+    constructor(
+        public int: string, 
+        public fraction: string
+    ) {}
+}
+
 export default class Transformers {
     static TITLE_EXCEPTIONS = new Set([
         "and",
@@ -27,6 +36,7 @@ export default class Transformers {
         "vs",
         "v",
     ]);
+
     static MONTH_ABBREVIATIONS: string[] = [
         "Jan",
         "Feb",
@@ -41,6 +51,7 @@ export default class Transformers {
         "Nov",
         "Dec",
     ];
+
     static getRaceClassification(race: Race): [string, string] {
         if (!race) return ["", ""];
 
@@ -232,7 +243,6 @@ export default class Transformers {
     static capitalize(s: string): string {
         if (!s) return "";
         return s.toLowerCase().replace(/\w\S*/g, (txt, _offset, _str) => {
-            // Capitalize parts separated by '/' as well (e.g. "smith/jones" -> "Smith/Jones")
             return txt
                 .split("/")
                 .map((part) => {
@@ -269,7 +279,6 @@ export default class Transformers {
             .trim()
             .split(/\s+/)
             .map((word) => {
-                // support capitalization after '/' (e.g. Smith/Jones -> Smith/Jones)
                 return word
                     .split("/")
                     .map((part) => {
@@ -453,6 +462,7 @@ export default class Transformers {
             })
             .join(" ");
     }
+
     static getJockeyName(input: string): string {
         if (!input) return "";
 
@@ -535,12 +545,12 @@ export default class Transformers {
         return result;
     }
 
-    static getFractionalTimeString(time: number | null): [string, string] {
+    static getFractionalTimeString(time: number | null): FractionalTime {
         if (time === null || time === undefined) {
-            return ["", ""];
+            return new FractionalTime("", "");
         }
 
-        if (!Number.isFinite(time)) return ["", ""];
+        if (!Number.isFinite(time)) return new FractionalTime("", "");
 
         let totalSeconds = Math.abs(time);
 
@@ -559,7 +569,7 @@ export default class Transformers {
             main = `${minutes}:${String(seconds).padStart(2, "0")}`;
         }
 
-        return [main, fifths === 0 ? " " : String(fifths)];
+        return new FractionalTime(main, fifths === 0 ? " " : String(fifths));
     }
 
     static getE1E2AndLatePaceString(

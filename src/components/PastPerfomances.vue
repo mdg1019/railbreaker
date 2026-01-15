@@ -16,6 +16,7 @@ const fraction_3 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fracti
 const final_time = pps.map(pp => Transformers.getFractionalTimeString(pp?.final_time ?? null));
 const race_classification = pps.map(pp => Transformers.getPPRaceClassification(pp));
 const e1_e2_lp = pps.map(pp => Transformers.getE1E2AndLatePaceString(pp));
+
 const firstCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
     Transformers.parseNumberOrNull(pp.first_call_position),
     Transformers.parseNumberOrNull(pp.first_call_between_lengths)
@@ -117,11 +118,11 @@ function positionClass(position: string) {
                     pps[i].track_condition.toLowerCase() }}</span><span
                         v-if="pps[i].sealed_track_indicator" class="use-superscript">s</span>
                 </div>
-                <div class="left-padding">{{ fraction_1[i]?.[0] }}<span class="use-superscript">{{ fraction_1[i]?.[1]
+                <div class="left-padding">{{ fraction_1[i]?.int }}<span class="use-superscript">{{ fraction_1[i]?.fraction
                         }}</span></div>
-                <div>{{ fraction_2[i]?.[0] }}<span class="use-superscript">{{ fraction_2[i]?.[1] }}</span></div>
-                <div>{{ fraction_3[i]?.[0] }}<span class="use-superscript">{{ fraction_3[i]?.[1] }}</span></div>
-                <div>{{ final_time[i]?.[0] }}<span class="use-superscript">{{ final_time[i]?.[1] }}</span></div>
+                <div>{{ fraction_2[i]?.int }}<span class="use-superscript">{{ fraction_2[i]?.fraction }}</span></div>
+                <div>{{ fraction_3[i]?.int }}<span class="use-superscript">{{ fraction_3[i]?.fraction }}</span></div>
+                <div>{{ final_time[i]?.int }}<span class="use-superscript">{{ final_time[i]?.fraction }}</span></div>
                 <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{
                     race_classification[i]?.[1] }}</div>
                 <div class="align-right">{{ e1_e2_lp[i]?.[0] }}</div>

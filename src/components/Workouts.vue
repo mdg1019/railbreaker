@@ -6,31 +6,30 @@ const props = defineProps<{
     workouts: Workout[];
 }>();
 
-class WorkoutTime {
-    constructor(public time: string, public fraction: string) {}
-}
+const visibleWorkouts = props.workouts.filter(w => w.date !== null && w.date !== '');
 
 const bullets = props.workouts.map(w => w.rank === 1 ? "●" : "");
-const surface = props.workouts.map(w => w.main_inner_track_indicator === "MT" ? " " : w.main_inner_track_indicator === "TT" ? "tr.t" : "***" +w.main_inner_track_indicator);
+const surface = props.workouts.map(w => w.main_inner_track_indicator === "MT" ? " " : w.main_inner_track_indicator === "TT" ? "tr.t" : "***" + w.main_inner_track_indicator);
 
 const workoutTimes = props.workouts.map(w => {
     let time = Transformers.getFractionalTimeString(w.time);
-    return new WorkoutTime(time[0], time[1]);
+    return { time: time.int, fraction: time.fraction };
 });
 
 </script>
 
 <template>
-    <div v-if="props.workouts.length > 0" class="workouts">
-        <div v-for="(w, i) in props.workouts" :key="i" class="workout">
-            <div class="bullet color-accent-red">{{ bullets[i] }}</div>
+    <div v-if="visibleWorkouts.length > 0" class="workouts">
+        <div v-for="(w, i) in visibleWorkouts" :key="i" class="workout">
+            <div class="bullet color-accent-red align-right">{{ bullets[i] }}</div>
             <div>{{ Transformers.formatDateShort(w.date) }}</div>
             <div>{{ surface[i] }}</div>
             <div>{{ Transformers.getShortLength(w.distance) }}</div>
             <div>{{ w.condition }}</div>
             <div class="align-right">{{ workoutTimes[i].time }}</div>
             <div class="align-left use-superscript">{{ workoutTimes[i].fraction }}</div>
-            <div>8</div>
+            <div>{{ w.description }}</div>
+            <div class="align-right">{{ w.rank }}/{{ w.workouts_that_day_distance }}</div>
         </div>
     </div>
 </template>
@@ -44,13 +43,20 @@ const workoutTimes = props.workouts.map(w => {
     margin-top: 1rem;
 }
 
-.workout {    
+.workout {
     display: grid;
-    grid-template-columns: 2rem 5rem 2rem 2rem 2rem 2rem 2rem 4rem;
+    grid-template-columns: 2rem 5rem 2rem 2rem 2rem 2rem 2rem 1rem 5rem;
+}
+
+.workout:nth-child(odd) {
+    color: var(--accent-yellow);
+}
+
+.workout:nth-child(even) {
+    color: var(--accent-green);
 }
 
 .bullet {
     transform: translateY(-0.4rem);
 }
-
 </style>
