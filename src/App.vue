@@ -157,7 +157,7 @@ onMounted(async () => {
                     extensions: ["json"],
                 },
             ],
-            defaultPath: globalStateStore.globalState.racecards_directory
+            defaultPath: globalStateStore.globalState.racecardsDirectory
         });
 
         if (file) {

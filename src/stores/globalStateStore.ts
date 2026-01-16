@@ -24,13 +24,13 @@ export const useGlobalStateStore = defineStore('globalState', {
       return this.globalState.tracks;
     },
     getCurrentDirectory(): string {
-      return this.globalState.current_directory;
+      return this.globalState.currentDirectory;
     },
     getDownloadsDirectory(): string {
-      return this.globalState.downloads_directory;
+      return this.globalState.downloadsDirectory;
     },
     getRacecardsDirectory(): string {
-      return this.globalState.racecards_directory;
+      return this.globalState.racecardsDirectory;
     }
   }
 });

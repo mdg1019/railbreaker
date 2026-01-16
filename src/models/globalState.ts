@@ -1,39 +1,59 @@
 export class GlobalState {
   tracks: Map<string, string>;
-  current_directory: string;
-  downloads_directory: string;
-  racecards_directory: string;
+  currentDirectory: string;
+  downloadsDirectory: string;
+  racecardsDirectory: string;
 
   constructor(
     tracks: Map<string, string> = new Map<string, string>(),
-    current_directory: string = "",
-    downloads_directory: string = "",
-    racecards_directory: string = ""
+    currentDirectory: string = "",
+    downloadsDirectory: string = "",
+    racecardsDirectory: string = ""
   ) {
     this.tracks = tracks;
-    this.current_directory = current_directory;
-    this.downloads_directory = downloads_directory;
-    this.racecards_directory = racecards_directory;
+    this.currentDirectory = currentDirectory;
+    this.downloadsDirectory = downloadsDirectory;
+    this.racecardsDirectory = racecardsDirectory;
   }
 
   static fromObject(obj: any): GlobalState {
-    const tracks = obj.tracks 
-      ? new Map<string, string>(Object.entries(obj.tracks))
+    const data = toCamelCaseKeys(obj ?? {});
+    const tracks = data.tracks
+      ? new Map<string, string>(Object.entries(data.tracks))
       : new Map<string, string>();
     return new GlobalState(
       tracks,
-      obj.current_directory || "",
-      obj.downloads_directory || "",
-      obj.racecards_directory || ""
+      data.currentDirectory || "",
+      data.downloadsDirectory || "",
+      data.racecardsDirectory || ""
     );
   }
 
   toObject(): any {
     return {
       tracks: Object.fromEntries(this.tracks),
-      current_directory: this.current_directory,
-      downloads_directory: this.downloads_directory,
-      racecards_directory: this.racecards_directory,
+      currentDirectory: this.currentDirectory,
+      downloadsDirectory: this.downloadsDirectory,
+      racecardsDirectory: this.racecardsDirectory,
     };
   }
 }
+
+const toCamelCaseKey = (key: string): string =>
+  key.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase());
+
+const toCamelCaseKeys = (value: any): any => {
+  if (Array.isArray(value)) {
+    return value.map(toCamelCaseKeys);
+  }
+
+  if (value && typeof value === 'object' && value.constructor === Object) {
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(value)) {
+      result[toCamelCaseKey(key)] = toCamelCaseKeys(val);
+    }
+    return result;
+  }
+
+  return value;
+};
