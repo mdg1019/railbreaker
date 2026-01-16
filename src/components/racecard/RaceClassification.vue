@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Race } from '../models/racecard'
-import Transformers from '../utils/transformers'
+import type { Race } from '../../models/racecard'
+import Transformers from '../../utils/transformers'
 
 const props = withDefaults(defineProps<{ race: Race | null; prefixColor?: string }>(), {
     prefixColor: 'var(--accent-yellow)'

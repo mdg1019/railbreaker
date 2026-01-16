@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Horse } from "../models/racecard";
-import Transformers from '../utils/transformers';
+import type { Horse } from "../../../models/racecard";
+import Transformers from '../../../utils/transformers';
 
 const props = defineProps<{
     horse: Horse;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Horse } from "../models/racecard";
+import type { Horse } from "../../../models/racecard";
 import HorseRecord from "./HorseRecord.vue";
 
 const props = defineProps<{

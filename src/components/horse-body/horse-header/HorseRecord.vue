@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Transformers from '../utils/transformers';
+import Transformers from '../../../utils/transformers';
 
 const props = defineProps<{
     label: string,
@@ -48,16 +48,6 @@ const cols = props.firstColumn ?
 <style lang="scss" scoped>
 .container {
     display: grid;
-    // grid-template-columns:
-    //     minmax(6rem, min-content) 
-    //     minmax(2rem, min-content) 
-    //     minmax(2rem, min-content) 
-    //     minmax(1rem, min-content) 
-    //     minmax(1rem, min-content) 
-    //     minmax(1rem, min-content) 
-    //     minmax(1rem, min-content) 
-    //     minmax(10rem, min-content) 
-    //     minmax(4rem, min-content);
     grid-template-rows: auto;
     gap: 0;
 }

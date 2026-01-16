@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Workout } from "../models/racecard";
-import Transformers from "../utils/transformers";
+import type { Workout } from "../../models/racecard";
+import Transformers from "../../utils/transformers";
 
 const props = defineProps<{
     workouts: Workout[];

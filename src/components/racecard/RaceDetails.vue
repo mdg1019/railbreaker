@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Racecard } from "../models/racecard";
-import Panel from "./Panel.vue";
-import Transformers from "../utils/transformers";
+import type { Racecard } from "../../models/racecard";
+import Panel from "../ui/Panel.vue";
+import Transformers from "../../utils/transformers";
 import RaceClassification from "./RaceClassification.vue";
 
 const props = defineProps<{ racecard: Racecard; race: number }>();

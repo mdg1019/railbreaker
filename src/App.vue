@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, onUnmounted, ref, nextTick, watch } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
@@ -8,13 +7,13 @@ import { useGlobalStateStore } from "./stores/globalStateStore";
 import { useConfigFileStore } from "./stores/configFileStore";
 import { Racecard } from "./models/racecard";
 import { Racecards } from "./models/racecards";
-import RacecardHeader from "./components/RacecardHeader.vue";
-import RaceDetails from "./components/RaceDetails.vue";
-import EqualizerLoader from "./components/EqualizerLoader.vue";
-import MessageDialog from "./components/MessageDialog.vue";
-import RacecardSideMenu from "./components/RacecardSideMenu.vue";
+import RacecardHeader from "./components/racecard/RacecardHeader.vue";
+import RaceDetails from "./components/racecard/RaceDetails.vue";
+import EqualizerLoader from "./components/ui/EqualizerLoader.vue";
+import MessageDialog from "./components/ui/MessageDialog.vue";
+import RacecardSideMenu from "./components/racecard/RacecardSideMenu.vue";
+import Horse from "./components/racecard/Horse.vue";
 import "./scss/_main.scss";
-import Horse from "./components/Horse.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();

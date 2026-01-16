@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { Racecards } from '../models/racecards'
+import type { Racecards } from '../../models/racecards'
 import RaceClassification from './RaceClassification.vue';
 
 const props = defineProps<{

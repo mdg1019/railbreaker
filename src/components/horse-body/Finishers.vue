@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { PastPerformance } from '../models/racecard';
-import Transformers from '../utils/transformers';
+import { PastPerformance } from '../../models/racecard';
+import Transformers from '../../utils/transformers';
 
 const props = defineProps<{ pp: PastPerformance }>();
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type Horse } from "../models/racecard";
-import Transformers from '../utils/transformers';
+import { type Horse } from "../../models/racecard";
+import Transformers from "../../utils/transformers";
 import Finishers from './Finishers.vue';
-import Tooltip from './Tooltip.vue';
+import Tooltip from '../ui/Tooltip.vue';
 
 const props = defineProps<{
     horse: Horse;

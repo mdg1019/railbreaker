@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { Horse } from "../models/racecard";
-import Panel from "./Panel.vue";
-import HorseHeaderLeft from "./HorseHeaderLeft.vue";
-import HorseHeaderRight from "./HorseHeaderRight.vue";
-import HorseHeaderCenter from "./HorseHeaderCenter.vue";
-import PastPerfomances from "./PastPerfomances.vue";
-import Workout from "./Workout.vue";
-import Workouts from "./Workouts.vue";
-
+import type { Horse } from "../../models/racecard";
+import Panel from "../ui/Panel.vue";
+import HorseHeaderLeft from "../horse-body/horse-header/HorseHeaderLeft.vue";
+import HorseHeaderRight from "../horse-body/horse-header/HorseHeaderRight.vue";
+import HorseHeaderCenter from "../horse-body/horse-header/HorseHeaderCenter.vue";
+import PastPerfomances from "../horse-body/PastPerfomances.vue";
+import Workouts from "../horse-body/Workouts.vue";
 const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]> }>();
 </script>
 
