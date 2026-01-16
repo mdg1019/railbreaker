@@ -11,70 +11,70 @@ const props = defineProps<{
 <template>
     <div class="container">
         <div class="left">
-            <div class="color-accent-yellow">{{ Transformers.capitalizeWords(props.horse.horses_color) }}.
+            <div class="color-accent-yellow">{{ Transformers.capitalizeWords(props.horse.horsesColor) }}.
                 {{ props.horse.sex.toLowerCase() }}.
-                {{ Transformers.createAgeString(props.horse.horses_foaling_month, props.horse.year_of_birth) }}
+                {{ Transformers.createAgeString(props.horse.horsesFoalingMonth, props.horse.yearOfBirth) }}
             </div>
             <div>
                 <span class="color-accent-green">Sire: </span>
                 <span class="color-accent-yellow">{{
                     Transformers.capitalizeWords(props.horse.sire) }}</span>
-                <span class="color-accent-yellow"> ({{ Transformers.capitalizeWords(props.horse.sires_sire) }})</span>
+                <span class="color-accent-yellow"> ({{ Transformers.capitalizeWords(props.horse.siresSire) }})</span>
             </div>
             <div>
                 <span class="color-accent-green">Brdr: </span>
                 <span class="color-accent-yellow">{{
                     Transformers.capitalizeWords(props.horse.breeder) }}</span>
-                <span class="color-accent-yellow"> ({{ props.horse.state_country_where_bred }})</span>
+                <span class="color-accent-yellow"> ({{ props.horse.stateCountryWhereBred }})</span>
             </div>
 
             <div class="trainer-info">
                 <span class="color-accent-green">Trnr: </span>
                 <span class="trainer color-accent-yellow">{{
-                    Transformers.capitalizeWords(props.horse.todays_trainer) }}</span>
+                    Transformers.capitalizeWords(props.horse.todaysTrainer) }}</span>
                 <span class="trainer-meet color-accent-yellow">
-                    ({{ props.horse.trainer_starts }} {{ props.horse.trainer_wins }}-{{ props.horse.trainer_places
-                    }}-{{ props.horse.trainer_shows }} {{
-                        Transformers.createPercentageString(props.horse.trainer_wins, props.horse.trainer_starts) }})
+                    ({{ props.horse.trainerStarts }} {{ props.horse.trainerWins }}-{{ props.horse.trainerPlaces
+                    }}-{{ props.horse.trainerShows }} {{
+                        Transformers.createPercentageString(props.horse.trainerWins, props.horse.trainerStarts) }})
                 </span>
                 <span class="trainer-previous-year color-accent-yellow">
-                    {{ props.horse.current_year_record_year }}:
-                    ({{ props.horse.trainer_wins_previous_year }}/{{ props.horse.trainer_starts_previous_year }}
-                    {{ Transformers.createPercentageString(props.horse.trainer_wins_previous_year,
-                        props.horse.trainer_starts_previous_year) }})
+                    {{ props.horse.currentYearRecordYear }}:
+                    ({{ props.horse.trainerWinsPreviousYear }}/{{ props.horse.trainerStartsPreviousYear }}
+                    {{ Transformers.createPercentageString(props.horse.trainerWinsPreviousYear,
+                        props.horse.trainerStartsPreviousYear) }})
                 </span>
             </div>
         </div>
         <div class="right">
             <div>
-                <span v-if="props.horse.bris_prime_power_rating !== null" class="prime-power color-accent-green">Prime
+                <span v-if="props.horse.brisPrimePowerRating !== null" class="prime-power color-accent-green">Prime
                     Power:
                     <span
-                        :style="{ color: props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)?.[2] ?? 'inherit' }">{{
-                            Transformers.formatOneDecimal(props.horse.bris_prime_power_rating) }}
-                        <span v-if="props.primePowerComparisons.find(entry => entry[0] === props.horse.post_position)">
+                        :style="{ color: props.primePowerComparisons.find(entry => entry[0] === props.horse.postPosition)?.[2] ?? 'inherit' }">{{
+                            Transformers.formatOneDecimal(props.horse.brisPrimePowerRating) }}
+                        <span v-if="props.primePowerComparisons.find(entry => entry[0] === props.horse.postPosition)">
                             <span>
                                 {{props.primePowerComparisons.find(entry => entry[0] ===
-                                    props.horse.post_position)?.[1] ?? ''}}
+                                    props.horse.postPosition)?.[1] ?? ''}}
                             </span>
                         </span>
                     </span>
                 </span>
             </div>
             <div class="blinkers color-accent-yellow">
-                <span v-show="props.horse.equipment_change === 1">Blinkers on</span>
-                <span v-show="props.horse.equipment_change === 2">Blinkers off</span>
+                <span v-show="props.horse.equipmentChange === 1">Blinkers on</span>
+                <span v-show="props.horse.equipmentChange === 2">Blinkers off</span>
             </div>
             <div>
                 <span>
-                    <span v-if="props.horse.todays_medication_new === 1
-                        || props.horse.todays_medication_new === 3
-                        || props.horse.todays_medication_new === 4
-                        || props.horse.todays_medication_new === 5"
-                        :style="{ color: props.horse.todays_medication_new === 4 || props.horse.todays_medication_new === 5 ? 'var(--accent-red)' : 'var(--accent-green)' }">L</span>
-                    <span v-if="props.horse.todays_medication_new === 2
-                        || props.horse.todays_medication_new === 3
-                        || props.horse.todays_medication_new === 5" class="color-accent-green">B</span>
+                    <span v-if="props.horse.todaysMedicationNew === 1
+                        || props.horse.todaysMedicationNew === 3
+                        || props.horse.todaysMedicationNew === 4
+                        || props.horse.todaysMedicationNew === 5"
+                        :style="{ color: props.horse.todaysMedicationNew === 4 || props.horse.todaysMedicationNew === 5 ? 'var(--accent-red)' : 'var(--accent-green)' }">L</span>
+                    <span v-if="props.horse.todaysMedicationNew === 2
+                        || props.horse.todaysMedicationNew === 3
+                        || props.horse.todaysMedicationNew === 5" class="color-accent-green">B</span>
                 </span>
                 <span class="color-accent-yellow">{{ props.horse.weight }}</span>
             </div>

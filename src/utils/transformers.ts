@@ -55,19 +55,19 @@ export default class Transformers {
     static getRaceClassification(race: Race): [string, string] {
         if (!race) return ["", ""];
 
-        let raceClassification = race.todays_race_classification;
+        let raceClassification = race.todaysRaceClassification;
 
-        if (race.race_type == "M" && raceClassification.startsWith("Md ")) {
+        if (race.raceType == "M" && raceClassification.startsWith("Md ")) {
             raceClassification = "MC " + raceClassification.slice(3);
         }
 
         let prefix = "";
 
-        if (race.age_sex_restrictions[2].toLowerCase() == "f") {
+        if (race.ageSexRestrictions[2].toLowerCase() == "f") {
             prefix += "\u00EA";
         }
 
-        if (race.statebred_flag.toLowerCase() == "s") {
+        if (race.statebredFlag.toLowerCase() == "s") {
             prefix += "\u00EB";
         }
 
@@ -76,7 +76,7 @@ export default class Transformers {
 
     static getPPRaceClassification(pp: PastPerformance): [string, string] {
         let prefix = "";
-        let classification = pp.race_classication;
+        let classification = pp.raceClassication;
 
         let lowercasePrefixes = classification.match(/^([a-z]+)/);
         classification = classification.slice(
@@ -109,7 +109,7 @@ export default class Transformers {
 
         let claimed = false;
 
-        if (pp.claiming_price && pp.claiming_price > 0) {
+        if (pp.claimingPrice && pp.claimingPrice > 0) {
             if (classification.endsWith("c")) {
                 classification = classification.slice(0, -1);
                 claimed = true;
@@ -124,7 +124,7 @@ export default class Transformers {
             classification += "-c";
         }
 
-        if (pp.high_claiming_price_of_race && !pp.claiming_price) {
+        if (pp.highClaimingPriceOfRace && !pp.claimingPrice) {
             classification += "-N";
         }
 
@@ -314,12 +314,12 @@ export default class Transformers {
 
     static buildRaceConditions(race: Race): string {
         let result =
-            race.race_conditions_line1 +
-            race.race_conditions_line2 +
-            race.race_conditions_line3 +
-            race.race_conditions_line4 +
-            race.race_conditions_line5 +
-            race.race_conditions_line6;
+            race.raceConditionsLine1 +
+            race.raceConditionsLine2 +
+            race.raceConditionsLine3 +
+            race.raceConditionsLine4 +
+            race.raceConditionsLine5 +
+            race.raceConditionsLine6;
 
         result = this.commas(result).trim();
         let pursePosition = result.toLowerCase().indexOf("purse");
@@ -525,11 +525,11 @@ export default class Transformers {
     static getSurfaceString(pp: PastPerformance): string {
         let result = "";
 
-        if (pp.code_for_prior_races.toLowerCase() === "x") {
+        if (pp.codeForPriorRaces.toLowerCase() === "x") {
             return "\u00f2";
         }
 
-        if (pp.previous_all_weather_surface_indicator === "A") {
+        if (pp.previousAllWeatherSurfaceIndicator === "A") {
             return "\u00f1";
         }
 
@@ -586,19 +586,19 @@ export default class Transformers {
         if (distance < 0) distance = -distance;
 
         if (distance < 1760) {
-            if (!pp.bris_4f_pace) {
+            if (!pp.bris4fPace) {
                 e1 = "";
-                e2 = pp.bris_2f_pace ? String(pp.bris_2f_pace) : "";
+                e2 = pp.bris2fPace ? String(pp.bris2fPace) : "";
             } else {
-                e1 = pp.bris_2f_pace ? String(pp.bris_2f_pace) : "";
-                e2 = pp.bris_4f_pace ? String(pp.bris_4f_pace) : "";
+                e1 = pp.bris2fPace ? String(pp.bris2fPace) : "";
+                e2 = pp.bris4fPace ? String(pp.bris4fPace) : "";
             }
         } else {
-            e1 = pp.bris_4f_pace ? String(pp.bris_4f_pace) : "";
-            e2 = pp.bris_6f_pace ? String(pp.bris_6f_pace) : "";
+            e1 = pp.bris4fPace ? String(pp.bris4fPace) : "";
+            e2 = pp.bris6fPace ? String(pp.bris6fPace) : "";
         }
 
-        latePace = pp.bris_late_pace ? String(pp.bris_late_pace) : "";
+        latePace = pp.brisLatePace ? String(pp.brisLatePace) : "";
 
         console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
 

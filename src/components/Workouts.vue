@@ -9,7 +9,7 @@ const props = defineProps<{
 const visibleWorkouts = props.workouts.filter(w => w.date !== null && w.date !== '');
 
 const bullets = props.workouts.map(w => w.rank === 1 ? "●" : "");
-const surface = props.workouts.map(w => w.main_inner_track_indicator === "MT" ? " " : w.main_inner_track_indicator === "TT" ? "tr.t" : "***" + w.main_inner_track_indicator);
+const surface = props.workouts.map(w => w.mainInnerTrackIndicator === "MT" ? " " : w.mainInnerTrackIndicator === "TT" ? "tr.t" : "***" + w.mainInnerTrackIndicator);
 
 const workoutTimes = props.workouts.map(w => {
     let time = Transformers.getFractionalTimeString(w.time);
@@ -29,7 +29,7 @@ const workoutTimes = props.workouts.map(w => {
             <div class="align-right">{{ workoutTimes[i].time }}</div>
             <div class="align-left use-superscript">{{ workoutTimes[i].fraction }}</div>
             <div>{{ w.description }}</div>
-            <div class="align-right">{{ w.rank }}/{{ w.workouts_that_day_distance }}</div>
+            <div class="align-right">{{ w.rank }}/{{ w.workoutsThatDayDistance }}</div>
         </div>
     </div>
 </template>

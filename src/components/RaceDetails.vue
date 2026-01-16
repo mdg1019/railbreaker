@@ -19,43 +19,43 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
             </div>
             <div class="race-details-center">
                 <div class="wager-list">
-                    <div v-if="currentRace.wager_type_line1 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line1) }}</div>
-                    <div v-if="currentRace.wager_type_line2 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line2) }}</div>
-                    <div v-if="currentRace.wager_type_line3 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line3) }}</div>
-                    <div v-if="currentRace.wager_type_line4 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line4) }}</div>
-                    <div v-if="currentRace.wager_type_line5 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line5) }}</div>
-                    <div v-if="currentRace.wager_type_line6 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line6) }}</div>
-                    <div v-if="currentRace.wager_type_line7 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line7) }}</div>
-                    <div v-if="currentRace.wager_type_line8 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line8) }}</div>
-                    <div v-if="currentRace.wager_type_line9 !== ''">{{
-                        Transformers.capitalize(currentRace.wager_type_line9) }}</div>
+                    <div v-if="currentRace.wagerTypeLine1 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine1) }}</div>
+                    <div v-if="currentRace.wagerTypeLine2 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine2) }}</div>
+                    <div v-if="currentRace.wagerTypeLine3 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine3) }}</div>
+                    <div v-if="currentRace.wagerTypeLine4 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine4) }}</div>
+                    <div v-if="currentRace.wagerTypeLine5 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine5) }}</div>
+                    <div v-if="currentRace.wagerTypeLine6 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine6) }}</div>
+                    <div v-if="currentRace.wagerTypeLine7 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine7) }}</div>
+                    <div v-if="currentRace.wagerTypeLine8 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine8) }}</div>
+                    <div v-if="currentRace.wagerTypeLine9 !== ''">{{
+                        Transformers.capitalize(currentRace.wagerTypeLine9) }}</div>
                 </div>
                 <div class="race-conditions">
-                    <div v-if="currentRace.race_conditions_line1 !== ''">
+                    <div v-if="currentRace.raceConditionsLine1 !== ''">
                         <span class="distance">{{ Transformers.getDistanceLength(currentRace?.distance ?? 0) + ". " }}</span>
                         <span class="race-classification"><RaceClassification :race="currentRace" /></span>
                         {{ Transformers.buildRaceConditions(currentRace) }}
                     </div>
-                    <div v-else>{{ Transformers.commas(currentRace.race_conditions) }}</div>
+                    <div v-else>{{ Transformers.commas(currentRace.raceConditions) }}</div>
                 </div>
-                <div class="post-times">Post Times: {{ currentRace.post_times }}</div>
+                <div class="post-times">Post Times: {{ currentRace.postTimes }}</div>
             </div>
             <div class="race-details-right">
                 <div class="right-c2-r1">E1</div>
                 <div class="right-c3-r1">E2/Late</div>
                 <div class="right-c4-r1">Speed</div>
                 <div class="right-c1-r2">Pars:</div> 
-                <div class="right-c2-r2">{{ currentRace.two_f_bris_pace_par ?? '-' }}</div>  
-                <div class="right-c3-r2">{{ (currentRace.six_f_bris_pace_par ?? currentRace.four_f_bris_pace_par ?? '-') + '/' + (currentRace.bris_late_pace_par ?? '-') }}</div>
-                <div class="right-c4-r2">{{ currentRace.bris_speed_for_class ?? '-' }}</div>
+                <div class="right-c2-r2">{{ currentRace.twoFBrisPacePar ?? '-' }}</div>  
+                <div class="right-c3-r2">{{ (currentRace.sixFBrisPacePar ?? currentRace.fourFBrisPacePar ?? '-') + '/' + (currentRace.brisLatePacePar ?? '-') }}</div>
+                <div class="right-c4-r2">{{ currentRace.brisSpeedForClass ?? '-' }}</div>
             </div>
         </div>
     </Panel>

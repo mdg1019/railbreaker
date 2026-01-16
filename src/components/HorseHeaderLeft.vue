@@ -11,42 +11,42 @@ const props = defineProps<{
             <div class="container">
                 <div class="top">
                     <div class="col1">
-                        <div class="program-number color-accent-yellow">{{ props.horse.post_position }}</div>
+                        <div class="program-number color-accent-yellow">{{ props.horse.postPosition }}</div>
                         <div class="odds color-accent-yellow">{{
-                            Transformers.createOddsString(props.horse.morning_line_odds) }}</div>
+                            Transformers.createOddsString(props.horse.morningLineOdds) }}</div>
                     </div>
                     <div class="col2">
                         <div class="name-claiming color-accent-yellow">
                             <div class="horse-name color-accent-green">{{
-                                Transformers.capitalize(props.horse.horse_name) }}
-                                <span class="color-accent-yellow">({{ props.horse.bris_run_style }} {{
-                                    props.horse.quirin_speed_points }})</span>
+                                Transformers.capitalize(props.horse.horseName) }}
+                                <span class="color-accent-yellow">({{ props.horse.brisRunStyle }} {{
+                                    props.horse.quirinSpeedPoints }})</span>
                             </div>
-                            <div v-if="props.horse.claiming_price_of_horse"
+                            <div v-if="props.horse.claimingPriceOfHorse"
                                 class="claiming-price color-accent-yellow">{{
-                                    Transformers.createDollarString(props.horse.claiming_price_of_horse) }}</div>
+                                    Transformers.createDollarString(props.horse.claimingPriceOfHorse) }}</div>
                         </div>
                         <div class="owner color-accent-green">Own:
                             <span class="color-accent-yellow">{{
-                                Transformers.capitalizeFullName(props.horse.todays_owner) }}</span>
+                                Transformers.capitalizeFullName(props.horse.todaysOwner) }}</span>
                         </div>
-                        <div class="owners_silks color-accent-green">{{ props.horse.owners_silks }}</div>
+                        <div class="ownersSilks color-accent-green">{{ props.horse.ownersSilks }}</div>
                     </div>
                 </div>
 
                 <div class="jockey-info">
                     <span class="jockey color-accent-yellow">{{
-                        Transformers.capitalizeWords(props.horse.todays_jockey) }}</span>
+                        Transformers.capitalizeWords(props.horse.todaysJockey) }}</span>
                     <span class="jockey-meet color-accent-yellow">
-                        ({{ props.horse.jockey_starts }} {{ props.horse.jockey_wins }}-{{ props.horse.jockey_places
-                        }}-{{ props.horse.jockey_shows }} {{
-                            Transformers.createPercentageString(props.horse.jockey_wins, props.horse.jockey_starts) }})
+                        ({{ props.horse.jockeyStarts }} {{ props.horse.jockeyWins }}-{{ props.horse.jockeyPlaces
+                        }}-{{ props.horse.jockeyShows }} {{
+                            Transformers.createPercentageString(props.horse.jockeyWins, props.horse.jockeyStarts) }})
                     </span>
                     <span class="jock-previous-year color-accent-yellow">
-                        {{ props.horse.current_year_record_year }}:
-                        ({{ props.horse.jockey_wins_previous_year }}/{{ props.horse.jockey_starts_previous_year }}
-                        {{ Transformers.createPercentageString(props.horse.jockey_wins_previous_year,
-                            props.horse.jockey_starts_previous_year) }})
+                        {{ props.horse.currentYearRecordYear }}:
+                        ({{ props.horse.jockeyWinsPreviousYear }}/{{ props.horse.jockeyStartsPreviousYear }}
+                        {{ Transformers.createPercentageString(props.horse.jockeyWinsPreviousYear,
+                            props.horse.jockeyStartsPreviousYear) }})
                     </span>
                 </div>
             </div> 
@@ -108,7 +108,7 @@ const props = defineProps<{
         font-size: 1.4rem;
     }
 
-    .owners_silks {
+    .ownersSilks {
         font-size: 1.2rem;
     }
 

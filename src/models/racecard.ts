@@ -1,22 +1,43 @@
+const toCamelCaseKey = (key: string): string =>
+  key.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase());
+
+const toCamelCaseKeys = (value: any): any => {
+  if (Array.isArray(value)) {
+    return value.map(toCamelCaseKeys);
+  }
+
+  if (value && typeof value === 'object' && value.constructor === Object) {
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(value)) {
+      result[toCamelCaseKey(key)] = toCamelCaseKeys(val);
+    }
+    return result;
+  }
+
+  return value;
+};
+
 export class Racecard {
   track: string;
   date: string;
-  long_date: string;
+  longDate: string;
   races: Race[];
 
   constructor(data: any = {}) {
+    data = toCamelCaseKeys(data);
     this.track = data.track ?? '';
     this.date = data.date ?? '';
-    this.long_date = data.long_date ?? '';
+    this.longDate = data.longDate ?? '';
     this.races = data.races ?? [];
   }
 
   static fromObject(obj: any): Racecard {
+    const data = toCamelCaseKeys(obj);
     return new Racecard({
-      track: obj.track,
-      date: obj.date,
-      long_date: obj.long_date,
-      races: obj.races?.map((r: any) => Race.fromObject(r)) ?? []
+      track: data.track,
+      date: data.date,
+      longDate: data.longDate,
+      races: data.races?.map((r: any) => Race.fromObject(r)) ?? []
     });
   }
 
@@ -24,607 +45,611 @@ export class Racecard {
     return {
       track: this.track,
       date: this.date,
-      long_date: this.long_date,
+      longDate: this.longDate,
       races: this.races.map(r => r.toObject())
     };
   }
 }
 
 export class Race {
-  race_number: number | null;
+  raceNumber: number | null;
   distance: number | null;
   surface: string;
-  race_type: string;
-  age_sex_restrictions: string;
-  todays_race_classification: string;
+  raceType: string;
+  ageSexRestrictions: string;
+  todaysRaceClassification: string;
   purse: number | null;
-  claiming_price: number | null;
-  track_record: number | null;
-  race_conditions: string;
-  todays_lasix_list: string;
-  todays_bute_list: string;
-  todays_coupled_list: string;
-  todays_mutuel_list: string;
-  simulcast_host_track_code: string;
-  simulcast_host_track_race_number: number | null;
-  all_weather_surface_flag: string;
-  race_conditions_line1: string;
-  race_conditions_line2: string;
-  race_conditions_line3: string;
-  race_conditions_line4: string;
-  race_conditions_line5: string;
-  race_conditions_line6: string;
-  low_claiming_price: number | null;
-  statebred_flag: string;
-  wager_type_line1: string;
-  wager_type_line2: string;
-  wager_type_line3: string;
-  wager_type_line4: string;
-  wager_type_line5: string;
-  wager_type_line6: string;
-  wager_type_line7: string;
-  wager_type_line8: string;
-  wager_type_line9: string;
-  two_f_bris_pace_par: number | null;
-  four_f_bris_pace_par: number | null;
-  six_f_bris_pace_par: number | null;
-  bris_speed_for_class: number | null;
-  post_times: string;
-  post_time_pacific_military: string;
-  bris_late_pace_par: number | null;
-  todays_equibase_abbreviated_race_conditions: string;
+  claimingPrice: number | null;
+  trackRecord: number | null;
+  raceConditions: string;
+  todaysLasixList: string;
+  todaysButeList: string;
+  todaysCoupledList: string;
+  todaysMutuelList: string;
+  simulcastHostTrackCode: string;
+  simulcastHostTrackRaceNumber: number | null;
+  allWeatherSurfaceFlag: string;
+  raceConditionsLine1: string;
+  raceConditionsLine2: string;
+  raceConditionsLine3: string;
+  raceConditionsLine4: string;
+  raceConditionsLine5: string;
+  raceConditionsLine6: string;
+  lowClaimingPrice: number | null;
+  statebredFlag: string;
+  wagerTypeLine1: string;
+  wagerTypeLine2: string;
+  wagerTypeLine3: string;
+  wagerTypeLine4: string;
+  wagerTypeLine5: string;
+  wagerTypeLine6: string;
+  wagerTypeLine7: string;
+  wagerTypeLine8: string;
+  wagerTypeLine9: string;
+  twoFBrisPacePar: number | null;
+  fourFBrisPacePar: number | null;
+  sixFBrisPacePar: number | null;
+  brisSpeedForClass: number | null;
+  postTimes: string;
+  postTimePacificMilitary: string;
+  brisLatePacePar: number | null;
+  todaysEquibaseAbbreviatedRaceConditions: string;
   horses: Horse[];
 
   constructor(data: any = {}) {
-    this.race_number = data.race_number ?? null;
+    data = toCamelCaseKeys(data);
+    this.raceNumber = data.raceNumber ?? null;
     this.distance = data.distance ?? null;
     this.surface = data.surface ?? '';
-    this.race_type = data.race_type ?? '';
-    this.age_sex_restrictions = data.age_sex_restrictions ?? '';
-    this.todays_race_classification = data.todays_race_classification ?? '';
+    this.raceType = data.raceType ?? '';
+    this.ageSexRestrictions = data.ageSexRestrictions ?? '';
+    this.todaysRaceClassification = data.todaysRaceClassification ?? '';
     this.purse = data.purse ?? null;
-    this.claiming_price = data.claiming_price ?? null;
-    this.track_record = data.track_record ?? null;
-    this.race_conditions = data.race_conditions ?? '';
-    this.todays_lasix_list = data.todays_lasix_list ?? '';
-    this.todays_bute_list = data.todays_bute_list ?? '';
-    this.todays_coupled_list = data.todays_coupled_list ?? '';
-    this.todays_mutuel_list = data.todays_mutuel_list ?? '';
-    this.simulcast_host_track_code = data.simulcast_host_track_code ?? '';
-    this.simulcast_host_track_race_number = data.simulcast_host_track_race_number ?? null;
-    this.all_weather_surface_flag = data.all_weather_surface_flag ?? '';
-    this.race_conditions_line1 = data.race_conditions_line1 ?? '';
-    this.race_conditions_line2 = data.race_conditions_line2 ?? '';
-    this.race_conditions_line3 = data.race_conditions_line3 ?? '';
-    this.race_conditions_line4 = data.race_conditions_line4 ?? '';
-    this.race_conditions_line5 = data.race_conditions_line5 ?? '';
-    this.race_conditions_line6 = data.race_conditions_line6 ?? '';
-    this.low_claiming_price = data.low_claiming_price ?? null;
-    this.statebred_flag = data.statebred_flag ?? '';
-    this.wager_type_line1 = data.wager_type_line1 ?? '';
-    this.wager_type_line2 = data.wager_type_line2 ?? '';
-    this.wager_type_line3 = data.wager_type_line3 ?? '';
-    this.wager_type_line4 = data.wager_type_line4 ?? '';
-    this.wager_type_line5 = data.wager_type_line5 ?? '';
-    this.wager_type_line6 = data.wager_type_line6 ?? '';
-    this.wager_type_line7 = data.wager_type_line7 ?? '';
-    this.wager_type_line8 = data.wager_type_line8 ?? '';
-    this.wager_type_line9 = data.wager_type_line9 ?? '';
-    this.two_f_bris_pace_par = data.two_f_bris_pace_par ?? null;
-    this.four_f_bris_pace_par = data.four_f_bris_pace_par ?? null;
-    this.six_f_bris_pace_par = data.six_f_bris_pace_par ?? null;
-    this.bris_speed_for_class = data.bris_speed_for_class ?? null;
-    this.bris_late_pace_par = data.bris_late_pace_par ?? null;
-    this.post_times = data.post_times ?? '';
-    this.post_time_pacific_military = data.post_time_pacific_military ?? '';
-    this.todays_equibase_abbreviated_race_conditions = data.todays_equibase_abbreviated_race_conditions ?? '';
+    this.claimingPrice = data.claimingPrice ?? null;
+    this.trackRecord = data.trackRecord ?? null;
+    this.raceConditions = data.raceConditions ?? '';
+    this.todaysLasixList = data.todaysLasixList ?? '';
+    this.todaysButeList = data.todaysButeList ?? '';
+    this.todaysCoupledList = data.todaysCoupledList ?? '';
+    this.todaysMutuelList = data.todaysMutuelList ?? '';
+    this.simulcastHostTrackCode = data.simulcastHostTrackCode ?? '';
+    this.simulcastHostTrackRaceNumber = data.simulcastHostTrackRaceNumber ?? null;
+    this.allWeatherSurfaceFlag = data.allWeatherSurfaceFlag ?? '';
+    this.raceConditionsLine1 = data.raceConditionsLine1 ?? '';
+    this.raceConditionsLine2 = data.raceConditionsLine2 ?? '';
+    this.raceConditionsLine3 = data.raceConditionsLine3 ?? '';
+    this.raceConditionsLine4 = data.raceConditionsLine4 ?? '';
+    this.raceConditionsLine5 = data.raceConditionsLine5 ?? '';
+    this.raceConditionsLine6 = data.raceConditionsLine6 ?? '';
+    this.lowClaimingPrice = data.lowClaimingPrice ?? null;
+    this.statebredFlag = data.statebredFlag ?? '';
+    this.wagerTypeLine1 = data.wagerTypeLine1 ?? '';
+    this.wagerTypeLine2 = data.wagerTypeLine2 ?? '';
+    this.wagerTypeLine3 = data.wagerTypeLine3 ?? '';
+    this.wagerTypeLine4 = data.wagerTypeLine4 ?? '';
+    this.wagerTypeLine5 = data.wagerTypeLine5 ?? '';
+    this.wagerTypeLine6 = data.wagerTypeLine6 ?? '';
+    this.wagerTypeLine7 = data.wagerTypeLine7 ?? '';
+    this.wagerTypeLine8 = data.wagerTypeLine8 ?? '';
+    this.wagerTypeLine9 = data.wagerTypeLine9 ?? '';
+    this.twoFBrisPacePar = data.twoFBrisPacePar ?? null;
+    this.fourFBrisPacePar = data.fourFBrisPacePar ?? null;
+    this.sixFBrisPacePar = data.sixFBrisPacePar ?? null;
+    this.brisSpeedForClass = data.brisSpeedForClass ?? null;
+    this.brisLatePacePar = data.brisLatePacePar ?? null;
+    this.postTimes = data.postTimes ?? '';
+    this.postTimePacificMilitary = data.postTimePacificMilitary ?? '';
+    this.todaysEquibaseAbbreviatedRaceConditions = data.todaysEquibaseAbbreviatedRaceConditions ?? '';
     this.horses = data.horses ?? [];
   }
 
   static fromObject(obj: any): Race {
+    const data = toCamelCaseKeys(obj);
     return new Race({
-      ...obj,
-      horses: obj.horses?.map((h: any) => Horse.fromObject(h)) ?? []
+      ...data,
+      horses: data.horses?.map((h: any) => Horse.fromObject(h)) ?? []
     });
   }
 
   toObject(): any {
     return {
-      race_number: this.race_number,
+      raceNumber: this.raceNumber,
       distance: this.distance,
       surface: this.surface,
-      race_type: this.race_type,
-      age_sex_restrictions: this.age_sex_restrictions,
-      todays_race_classification: this.todays_race_classification,
+      raceType: this.raceType,
+      ageSexRestrictions: this.ageSexRestrictions,
+      todaysRaceClassification: this.todaysRaceClassification,
       purse: this.purse,
-      claiming_price: this.claiming_price,
-      track_record: this.track_record,
-      race_conditions: this.race_conditions,
-      todays_lasix_list: this.todays_lasix_list,
-      todays_bute_list: this.todays_bute_list,
-      todays_coupled_list: this.todays_coupled_list,
-      todays_mutuel_list: this.todays_mutuel_list,
-      simulcast_host_track_code: this.simulcast_host_track_code,
-      simulcast_host_track_race_number: this.simulcast_host_track_race_number,
-      all_weather_surface_flag: this.all_weather_surface_flag,
-      race_conditions_line1: this.race_conditions_line1,
-      race_conditions_line2: this.race_conditions_line2,
-      race_conditions_line3: this.race_conditions_line3,
-      race_conditions_line4: this.race_conditions_line4,
-      race_conditions_line5: this.race_conditions_line5,
-      race_conditions_line6: this.race_conditions_line6,
-      low_claiming_price: this.low_claiming_price,
-      statebred_flag: this.statebred_flag,
-      wager_type_line1: this.wager_type_line1,
-      wager_type_line2: this.wager_type_line2,
-      wager_type_line3: this.wager_type_line3,
-      wager_type_line4: this.wager_type_line4,
-      wager_type_line5: this.wager_type_line5,
-      wager_type_line6: this.wager_type_line6,
-      wager_type_line7: this.wager_type_line7,
-      wager_type_line8: this.wager_type_line8,
-      wager_type_line9: this.wager_type_line9,
-      two_f_bris_pace_par: this.two_f_bris_pace_par,
-      four_f_bris_pace_par: this.four_f_bris_pace_par,
-      six_f_bris_pace_par: this.six_f_bris_pace_par,
-      bris_speed_for_class: this.bris_speed_for_class,
-      bris_late_pace_par: this.bris_late_pace_par,
-      post_times: this.post_times,
-      post_time_pacific_military: this.post_time_pacific_military,
-      todays_equibase_abbreviated_race_conditions: this.todays_equibase_abbreviated_race_conditions,
+      claimingPrice: this.claimingPrice,
+      trackRecord: this.trackRecord,
+      raceConditions: this.raceConditions,
+      todaysLasixList: this.todaysLasixList,
+      todaysButeList: this.todaysButeList,
+      todaysCoupledList: this.todaysCoupledList,
+      todaysMutuelList: this.todaysMutuelList,
+      simulcastHostTrackCode: this.simulcastHostTrackCode,
+      simulcastHostTrackRaceNumber: this.simulcastHostTrackRaceNumber,
+      allWeatherSurfaceFlag: this.allWeatherSurfaceFlag,
+      raceConditionsLine1: this.raceConditionsLine1,
+      raceConditionsLine2: this.raceConditionsLine2,
+      raceConditionsLine3: this.raceConditionsLine3,
+      raceConditionsLine4: this.raceConditionsLine4,
+      raceConditionsLine5: this.raceConditionsLine5,
+      raceConditionsLine6: this.raceConditionsLine6,
+      lowClaimingPrice: this.lowClaimingPrice,
+      statebredFlag: this.statebredFlag,
+      wagerTypeLine1: this.wagerTypeLine1,
+      wagerTypeLine2: this.wagerTypeLine2,
+      wagerTypeLine3: this.wagerTypeLine3,
+      wagerTypeLine4: this.wagerTypeLine4,
+      wagerTypeLine5: this.wagerTypeLine5,
+      wagerTypeLine6: this.wagerTypeLine6,
+      wagerTypeLine7: this.wagerTypeLine7,
+      wagerTypeLine8: this.wagerTypeLine8,
+      wagerTypeLine9: this.wagerTypeLine9,
+      twoFBrisPacePar: this.twoFBrisPacePar,
+      fourFBrisPacePar: this.fourFBrisPacePar,
+      sixFBrisPacePar: this.sixFBrisPacePar,
+      brisSpeedForClass: this.brisSpeedForClass,
+      brisLatePacePar: this.brisLatePacePar,
+      postTimes: this.postTimes,
+      postTimePacificMilitary: this.postTimePacificMilitary,
+      todaysEquibaseAbbreviatedRaceConditions: this.todaysEquibaseAbbreviatedRaceConditions,
       horses: this.horses.map(h => h.toObject())
     };
   }
 }
 
 export class Horse {
-  post_position: number | null;
+  postPosition: number | null;
   entry: string;
-  claiming_price_of_horse: number | null;
-  breed_type: string;
-  todays_nasal_strip_change: number | null;
-  todays_trainer: string;
-  trainer_starts: number | null;
-  trainer_wins: number | null;
-  trainer_places: number | null;
-  trainer_shows: number | null;
-  todays_jockey: string;
-  apprentice_weight_allowance: number | null;
-  jockey_starts: number | null;
-  jockey_wins: number | null;
-  jockey_places: number | null;
-  jockey_shows: number | null;
-  todays_owner: string;
-  owners_silks: string;
-  main_track_only_ae_indicator: string;
-  program_number: string;
-  morning_line_odds: number | null;
-  horse_name: string;
-  year_of_birth: number | null;
-  horses_foaling_month: number | null;
+  claimingPriceOfHorse: number | null;
+  breedType: string;
+  todaysNasalStripChange: number | null;
+  todaysTrainer: string;
+  trainerStarts: number | null;
+  trainerWins: number | null;
+  trainerPlaces: number | null;
+  trainerShows: number | null;
+  todaysJockey: string;
+  apprenticeWeightAllowance: number | null;
+  jockeyStarts: number | null;
+  jockeyWins: number | null;
+  jockeyPlaces: number | null;
+  jockeyShows: number | null;
+  todaysOwner: string;
+  ownersSilks: string;
+  mainTrackOnlyAeIndicator: string;
+  programNumber: string;
+  morningLineOdds: number | null;
+  horseName: string;
+  yearOfBirth: number | null;
+  horsesFoalingMonth: number | null;
   sex: string;
-  horses_color: string;
+  horsesColor: string;
   weight: number | null;
   sire: string;
-  sires_sire: string;
+  siresSire: string;
   dam: string;
-  dams_sire: string;
+  damsSire: string;
   breeder: string;
-  state_country_where_bred: string;
-  program_post_position: string;
-  todays_medication_new: number | null;
-  todays_medication_old: number | null;
-  equipment_change: number | null;
-  lifetime_record_todays_distance_starts: number | null;
-  lifetime_record_todays_distance_wins: number | null;
-  lifetime_record_todays_distance_places: number | null;
-  lifetime_record_todays_distance_shows: number | null;
-  lifetime_record_todays_distance_earnings: number | null;
-  lifetime_record_todays_track_starts: number | null;
-  lifetime_record_todays_track_wins: number | null;
-  lifetime_record_todays_track_places: number | null;
-  lifetime_record_todays_track_shows: number | null;
-  lifetime_record_todays_track_earnings: number | null;
-  lifetime_record_turf_starts: number | null;
-  lifetime_record_turf_wins: number | null;
-  lifetime_record_turf_places: number | null;
-  lifetime_record_turf_shows: number | null;
-  lifetime_record_turf_earnings: number | null;
-  lifetime_record_wet_starts: number | null;
-  lifetime_record_wet_wins: number | null;
-  lifetime_record_wet_places: number | null;
-  lifetime_record_wet_shows: number | null;
-  lifetime_record_wet_earnings: number | null;
-  current_year_record_year: number | null;
-  current_year_record_starts: number | null;
-  current_year_record_wins: number | null;
-  current_year_record_places: number | null;
-  current_year_record_shows: number | null;
-  current_year_record_earnings: number | null;
-  previous_year_record_year: number | null;
-  previous_year_record_starts: number | null;
-  previous_year_record_wins: number | null;
-  previous_year_record_places: number | null;
-  previous_year_record_shows: number | null;
-  previous_year_record_earnings: number | null;
-  lifetime_record_starts: number | null;
-  lifetime_record_wins: number | null;
-  lifetime_record_places: number | null;
-  lifetime_record_shows: number | null;
-  lifetime_record_earnings: number | null;
-  bris_run_style: string;
-  quirin_speed_points: number | null;
-  trainer_jockey_combo_starts: number | null;
-  trainer_jockey_combo_wins: number | null;
-  trainer_jockey_combo_places: number | null;
-  trainer_jockey_combo_shows: number | null;
-  trainer_jockey_combo_roi: number | null;
-  days_since_last_race: number | null;
-  lifetime_all_weather_starts: number | null;
-  lifetime_all_weather_wins: number | null;
-  lifetime_all_weather_places: number | null;
-  lifetime_all_weather_shows: number | null;
-  lifetime_all_weather_earnings: number | null;
-  best_bris_speed_all_weather_surface: number | null;
-  bris_prime_power_rating: number | null;
-  trainer_starts_current_year: number | null;
-  trainer_wins_current_year: number | null;
-  trainer_places_current_year: number | null;
-  trainer_shows_current_year: number | null;
-  trainer_roi_current_year: number | null;
-  trainer_starts_previous_year: number | null;
-  trainer_wins_previous_year: number | null;
-  trainer_places_previous_year: number | null;
-  trainer_shows_previous_year: number | null;
-  trainer_roi_previous_year: number | null;
-  jockey_starts_current_year: number | null;
-  jockey_wins_current_year: number | null;
-  jockey_places_current_year: number | null;
-  jockey_shows_current_year: number | null;
-  jockey_roi_current_year: number | null;
-  jockey_starts_previous_year: number | null;
-  jockey_wins_previous_year: number | null;
-  jockey_places_previous_year: number | null;
-  jockey_shows_previous_year: number | null;
-  jockey_roi_previous_year: number | null;
-  sire_stud_fee: number | null;
-  best_bris_speed_fast_track: number | null;
-  best_bris_speed_turf: number | null;
-  best_bris_speed_off_track: number | null;
-  best_bris_speed_distance: number | null;
-  auction_price: number | null;
-  where_when_sold_at_auction: string;
-  bris_dirt_pedigree_rating: string;
-  bris_mud_pedigree_rating: string;
-  bris_turf_pedigree_rating: string;
-  bris_distance_pedigree_rating: string;
-  best_bris_speed_life: number | null;
-  best_bris_speed_most_recent_year: number | null;
-  best_bris_speed_2nd_most_recent_year: number | null;
-  best_bris_speed_todays_track: number | null;
-  starts_fast_dirt: number | null;
-  wins_fast_dirt: number | null;
-  places_fast_dirt: number | null;
-  shows_fast_dirt: number | null;
-  earnings_fast_dirt: number | null;
-  jockey_distance_turf_label: string;
-  jockey_distance_turf_starts: number | null;
-  jockey_distance_turf_wins: number | null;
-  jockey_distance_turf_places: number | null;
-  jockey_distance_turf_shows: number | null;
-  jockey_distance_turf_roi: number | null;
-  jockey_distance_turf_earnings: number | null;
-  trainer_jockey_combo_starts_meet: number | null;
-  trainer_jockey_combo_wins_meet: number | null;
-  trainer_jockey_combo_places_meet: number | null;
-  trainer_jockey_combo_shows_meet: number | null;
-  trainer_jockey_combo_roi_meet: number | null;
+  stateCountryWhereBred: string;
+  programPostPosition: string;
+  todaysMedicationNew: number | null;
+  todaysMedicationOld: number | null;
+  equipmentChange: number | null;
+  lifetimeRecordTodaysDistanceStarts: number | null;
+  lifetimeRecordTodaysDistanceWins: number | null;
+  lifetimeRecordTodaysDistancePlaces: number | null;
+  lifetimeRecordTodaysDistanceShows: number | null;
+  lifetimeRecordTodaysDistanceEarnings: number | null;
+  lifetimeRecordTodaysTrackStarts: number | null;
+  lifetimeRecordTodaysTrackWins: number | null;
+  lifetimeRecordTodaysTrackPlaces: number | null;
+  lifetimeRecordTodaysTrackShows: number | null;
+  lifetimeRecordTodaysTrackEarnings: number | null;
+  lifetimeRecordTurfStarts: number | null;
+  lifetimeRecordTurfWins: number | null;
+  lifetimeRecordTurfPlaces: number | null;
+  lifetimeRecordTurfShows: number | null;
+  lifetimeRecordTurfEarnings: number | null;
+  lifetimeRecordWetStarts: number | null;
+  lifetimeRecordWetWins: number | null;
+  lifetimeRecordWetPlaces: number | null;
+  lifetimeRecordWetShows: number | null;
+  lifetimeRecordWetEarnings: number | null;
+  currentYearRecordYear: number | null;
+  currentYearRecordStarts: number | null;
+  currentYearRecordWins: number | null;
+  currentYearRecordPlaces: number | null;
+  currentYearRecordShows: number | null;
+  currentYearRecordEarnings: number | null;
+  previousYearRecordYear: number | null;
+  previousYearRecordStarts: number | null;
+  previousYearRecordWins: number | null;
+  previousYearRecordPlaces: number | null;
+  previousYearRecordShows: number | null;
+  previousYearRecordEarnings: number | null;
+  lifetimeRecordStarts: number | null;
+  lifetimeRecordWins: number | null;
+  lifetimeRecordPlaces: number | null;
+  lifetimeRecordShows: number | null;
+  lifetimeRecordEarnings: number | null;
+  brisRunStyle: string;
+  quirinSpeedPoints: number | null;
+  trainerJockeyComboStarts: number | null;
+  trainerJockeyComboWins: number | null;
+  trainerJockeyComboPlaces: number | null;
+  trainerJockeyComboShows: number | null;
+  trainerJockeyComboRoi: number | null;
+  daysSinceLastRace: number | null;
+  lifetimeAllWeatherStarts: number | null;
+  lifetimeAllWeatherWins: number | null;
+  lifetimeAllWeatherPlaces: number | null;
+  lifetimeAllWeatherShows: number | null;
+  lifetimeAllWeatherEarnings: number | null;
+  bestBrisSpeedAllWeatherSurface: number | null;
+  brisPrimePowerRating: number | null;
+  trainerStartsCurrentYear: number | null;
+  trainerWinsCurrentYear: number | null;
+  trainerPlacesCurrentYear: number | null;
+  trainerShowsCurrentYear: number | null;
+  trainerRoiCurrentYear: number | null;
+  trainerStartsPreviousYear: number | null;
+  trainerWinsPreviousYear: number | null;
+  trainerPlacesPreviousYear: number | null;
+  trainerShowsPreviousYear: number | null;
+  trainerRoiPreviousYear: number | null;
+  jockeyStartsCurrentYear: number | null;
+  jockeyWinsCurrentYear: number | null;
+  jockeyPlacesCurrentYear: number | null;
+  jockeyShowsCurrentYear: number | null;
+  jockeyRoiCurrentYear: number | null;
+  jockeyStartsPreviousYear: number | null;
+  jockeyWinsPreviousYear: number | null;
+  jockeyPlacesPreviousYear: number | null;
+  jockeyShowsPreviousYear: number | null;
+  jockeyRoiPreviousYear: number | null;
+  sireStudFee: number | null;
+  bestBrisSpeedFastTrack: number | null;
+  bestBrisSpeedTurf: number | null;
+  bestBrisSpeedOffTrack: number | null;
+  bestBrisSpeedDistance: number | null;
+  auctionPrice: number | null;
+  whereWhenSoldAtAuction: string;
+  brisDirtPedigreeRating: string;
+  brisMudPedigreeRating: string;
+  brisTurfPedigreeRating: string;
+  brisDistancePedigreeRating: string;
+  bestBrisSpeedLife: number | null;
+  bestBrisSpeedMostRecentYear: number | null;
+  bestBrisSpeed2ndMostRecentYear: number | null;
+  bestBrisSpeedTodaysTrack: number | null;
+  startsFastDirt: number | null;
+  winsFastDirt: number | null;
+  placesFastDirt: number | null;
+  showsFastDirt: number | null;
+  earningsFastDirt: number | null;
+  jockeyDistanceTurfLabel: string;
+  jockeyDistanceTurfStarts: number | null;
+  jockeyDistanceTurfWins: number | null;
+  jockeyDistanceTurfPlaces: number | null;
+  jockeyDistanceTurfShows: number | null;
+  jockeyDistanceTurfRoi: number | null;
+  jockeyDistanceTurfEarnings: number | null;
+  trainerJockeyComboStartsMeet: number | null;
+  trainerJockeyComboWinsMeet: number | null;
+  trainerJockeyComboPlacesMeet: number | null;
+  trainerJockeyComboShowsMeet: number | null;
+  trainerJockeyComboRoiMeet: number | null;
   workouts: Workout[];
-  past_performances: PastPerformance[];
-  key_trainer_stats: KeyTrainerStat[];
+  pastPerformances: PastPerformance[];
+  keyTrainerStats: KeyTrainerStat[];
 
   constructor(data: any = {}) {
-    this.post_position = data.post_position ?? null;
+    data = toCamelCaseKeys(data);
+    this.postPosition = data.postPosition ?? null;
     this.entry = data.entry ?? '';
-    this.claiming_price_of_horse = data.claiming_price_of_horse ?? null;
-    this.breed_type = data.breed_type ?? '';
-    this.todays_nasal_strip_change = data.todays_nasal_strip_change ?? null;
-    this.todays_trainer = data.todays_trainer ?? '';
-    this.trainer_starts = data.trainer_starts ?? null;
-    this.trainer_wins = data.trainer_wins ?? null;
-    this.trainer_places = data.trainer_places ?? null;
-    this.trainer_shows = data.trainer_shows ?? null;
-    this.todays_jockey = data.todays_jockey ?? '';
-    this.apprentice_weight_allowance = data.apprentice_weight_allowance ?? null;
-    this.jockey_starts = data.jockey_starts ?? null;
-    this.jockey_wins = data.jockey_wins ?? null;
-    this.jockey_places = data.jockey_places ?? null;
-    this.jockey_shows = data.jockey_shows ?? null;
-    this.todays_owner = data.todays_owner ?? '';
-    this.owners_silks = data.owners_silks ?? '';
-    this.main_track_only_ae_indicator = data.main_track_only_ae_indicator ?? '';
-    this.program_number = data.program_number ?? '';
-    this.morning_line_odds = data.morning_line_odds ?? null;
-    this.horse_name = data.horse_name ?? '';
-    this.year_of_birth = data.year_of_birth ?? null;
-    this.horses_foaling_month = data.horses_foaling_month ?? null;
+    this.claimingPriceOfHorse = data.claimingPriceOfHorse ?? null;
+    this.breedType = data.breedType ?? '';
+    this.todaysNasalStripChange = data.todaysNasalStripChange ?? null;
+    this.todaysTrainer = data.todaysTrainer ?? '';
+    this.trainerStarts = data.trainerStarts ?? null;
+    this.trainerWins = data.trainerWins ?? null;
+    this.trainerPlaces = data.trainerPlaces ?? null;
+    this.trainerShows = data.trainerShows ?? null;
+    this.todaysJockey = data.todaysJockey ?? '';
+    this.apprenticeWeightAllowance = data.apprenticeWeightAllowance ?? null;
+    this.jockeyStarts = data.jockeyStarts ?? null;
+    this.jockeyWins = data.jockeyWins ?? null;
+    this.jockeyPlaces = data.jockeyPlaces ?? null;
+    this.jockeyShows = data.jockeyShows ?? null;
+    this.todaysOwner = data.todaysOwner ?? '';
+    this.ownersSilks = data.ownersSilks ?? '';
+    this.mainTrackOnlyAeIndicator = data.mainTrackOnlyAeIndicator ?? '';
+    this.programNumber = data.programNumber ?? '';
+    this.morningLineOdds = data.morningLineOdds ?? null;
+    this.horseName = data.horseName ?? '';
+    this.yearOfBirth = data.yearOfBirth ?? null;
+    this.horsesFoalingMonth = data.horsesFoalingMonth ?? null;
     this.sex = data.sex ?? '';
-    this.horses_color = data.horses_color ?? '';
+    this.horsesColor = data.horsesColor ?? '';
     this.weight = data.weight ?? null;
     this.sire = data.sire ?? '';
-    this.sires_sire = data.sires_sire ?? '';
+    this.siresSire = data.siresSire ?? '';
     this.dam = data.dam ?? '';
-    this.dams_sire = data.dams_sire ?? '';
+    this.damsSire = data.damsSire ?? '';
     this.breeder = data.breeder ?? '';
-    this.state_country_where_bred = data.state_country_where_bred ?? '';
-    this.program_post_position = data.program_post_position ?? '';
-    this.todays_medication_new = data.todays_medication_new ?? null;
-    this.todays_medication_old = data.todays_medication_old ?? null;
-    this.equipment_change = data.equipment_change ?? null;
-    this.lifetime_record_todays_distance_starts = data.lifetime_record_todays_distance_starts ?? null;
-    this.lifetime_record_todays_distance_wins = data.lifetime_record_todays_distance_wins ?? null;
-    this.lifetime_record_todays_distance_places = data.lifetime_record_todays_distance_places ?? null;
-    this.lifetime_record_todays_distance_shows = data.lifetime_record_todays_distance_shows ?? null;
-    this.lifetime_record_todays_distance_earnings = data.lifetime_record_todays_distance_earnings ?? null;
-    this.lifetime_record_todays_track_starts = data.lifetime_record_todays_track_starts ?? null;
-    this.lifetime_record_todays_track_wins = data.lifetime_record_todays_track_wins ?? null;
-    this.lifetime_record_todays_track_places = data.lifetime_record_todays_track_places ?? null;
-    this.lifetime_record_todays_track_shows = data.lifetime_record_todays_track_shows ?? null;
-    this.lifetime_record_todays_track_earnings = data.lifetime_record_todays_track_earnings ?? null;
-    this.lifetime_record_turf_starts = data.lifetime_record_turf_starts ?? null;
-    this.lifetime_record_turf_wins = data.lifetime_record_turf_wins ?? null;
-    this.lifetime_record_turf_places = data.lifetime_record_turf_places ?? null;
-    this.lifetime_record_turf_shows = data.lifetime_record_turf_shows ?? null;
-    this.lifetime_record_turf_earnings = data.lifetime_record_turf_earnings ?? null;
-    this.lifetime_record_wet_starts = data.lifetime_record_wet_starts ?? null;
-    this.lifetime_record_wet_wins = data.lifetime_record_wet_wins ?? null;
-    this.lifetime_record_wet_places = data.lifetime_record_wet_places ?? null;
-    this.lifetime_record_wet_shows = data.lifetime_record_wet_shows ?? null;
-    this.lifetime_record_wet_earnings = data.lifetime_record_wet_earnings ?? null;
-    this.current_year_record_year = data.current_year_record_year ?? null;
-    this.current_year_record_starts = data.current_year_record_starts ?? null;
-    this.current_year_record_wins = data.current_year_record_wins ?? null;
-    this.current_year_record_places = data.current_year_record_places ?? null;
-    this.current_year_record_shows = data.current_year_record_shows ?? null;
-    this.current_year_record_earnings = data.current_year_record_earnings ?? null;
-    this.previous_year_record_year = data.previous_year_record_year ?? null;
-    this.previous_year_record_starts = data.previous_year_record_starts ?? null;
-    this.previous_year_record_wins = data.previous_year_record_wins ?? null;
-    this.previous_year_record_places = data.previous_year_record_places ?? null;
-    this.previous_year_record_shows = data.previous_year_record_shows ?? null;
-    this.previous_year_record_earnings = data.previous_year_record_earnings ?? null;
-    this.lifetime_record_starts = data.lifetime_record_starts ?? null;
-    this.lifetime_record_wins = data.lifetime_record_wins ?? null;
-    this.lifetime_record_places = data.lifetime_record_places ?? null;
-    this.lifetime_record_shows = data.lifetime_record_shows ?? null;
-    this.lifetime_record_earnings = data.lifetime_record_earnings ?? null;
-    this.bris_run_style = data.bris_run_style ?? '';
-    this.quirin_speed_points = data.quirin_speed_points ?? null;
-    this.trainer_jockey_combo_starts = data.trainer_jockey_combo_starts ?? null;
-    this.trainer_jockey_combo_wins = data.trainer_jockey_combo_wins ?? null;
-    this.trainer_jockey_combo_places = data.trainer_jockey_combo_places ?? null;
-    this.trainer_jockey_combo_shows = data.trainer_jockey_combo_shows ?? null;
-    this.trainer_jockey_combo_roi = data.trainer_two_dollar_roi ?? null;
-    this.days_since_last_race = data.days_since_last_race ?? null;
-    this.lifetime_all_weather_starts = data.lifetime_all_weather_starts ?? null;
-    this.lifetime_all_weather_wins = data.lifetime_all_weather_wins ?? null;
-    this.lifetime_all_weather_places = data.lifetime_all_weather_places ?? null;
-    this.lifetime_all_weather_shows = data.lifetime_all_weather_shows ?? null;
-    this.lifetime_all_weather_earnings = data.lifetime_all_weather_earnings ?? null;
-    this.best_bris_speed_all_weather_surface = data.best_bris_speed_all_weather_surface ?? null;
-    this.bris_prime_power_rating = data.bris_prime_power_rating ?? null;
-    this.trainer_starts_current_year = data.trainer_starts_current_year ?? null;
-    this.trainer_wins_current_year = data.trainer_wins_current_year ?? null;
-    this.trainer_places_current_year = data.trainer_places_current_year ?? null;
-    this.trainer_shows_current_year = data.trainer_shows_current_year ?? null;
-    this.trainer_roi_current_year = data.trainer_roi_current_year ?? null;
-    this.trainer_starts_previous_year = data.trainer_starts_previous_year ?? null;
-    this.trainer_wins_previous_year = data.trainer_wins_previous_year ?? null;
-    this.trainer_places_previous_year = data.trainer_places_previous_year ?? null;
-    this.trainer_shows_previous_year = data.trainer_shows_previous_year ?? null;
-    this.trainer_roi_previous_year = data.trainer_roi_previous_year ?? null;
-    this.jockey_starts_current_year = data.jockey_starts_current_year ?? null;
-    this.jockey_wins_current_year = data.jockey_wins_current_year ?? null;
-    this.jockey_places_current_year = data.jockey_places_current_year ?? null;
-    this.jockey_shows_current_year = data.jockey_shows_current_year ?? null;
-    this.jockey_roi_current_year = data.jockey_roi_current_year ?? null;
-    this.jockey_starts_previous_year = data.jockey_starts_previous_year ?? null;
-    this.jockey_wins_previous_year = data.jockey_wins_previous_year ?? null;
-    this.jockey_places_previous_year = data.jockey_places_previous_year ?? null;
-    this.jockey_shows_previous_year = data.jockey_shows_previous_year ?? null;
-    this.jockey_roi_previous_year = data.jockey_roi_previous_year ?? null;
-    this.sire_stud_fee = data.sire_stud_fee ?? null;
-    this.best_bris_speed_fast_track = data.best_bris_speed_fast_track ?? null;
-    this.best_bris_speed_turf = data.best_bris_speed_turf ?? null;
-    this.best_bris_speed_off_track = data.best_bris_speed_off_track ?? null;
-    this.best_bris_speed_distance = data.best_bris_speed_distance ?? null;
-    this.auction_price = data.auction_price ?? null;
-    this.where_when_sold_at_auction = data.where_when_sold_at_auction ?? '';
-    this.bris_dirt_pedigree_rating = data.bris_dirt_pedigree_rating ?? '';
-    this.bris_mud_pedigree_rating = data.bris_mud_pedigree_rating ?? '';
-    this.bris_turf_pedigree_rating = data.bris_turf_pedigree_rating ?? '';
-    this.bris_distance_pedigree_rating = data.bris_distance_pedigree_rating ?? '';
-    this.best_bris_speed_life = data.best_bris_speed_life ?? null;
-    this.best_bris_speed_most_recent_year = data.best_bris_speed_most_recent_year ?? null;
-    this.best_bris_speed_2nd_most_recent_year = data.best_bris_speed_2nd_most_recent_year ?? null;
-    this.best_bris_speed_todays_track = data.best_bris_speed_todays_track ?? null;
-    this.starts_fast_dirt = data.starts_fast_dirt ?? null;
-    this.wins_fast_dirt = data.wins_fast_dirt ?? null;
-    this.places_fast_dirt = data.places_fast_dirt ?? null;
-    this.shows_fast_dirt = data.shows_fast_dirt ?? null;
-    this.earnings_fast_dirt = data.earnings_fast_dirt ?? null;
-    this.jockey_distance_turf_label = data.jockey_distance_turf_label ?? '';
-    this.jockey_distance_turf_starts = data.jockey_distance_turf_starts ?? null;
-    this.jockey_distance_turf_wins = data.jockey_distance_turf_wins ?? null;
-    this.jockey_distance_turf_places = data.jockey_distance_turf_places ?? null;
-    this.jockey_distance_turf_shows = data.jockey_distance_turf_shows ?? null;
-    this.jockey_distance_turf_roi = data.jockey_distance_turf_roi ?? null;
-    this.jockey_distance_turf_earnings = data.jockey_distance_turf_earnings ?? null;
-    this.trainer_jockey_combo_starts_meet = data.trainer_jockey_combo_starts_meet ?? null;
-    this.trainer_jockey_combo_wins_meet = data.trainer_jockey_combo_wins_meet ?? null;
-    this.trainer_jockey_combo_places_meet = data.trainer_jockey_combo_places_meet ?? null;
-    this.trainer_jockey_combo_shows_meet = data.trainer_jockey_combo_shows_meet ?? null;
-    this.trainer_jockey_combo_roi_meet = data.trainer_jockey_combo_roi_meet ?? null;
+    this.stateCountryWhereBred = data.stateCountryWhereBred ?? '';
+    this.programPostPosition = data.programPostPosition ?? '';
+    this.todaysMedicationNew = data.todaysMedicationNew ?? null;
+    this.todaysMedicationOld = data.todaysMedicationOld ?? null;
+    this.equipmentChange = data.equipmentChange ?? null;
+    this.lifetimeRecordTodaysDistanceStarts = data.lifetimeRecordTodaysDistanceStarts ?? null;
+    this.lifetimeRecordTodaysDistanceWins = data.lifetimeRecordTodaysDistanceWins ?? null;
+    this.lifetimeRecordTodaysDistancePlaces = data.lifetimeRecordTodaysDistancePlaces ?? null;
+    this.lifetimeRecordTodaysDistanceShows = data.lifetimeRecordTodaysDistanceShows ?? null;
+    this.lifetimeRecordTodaysDistanceEarnings = data.lifetimeRecordTodaysDistanceEarnings ?? null;
+    this.lifetimeRecordTodaysTrackStarts = data.lifetimeRecordTodaysTrackStarts ?? null;
+    this.lifetimeRecordTodaysTrackWins = data.lifetimeRecordTodaysTrackWins ?? null;
+    this.lifetimeRecordTodaysTrackPlaces = data.lifetimeRecordTodaysTrackPlaces ?? null;
+    this.lifetimeRecordTodaysTrackShows = data.lifetimeRecordTodaysTrackShows ?? null;
+    this.lifetimeRecordTodaysTrackEarnings = data.lifetimeRecordTodaysTrackEarnings ?? null;
+    this.lifetimeRecordTurfStarts = data.lifetimeRecordTurfStarts ?? null;
+    this.lifetimeRecordTurfWins = data.lifetimeRecordTurfWins ?? null;
+    this.lifetimeRecordTurfPlaces = data.lifetimeRecordTurfPlaces ?? null;
+    this.lifetimeRecordTurfShows = data.lifetimeRecordTurfShows ?? null;
+    this.lifetimeRecordTurfEarnings = data.lifetimeRecordTurfEarnings ?? null;
+    this.lifetimeRecordWetStarts = data.lifetimeRecordWetStarts ?? null;
+    this.lifetimeRecordWetWins = data.lifetimeRecordWetWins ?? null;
+    this.lifetimeRecordWetPlaces = data.lifetimeRecordWetPlaces ?? null;
+    this.lifetimeRecordWetShows = data.lifetimeRecordWetShows ?? null;
+    this.lifetimeRecordWetEarnings = data.lifetimeRecordWetEarnings ?? null;
+    this.currentYearRecordYear = data.currentYearRecordYear ?? null;
+    this.currentYearRecordStarts = data.currentYearRecordStarts ?? null;
+    this.currentYearRecordWins = data.currentYearRecordWins ?? null;
+    this.currentYearRecordPlaces = data.currentYearRecordPlaces ?? null;
+    this.currentYearRecordShows = data.currentYearRecordShows ?? null;
+    this.currentYearRecordEarnings = data.currentYearRecordEarnings ?? null;
+    this.previousYearRecordYear = data.previousYearRecordYear ?? null;
+    this.previousYearRecordStarts = data.previousYearRecordStarts ?? null;
+    this.previousYearRecordWins = data.previousYearRecordWins ?? null;
+    this.previousYearRecordPlaces = data.previousYearRecordPlaces ?? null;
+    this.previousYearRecordShows = data.previousYearRecordShows ?? null;
+    this.previousYearRecordEarnings = data.previousYearRecordEarnings ?? null;
+    this.lifetimeRecordStarts = data.lifetimeRecordStarts ?? null;
+    this.lifetimeRecordWins = data.lifetimeRecordWins ?? null;
+    this.lifetimeRecordPlaces = data.lifetimeRecordPlaces ?? null;
+    this.lifetimeRecordShows = data.lifetimeRecordShows ?? null;
+    this.lifetimeRecordEarnings = data.lifetimeRecordEarnings ?? null;
+    this.brisRunStyle = data.brisRunStyle ?? '';
+    this.quirinSpeedPoints = data.quirinSpeedPoints ?? null;
+    this.trainerJockeyComboStarts = data.trainerJockeyComboStarts ?? null;
+    this.trainerJockeyComboWins = data.trainerJockeyComboWins ?? null;
+    this.trainerJockeyComboPlaces = data.trainerJockeyComboPlaces ?? null;
+    this.trainerJockeyComboShows = data.trainerJockeyComboShows ?? null;
+    this.trainerJockeyComboRoi = data.trainerJockeyComboRoi ?? null;
+    this.daysSinceLastRace = data.daysSinceLastRace ?? null;
+    this.lifetimeAllWeatherStarts = data.lifetimeAllWeatherStarts ?? null;
+    this.lifetimeAllWeatherWins = data.lifetimeAllWeatherWins ?? null;
+    this.lifetimeAllWeatherPlaces = data.lifetimeAllWeatherPlaces ?? null;
+    this.lifetimeAllWeatherShows = data.lifetimeAllWeatherShows ?? null;
+    this.lifetimeAllWeatherEarnings = data.lifetimeAllWeatherEarnings ?? null;
+    this.bestBrisSpeedAllWeatherSurface = data.bestBrisSpeedAllWeatherSurface ?? null;
+    this.brisPrimePowerRating = data.brisPrimePowerRating ?? null;
+    this.trainerStartsCurrentYear = data.trainerStartsCurrentYear ?? null;
+    this.trainerWinsCurrentYear = data.trainerWinsCurrentYear ?? null;
+    this.trainerPlacesCurrentYear = data.trainerPlacesCurrentYear ?? null;
+    this.trainerShowsCurrentYear = data.trainerShowsCurrentYear ?? null;
+    this.trainerRoiCurrentYear = data.trainerRoiCurrentYear ?? null;
+    this.trainerStartsPreviousYear = data.trainerStartsPreviousYear ?? null;
+    this.trainerWinsPreviousYear = data.trainerWinsPreviousYear ?? null;
+    this.trainerPlacesPreviousYear = data.trainerPlacesPreviousYear ?? null;
+    this.trainerShowsPreviousYear = data.trainerShowsPreviousYear ?? null;
+    this.trainerRoiPreviousYear = data.trainerRoiPreviousYear ?? null;
+    this.jockeyStartsCurrentYear = data.jockeyStartsCurrentYear ?? null;
+    this.jockeyWinsCurrentYear = data.jockeyWinsCurrentYear ?? null;
+    this.jockeyPlacesCurrentYear = data.jockeyPlacesCurrentYear ?? null;
+    this.jockeyShowsCurrentYear = data.jockeyShowsCurrentYear ?? null;
+    this.jockeyRoiCurrentYear = data.jockeyRoiCurrentYear ?? null;
+    this.jockeyStartsPreviousYear = data.jockeyStartsPreviousYear ?? null;
+    this.jockeyWinsPreviousYear = data.jockeyWinsPreviousYear ?? null;
+    this.jockeyPlacesPreviousYear = data.jockeyPlacesPreviousYear ?? null;
+    this.jockeyShowsPreviousYear = data.jockeyShowsPreviousYear ?? null;
+    this.jockeyRoiPreviousYear = data.jockeyRoiPreviousYear ?? null;
+    this.sireStudFee = data.sireStudFee ?? null;
+    this.bestBrisSpeedFastTrack = data.bestBrisSpeedFastTrack ?? null;
+    this.bestBrisSpeedTurf = data.bestBrisSpeedTurf ?? null;
+    this.bestBrisSpeedOffTrack = data.bestBrisSpeedOffTrack ?? null;
+    this.bestBrisSpeedDistance = data.bestBrisSpeedDistance ?? null;
+    this.auctionPrice = data.auctionPrice ?? null;
+    this.whereWhenSoldAtAuction = data.whereWhenSoldAtAuction ?? '';
+    this.brisDirtPedigreeRating = data.brisDirtPedigreeRating ?? '';
+    this.brisMudPedigreeRating = data.brisMudPedigreeRating ?? '';
+    this.brisTurfPedigreeRating = data.brisTurfPedigreeRating ?? '';
+    this.brisDistancePedigreeRating = data.brisDistancePedigreeRating ?? '';
+    this.bestBrisSpeedLife = data.bestBrisSpeedLife ?? null;
+    this.bestBrisSpeedMostRecentYear = data.bestBrisSpeedMostRecentYear ?? null;
+    this.bestBrisSpeed2ndMostRecentYear = data.bestBrisSpeed2ndMostRecentYear ?? null;
+    this.bestBrisSpeedTodaysTrack = data.bestBrisSpeedTodaysTrack ?? null;
+    this.startsFastDirt = data.startsFastDirt ?? null;
+    this.winsFastDirt = data.winsFastDirt ?? null;
+    this.placesFastDirt = data.placesFastDirt ?? null;
+    this.showsFastDirt = data.showsFastDirt ?? null;
+    this.earningsFastDirt = data.earningsFastDirt ?? null;
+    this.jockeyDistanceTurfLabel = data.jockeyDistanceTurfLabel ?? '';
+    this.jockeyDistanceTurfStarts = data.jockeyDistanceTurfStarts ?? null;
+    this.jockeyDistanceTurfWins = data.jockeyDistanceTurfWins ?? null;
+    this.jockeyDistanceTurfPlaces = data.jockeyDistanceTurfPlaces ?? null;
+    this.jockeyDistanceTurfShows = data.jockeyDistanceTurfShows ?? null;
+    this.jockeyDistanceTurfRoi = data.jockeyDistanceTurfRoi ?? null;
+    this.jockeyDistanceTurfEarnings = data.jockeyDistanceTurfEarnings ?? null;
+    this.trainerJockeyComboStartsMeet = data.trainerJockeyComboStartsMeet ?? null;
+    this.trainerJockeyComboWinsMeet = data.trainerJockeyComboWinsMeet ?? null;
+    this.trainerJockeyComboPlacesMeet = data.trainerJockeyComboPlacesMeet ?? null;
+    this.trainerJockeyComboShowsMeet = data.trainerJockeyComboShowsMeet ?? null;
+    this.trainerJockeyComboRoiMeet = data.trainerJockeyComboRoiMeet ?? null;
     this.workouts = data.workouts ?? [];
-    this.past_performances = data.past_performances ?? [];
-    this.key_trainer_stats = data.key_trainer_stats ?? [];
+    this.pastPerformances = data.pastPerformances ?? [];
+    this.keyTrainerStats = data.keyTrainerStats ?? [];
   }
 
   static fromObject(obj: any): Horse {
+    const data = toCamelCaseKeys(obj);
     return new Horse({
-      ...obj,
-      workouts: obj.workouts?.map((w: any) => Workout.fromObject(w)) ?? [],
-      past_performances: obj.past_performances?.map((p: any) => PastPerformance.fromObject(p)) ?? [],
-      key_trainer_stats: obj.key_trainer_stats?.map((k: any) => KeyTrainerStat.fromObject(k)) ?? []
+      ...data,
+      workouts: data.workouts?.map((w: any) => Workout.fromObject(w)) ?? [],
+      pastPerformances: data.pastPerformances?.map((p: any) => PastPerformance.fromObject(p)) ?? [],
+      keyTrainerStats: data.keyTrainerStats?.map((k: any) => KeyTrainerStat.fromObject(k)) ?? []
     });
   }
 
   toObject(): any {
     return {
-      post_position: this.post_position,
+      postPosition: this.postPosition,
       entry: this.entry,
-      claiming_price_of_horse: this.claiming_price_of_horse,
-      breed_type: this.breed_type,
-      todays_nasal_strip_change: this.todays_nasal_strip_change,
-      todays_trainer: this.todays_trainer,
-      trainer_starts: this.trainer_starts,
-      trainer_wins: this.trainer_wins,
-      trainer_places: this.trainer_places,
-      trainer_shows: this.trainer_shows,
-      todays_jockey: this.todays_jockey,
-      apprentice_weight_allowance: this.apprentice_weight_allowance,
-      jockey_starts: this.jockey_starts,
-      jockey_wins: this.jockey_wins,
-      jockey_places: this.jockey_places,
-      jockey_shows: this.jockey_shows,
-      todays_owner: this.todays_owner,
-      owners_silks: this.owners_silks,
-      main_track_only_ae_indicator: this.main_track_only_ae_indicator,
-      program_number: this.program_number,
-      morning_line_odds: this.morning_line_odds,
-      horse_name: this.horse_name,
-      year_of_birth: this.year_of_birth,
-      horses_foaling_month: this.horses_foaling_month,
+      claimingPriceOfHorse: this.claimingPriceOfHorse,
+      breedType: this.breedType,
+      todaysNasalStripChange: this.todaysNasalStripChange,
+      todaysTrainer: this.todaysTrainer,
+      trainerStarts: this.trainerStarts,
+      trainerWins: this.trainerWins,
+      trainerPlaces: this.trainerPlaces,
+      trainerShows: this.trainerShows,
+      todaysJockey: this.todaysJockey,
+      apprenticeWeightAllowance: this.apprenticeWeightAllowance,
+      jockeyStarts: this.jockeyStarts,
+      jockeyWins: this.jockeyWins,
+      jockeyPlaces: this.jockeyPlaces,
+      jockeyShows: this.jockeyShows,
+      todaysOwner: this.todaysOwner,
+      ownersSilks: this.ownersSilks,
+      mainTrackOnlyAeIndicator: this.mainTrackOnlyAeIndicator,
+      programNumber: this.programNumber,
+      morningLineOdds: this.morningLineOdds,
+      horseName: this.horseName,
+      yearOfBirth: this.yearOfBirth,
+      horsesFoalingMonth: this.horsesFoalingMonth,
       sex: this.sex,
-      horses_color: this.horses_color,
+      horsesColor: this.horsesColor,
       weight: this.weight,
       sire: this.sire,
-      sires_sire: this.sires_sire,
+      siresSire: this.siresSire,
       dam: this.dam,
-      dams_sire: this.dams_sire,
+      damsSire: this.damsSire,
       breeder: this.breeder,
-      state_country_where_bred: this.state_country_where_bred,
-      program_post_position: this.program_post_position,
-      todays_medication_new: this.todays_medication_new,
-      todays_medication_old: this.todays_medication_old,
-      equipment_change: this.equipment_change,
-      lifetime_record_todays_distance_starts: this.lifetime_record_todays_distance_starts,
-      lifetime_record_todays_distance_wins: this.lifetime_record_todays_distance_wins,
-      lifetime_record_todays_distance_places: this.lifetime_record_todays_distance_places,
-      lifetime_record_todays_distance_shows: this.lifetime_record_todays_distance_shows,
-      lifetime_record_todays_distance_earnings: this.lifetime_record_todays_distance_earnings,
-      lifetime_record_todays_track_starts: this.lifetime_record_todays_track_starts,
-      lifetime_record_todays_track_wins: this.lifetime_record_todays_track_wins,
-      lifetime_record_todays_track_places: this.lifetime_record_todays_track_places,
-      lifetime_record_todays_track_shows: this.lifetime_record_todays_track_shows,
-      lifetime_record_todays_track_earnings: this.lifetime_record_todays_track_earnings,
-      lifetime_record_turf_starts: this.lifetime_record_turf_starts,
-      lifetime_record_turf_wins: this.lifetime_record_turf_wins,
-      lifetime_record_turf_places: this.lifetime_record_turf_places,
-      lifetime_record_turf_shows: this.lifetime_record_turf_shows,
-      lifetime_record_turf_earnings: this.lifetime_record_turf_earnings,
-      lifetime_record_wet_starts: this.lifetime_record_wet_starts,
-      lifetime_record_wet_wins: this.lifetime_record_wet_wins,
-      lifetime_record_wet_places: this.lifetime_record_wet_places,
-      lifetime_record_wet_shows: this.lifetime_record_wet_shows,
-      lifetime_record_wet_earnings: this.lifetime_record_wet_earnings,
-      current_year_record_year: this.current_year_record_year,
-      current_year_record_starts: this.current_year_record_starts,
-      current_year_record_wins: this.current_year_record_wins,
-      current_year_record_places: this.current_year_record_places,
-      current_year_record_shows: this.current_year_record_shows,
-      current_year_record_earnings: this.current_year_record_earnings,
-      previous_year_record_year: this.previous_year_record_year,
-      previous_year_record_starts: this.previous_year_record_starts,
-      previous_year_record_wins: this.previous_year_record_wins,
-      previous_year_record_places: this.previous_year_record_places,
-      previous_year_record_shows: this.previous_year_record_shows,
-      previous_year_record_earnings: this.previous_year_record_earnings,
-      lifetime_record_starts: this.lifetime_record_starts,
-      lifetime_record_wins: this.lifetime_record_wins,
-      lifetime_record_places: this.lifetime_record_places,
-      lifetime_record_shows: this.lifetime_record_shows,
-      lifetime_record_earnings: this.lifetime_record_earnings,
-      bris_run_style: this.bris_run_style,
-      quirin_speed_points: this.quirin_speed_points,
-      trainer_jockey_combo_starts: this.trainer_jockey_combo_starts,
-      trainer_jockey_combo_wins: this.trainer_jockey_combo_wins,
-      trainer_jockey_combo_places: this.trainer_jockey_combo_places,
-      trainer_jockey_combo_shows: this.trainer_jockey_combo_shows,
-      trainer_two_dollar_roi: this.trainer_jockey_combo_roi,
-      days_since_last_race: this.days_since_last_race,
-      lifetime_all_weather_starts: this.lifetime_all_weather_starts,
-      lifetime_all_weather_wins: this.lifetime_all_weather_wins,
-      lifetime_all_weather_places: this.lifetime_all_weather_places,
-      lifetime_all_weather_shows: this.lifetime_all_weather_shows,
-      lifetime_all_weather_earnings: this.lifetime_all_weather_earnings,
-      best_bris_speed_all_weather_surface: this.best_bris_speed_all_weather_surface,
-      bris_prime_power_rating: this.bris_prime_power_rating,
-      trainer_starts_current_year: this.trainer_starts_current_year,
-      trainer_wins_current_year: this.trainer_wins_current_year,
-      trainer_places_current_year: this.trainer_places_current_year,
-      trainer_shows_current_year: this.trainer_shows_current_year,
-      trainer_roi_current_year: this.trainer_roi_current_year,
-      trainer_starts_previous_year: this.trainer_starts_previous_year,
-      trainer_wins_previous_year: this.trainer_wins_previous_year,
-      trainer_places_previous_year: this.trainer_places_previous_year,
-      trainer_shows_previous_year: this.trainer_shows_previous_year,
-      trainer_roi_previous_year: this.trainer_roi_previous_year,
-      jockey_starts_current_year: this.jockey_starts_current_year,
-      jockey_wins_current_year: this.jockey_wins_current_year,
-      jockey_places_current_year: this.jockey_places_current_year,
-      jockey_shows_current_year: this.jockey_shows_current_year,
-      jockey_roi_current_year: this.jockey_roi_current_year,
-      jockey_starts_previous_year: this.jockey_starts_previous_year,
-      jockey_wins_previous_year: this.jockey_wins_previous_year,
-      jockey_places_previous_year: this.jockey_places_previous_year,
-      jockey_shows_previous_year: this.jockey_shows_previous_year,
-      jockey_roi_previous_year: this.jockey_roi_previous_year,
-      sire_stud_fee: this.sire_stud_fee,
-      best_bris_speed_fast_track: this.best_bris_speed_fast_track,
-      best_bris_speed_turf: this.best_bris_speed_turf,
-      best_bris_speed_off_track: this.best_bris_speed_off_track,
-      best_bris_speed_distance: this.best_bris_speed_distance,
-      auction_price: this.auction_price,
-      where_when_sold_at_auction: this.where_when_sold_at_auction,
-      bris_dirt_pedigree_rating: this.bris_dirt_pedigree_rating,
-      bris_mud_pedigree_rating: this.bris_mud_pedigree_rating,
-      bris_turf_pedigree_rating: this.bris_turf_pedigree_rating,
-      bris_distance_pedigree_rating: this.bris_distance_pedigree_rating,
-      best_bris_speed_life: this.best_bris_speed_life,
-      best_bris_speed_most_recent_year: this.best_bris_speed_most_recent_year,
-      best_bris_speed_2nd_most_recent_year: this.best_bris_speed_2nd_most_recent_year,
-      best_bris_speed_todays_track: this.best_bris_speed_todays_track,
-      starts_fast_dirt: this.starts_fast_dirt,
-      wins_fast_dirt: this.wins_fast_dirt,
-      places_fast_dirt: this.places_fast_dirt,
-      shows_fast_dirt: this.shows_fast_dirt,
-      earnings_fast_dirt: this.earnings_fast_dirt,
-      jockey_distance_turf_label: this.jockey_distance_turf_label,
-      jockey_distance_turf_starts: this.jockey_distance_turf_starts,
-      jockey_distance_turf_wins: this.jockey_distance_turf_wins,
-      jockey_distance_turf_places: this.jockey_distance_turf_places,
-      jockey_distance_turf_shows: this.jockey_distance_turf_shows,
-      jockey_distance_turf_roi: this.jockey_distance_turf_roi,
-      jockey_distance_turf_earnings: this.jockey_distance_turf_earnings,
-      trainer_jockey_combo_starts_meet: this.trainer_jockey_combo_starts_meet,
-      trainer_jockey_combo_wins_meet: this.trainer_jockey_combo_wins_meet,
-      trainer_jockey_combo_places_meet: this.trainer_jockey_combo_places_meet,
-      trainer_jockey_combo_shows_meet: this.trainer_jockey_combo_shows_meet,
-      trainer_jockey_combo_roi_meet: this.trainer_jockey_combo_roi_meet,
+      stateCountryWhereBred: this.stateCountryWhereBred,
+      programPostPosition: this.programPostPosition,
+      todaysMedicationNew: this.todaysMedicationNew,
+      todaysMedicationOld: this.todaysMedicationOld,
+      equipmentChange: this.equipmentChange,
+      lifetimeRecordTodaysDistanceStarts: this.lifetimeRecordTodaysDistanceStarts,
+      lifetimeRecordTodaysDistanceWins: this.lifetimeRecordTodaysDistanceWins,
+      lifetimeRecordTodaysDistancePlaces: this.lifetimeRecordTodaysDistancePlaces,
+      lifetimeRecordTodaysDistanceShows: this.lifetimeRecordTodaysDistanceShows,
+      lifetimeRecordTodaysDistanceEarnings: this.lifetimeRecordTodaysDistanceEarnings,
+      lifetimeRecordTodaysTrackStarts: this.lifetimeRecordTodaysTrackStarts,
+      lifetimeRecordTodaysTrackWins: this.lifetimeRecordTodaysTrackWins,
+      lifetimeRecordTodaysTrackPlaces: this.lifetimeRecordTodaysTrackPlaces,
+      lifetimeRecordTodaysTrackShows: this.lifetimeRecordTodaysTrackShows,
+      lifetimeRecordTodaysTrackEarnings: this.lifetimeRecordTodaysTrackEarnings,
+      lifetimeRecordTurfStarts: this.lifetimeRecordTurfStarts,
+      lifetimeRecordTurfWins: this.lifetimeRecordTurfWins,
+      lifetimeRecordTurfPlaces: this.lifetimeRecordTurfPlaces,
+      lifetimeRecordTurfShows: this.lifetimeRecordTurfShows,
+      lifetimeRecordTurfEarnings: this.lifetimeRecordTurfEarnings,
+      lifetimeRecordWetStarts: this.lifetimeRecordWetStarts,
+      lifetimeRecordWetWins: this.lifetimeRecordWetWins,
+      lifetimeRecordWetPlaces: this.lifetimeRecordWetPlaces,
+      lifetimeRecordWetShows: this.lifetimeRecordWetShows,
+      lifetimeRecordWetEarnings: this.lifetimeRecordWetEarnings,
+      currentYearRecordYear: this.currentYearRecordYear,
+      currentYearRecordStarts: this.currentYearRecordStarts,
+      currentYearRecordWins: this.currentYearRecordWins,
+      currentYearRecordPlaces: this.currentYearRecordPlaces,
+      currentYearRecordShows: this.currentYearRecordShows,
+      currentYearRecordEarnings: this.currentYearRecordEarnings,
+      previousYearRecordYear: this.previousYearRecordYear,
+      previousYearRecordStarts: this.previousYearRecordStarts,
+      previousYearRecordWins: this.previousYearRecordWins,
+      previousYearRecordPlaces: this.previousYearRecordPlaces,
+      previousYearRecordShows: this.previousYearRecordShows,
+      previousYearRecordEarnings: this.previousYearRecordEarnings,
+      lifetimeRecordStarts: this.lifetimeRecordStarts,
+      lifetimeRecordWins: this.lifetimeRecordWins,
+      lifetimeRecordPlaces: this.lifetimeRecordPlaces,
+      lifetimeRecordShows: this.lifetimeRecordShows,
+      lifetimeRecordEarnings: this.lifetimeRecordEarnings,
+      brisRunStyle: this.brisRunStyle,
+      quirinSpeedPoints: this.quirinSpeedPoints,
+      trainerJockeyComboStarts: this.trainerJockeyComboStarts,
+      trainerJockeyComboWins: this.trainerJockeyComboWins,
+      trainerJockeyComboPlaces: this.trainerJockeyComboPlaces,
+      trainerJockeyComboShows: this.trainerJockeyComboShows,
+      trainerJockeyComboRoi: this.trainerJockeyComboRoi,
+      daysSinceLastRace: this.daysSinceLastRace,
+      lifetimeAllWeatherStarts: this.lifetimeAllWeatherStarts,
+      lifetimeAllWeatherWins: this.lifetimeAllWeatherWins,
+      lifetimeAllWeatherPlaces: this.lifetimeAllWeatherPlaces,
+      lifetimeAllWeatherShows: this.lifetimeAllWeatherShows,
+      lifetimeAllWeatherEarnings: this.lifetimeAllWeatherEarnings,
+      bestBrisSpeedAllWeatherSurface: this.bestBrisSpeedAllWeatherSurface,
+      brisPrimePowerRating: this.brisPrimePowerRating,
+      trainerStartsCurrentYear: this.trainerStartsCurrentYear,
+      trainerWinsCurrentYear: this.trainerWinsCurrentYear,
+      trainerPlacesCurrentYear: this.trainerPlacesCurrentYear,
+      trainerShowsCurrentYear: this.trainerShowsCurrentYear,
+      trainerRoiCurrentYear: this.trainerRoiCurrentYear,
+      trainerStartsPreviousYear: this.trainerStartsPreviousYear,
+      trainerWinsPreviousYear: this.trainerWinsPreviousYear,
+      trainerPlacesPreviousYear: this.trainerPlacesPreviousYear,
+      trainerShowsPreviousYear: this.trainerShowsPreviousYear,
+      trainerRoiPreviousYear: this.trainerRoiPreviousYear,
+      jockeyStartsCurrentYear: this.jockeyStartsCurrentYear,
+      jockeyWinsCurrentYear: this.jockeyWinsCurrentYear,
+      jockeyPlacesCurrentYear: this.jockeyPlacesCurrentYear,
+      jockeyShowsCurrentYear: this.jockeyShowsCurrentYear,
+      jockeyRoiCurrentYear: this.jockeyRoiCurrentYear,
+      jockeyStartsPreviousYear: this.jockeyStartsPreviousYear,
+      jockeyWinsPreviousYear: this.jockeyWinsPreviousYear,
+      jockeyPlacesPreviousYear: this.jockeyPlacesPreviousYear,
+      jockeyShowsPreviousYear: this.jockeyShowsPreviousYear,
+      jockeyRoiPreviousYear: this.jockeyRoiPreviousYear,
+      sireStudFee: this.sireStudFee,
+      bestBrisSpeedFastTrack: this.bestBrisSpeedFastTrack,
+      bestBrisSpeedTurf: this.bestBrisSpeedTurf,
+      bestBrisSpeedOffTrack: this.bestBrisSpeedOffTrack,
+      bestBrisSpeedDistance: this.bestBrisSpeedDistance,
+      auctionPrice: this.auctionPrice,
+      whereWhenSoldAtAuction: this.whereWhenSoldAtAuction,
+      brisDirtPedigreeRating: this.brisDirtPedigreeRating,
+      brisMudPedigreeRating: this.brisMudPedigreeRating,
+      brisTurfPedigreeRating: this.brisTurfPedigreeRating,
+      brisDistancePedigreeRating: this.brisDistancePedigreeRating,
+      bestBrisSpeedLife: this.bestBrisSpeedLife,
+      bestBrisSpeedMostRecentYear: this.bestBrisSpeedMostRecentYear,
+      bestBrisSpeed2ndMostRecentYear: this.bestBrisSpeed2ndMostRecentYear,
+      bestBrisSpeedTodaysTrack: this.bestBrisSpeedTodaysTrack,
+      startsFastDirt: this.startsFastDirt,
+      winsFastDirt: this.winsFastDirt,
+      placesFastDirt: this.placesFastDirt,
+      showsFastDirt: this.showsFastDirt,
+      earningsFastDirt: this.earningsFastDirt,
+      jockeyDistanceTurfLabel: this.jockeyDistanceTurfLabel,
+      jockeyDistanceTurfStarts: this.jockeyDistanceTurfStarts,
+      jockeyDistanceTurfWins: this.jockeyDistanceTurfWins,
+      jockeyDistanceTurfPlaces: this.jockeyDistanceTurfPlaces,
+      jockeyDistanceTurfShows: this.jockeyDistanceTurfShows,
+      jockeyDistanceTurfRoi: this.jockeyDistanceTurfRoi,
+      jockeyDistanceTurfEarnings: this.jockeyDistanceTurfEarnings,
+      trainerJockeyComboStartsMeet: this.trainerJockeyComboStartsMeet,
+      trainerJockeyComboWinsMeet: this.trainerJockeyComboWinsMeet,
+      trainerJockeyComboPlacesMeet: this.trainerJockeyComboPlacesMeet,
+      trainerJockeyComboShowsMeet: this.trainerJockeyComboShowsMeet,
+      trainerJockeyComboRoiMeet: this.trainerJockeyComboRoiMeet,
       workouts: this.workouts.map(w => w.toObject()),
-      past_performances: this.past_performances.map(p => p.toObject()),
-      key_trainer_stats: this.key_trainer_stats.map(k => k.toObject())
+      pastPerformances: this.pastPerformances.map(p => p.toObject()),
+      keyTrainerStats: this.keyTrainerStats.map(k => k.toObject())
     };
   }
 }
@@ -636,8 +661,8 @@ export class Workout {
   distance: number | null;
   condition: string;
   description: string;
-  main_inner_track_indicator: string;
-  workouts_that_day_distance: number | null;
+  mainInnerTrackIndicator: string;
+  workoutsThatDayDistance: number | null;
   rank: number | null;
 
   constructor(
@@ -647,8 +672,8 @@ export class Workout {
     distance: number | null = null,
     condition: string = '',
     description: string = '',
-    main_inner_track_indicator: string = '',
-    workouts_that_day_distance: number | null = null,
+    mainInnerTrackIndicator: string = '',
+    workoutsThatDayDistance: number | null = null,
     rank: number | null = null
   ) {
     this.date = date;
@@ -657,22 +682,23 @@ export class Workout {
     this.distance = distance;
     this.condition = condition;
     this.description = description;
-    this.main_inner_track_indicator = main_inner_track_indicator;
-    this.workouts_that_day_distance = workouts_that_day_distance;
+    this.mainInnerTrackIndicator = mainInnerTrackIndicator;
+    this.workoutsThatDayDistance = workoutsThatDayDistance;
     this.rank = rank;
   }
 
   static fromObject(obj: any): Workout {
+    const data = toCamelCaseKeys(obj);
     return new Workout(
-      obj.date ?? '',
-      obj.time ?? null,
-      obj.track ?? '',
-      obj.distance ?? null,
-      obj.condition ?? '',
-      obj.description ?? '',
-      obj.main_inner_track_indicator ?? '',
-      obj.workouts_that_day_distance ?? null,
-      obj.rank ?? null
+      data.date ?? '',
+      data.time ?? null,
+      data.track ?? '',
+      data.distance ?? null,
+      data.condition ?? '',
+      data.description ?? '',
+      data.mainInnerTrackIndicator ?? '',
+      data.workoutsThatDayDistance ?? null,
+      data.rank ?? null
     );
   }
 
@@ -684,8 +710,8 @@ export class Workout {
       distance: this.distance,
       condition: this.condition,
       description: this.description,
-      main_inner_track_indicator: this.main_inner_track_indicator,
-      workouts_that_day_distance: this.workouts_that_day_distance,
+      mainInnerTrackIndicator: this.mainInnerTrackIndicator,
+      workoutsThatDayDistance: this.workoutsThatDayDistance,
       rank: this.rank
     };
   }
@@ -694,25 +720,27 @@ export class Workout {
 export class KeyTrainerStat {
   category: string;
   starts: number | null;
-  win_pct: number | null;
-  in_the_money_pct: number | null;
+  winPct: number | null;
+  inTheMoneyPct: number | null;
   roi: number | null;
 
   constructor(data: any = {}) {
+    data = toCamelCaseKeys(data);
     this.category = data.category ?? '';
     this.starts = data.starts ?? null;
-    this.win_pct = data.win_pct ?? null;
-    this.in_the_money_pct = data.in_the_money_pct ?? null;
+    this.winPct = data.winPct ?? null;
+    this.inTheMoneyPct = data.inTheMoneyPct ?? null;
     this.roi = data.roi ?? null;
   }
 
   static fromObject(obj: any): KeyTrainerStat {
+    const data = toCamelCaseKeys(obj);
     return new KeyTrainerStat({
-      category: obj.category,
-      starts: obj.starts,
-      win_pct: obj.win_pct,
-      in_the_money_pct: obj.in_the_money_pct,
-      roi: obj.roi
+      category: data.category,
+      starts: data.starts,
+      winPct: data.winPct,
+      inTheMoneyPct: data.inTheMoneyPct,
+      roi: data.roi
     });
   }
 
@@ -720,216 +748,217 @@ export class KeyTrainerStat {
     return {
       category: this.category,
       starts: this.starts,
-      win_pct: this.win_pct,
-      in_the_money_pct: this.in_the_money_pct,
+      winPct: this.winPct,
+      inTheMoneyPct: this.inTheMoneyPct,
       roi: this.roi
     };
   }
 }
 
 export class PastPerformance {
-  race_date: string;
-  days_since_last_race: number | null;
-  track_code: string;
-  bris_track_code: string;
-  race_number: number | null;
-  track_condition: string;
+  raceDate: string;
+  daysSinceLastRace: number | null;
+  trackCode: string;
+  brisTrackCode: string;
+  raceNumber: number | null;
+  trackCondition: string;
   distance: number | null;
   surface: string;
-  special_chute_indicator: string;
+  specialChuteIndicator: string;
   entrants: number | null;
-  post_position: number | null;
+  postPosition: number | null;
   equipment: string;
   racename: string;
   medication: number | null;
-  trip_comment: string;
-  winners_name: string;
-  place_name: string;
-  show_name: string;
-  winners_weight: number | null;
-  place_weight: number | null;
-  show_weight: number | null;
-  winners_margin: number | null;
-  place_margin: number | null;
-  show_margin: number | null;
-  alternate_comment_line: string;
+  tripComment: string;
+  winnersName: string;
+  placeName: string;
+  showName: string;
+  winnersWeight: number | null;
+  placeWeight: number | null;
+  showWeight: number | null;
+  winnersMargin: number | null;
+  placeMargin: number | null;
+  showMargin: number | null;
+  alternateCommentLine: string;
   weight: number | null;
   odds: number | null;
   entry: string;
-  race_classication: string;
-  claiming_price: number | null;
+  raceClassication: string;
+  claimingPrice: number | null;
   purse: number | null;
-  start_call_position: string;
-  first_call_position: string;
-  second_call_position: string;
-  gate_call_position: string;
-  stretch_call_position: string;
-  finish_position: string;
-  money_position: string;
-  start_call_between_lengths_leader: number | null;
-  start_call_between_lengths: number | null;
-  first_call_between_lengths_leader: number | null;
-  first_call_between_lengths: number | null;
-  second_call_between_lengths_leader: number | null;
-  second_call_between_lengths: number | null;
-  bris_race_shape_1st_call: number | null;
-  stretch_call_between_lengths_leader: number | null;
-  stretch_call_between_lengths: number | null;
-  finish_between_lengths_leader: number | null;
-  finish_between_lengths: number | null;
-  bris_race_shape_2nd_call: number | null;
-  bris_2f_pace: number | null;
-  bris_4f_pace: number | null;
-  bris_6f_pace: number | null;
-  bris_8f_pace: number | null;
-  bris_10f_pace: number | null;
-  bris_late_pace: number | null;
-  bris_speed_rating: number | null;
-  speed_rating: number | null;
-  track_variant: number | null;
-  two_f_fraction: number | null;
-  three_f_fraction: number | null;
-  four_f_fraction: number | null;
-  five_f_fraction: number | null;
-  six_f_fraction: number | null;
-  seven_f_fraction: number | null;
-  eight_f_fraction: number | null;
-  ten_f_fraction: number | null;
-  twelve_f_fraction: number | null;
-  fourteen_f_fraction: number | null;
-  sixteen_f_fraction: number | null;
-  fraction_1: number | null;
-  fraction_2: number | null;
-  fraction_3: number | null;
-  final_time: number | null;
-  claimed_code: string;
+  startCallPosition: string;
+  firstCallPosition: string;
+  secondCallPosition: string;
+  gateCallPosition: string;
+  stretchCallPosition: string;
+  finishPosition: string;
+  moneyPosition: string;
+  startCallBetweenLengthsLeader: number | null;
+  startCallBetweenLengths: number | null;
+  firstCallBetweenLengthsLeader: number | null;
+  firstCallBetweenLengths: number | null;
+  secondCallBetweenLengthsLeader: number | null;
+  secondCallBetweenLengths: number | null;
+  brisRaceShape1stCall: number | null;
+  stretchCallBetweenLengthsLeader: number | null;
+  stretchCallBetweenLengths: number | null;
+  finishBetweenLengthsLeader: number | null;
+  finishBetweenLengths: number | null;
+  brisRaceShape2ndCall: number | null;
+  bris2fPace: number | null;
+  bris4fPace: number | null;
+  bris6fPace: number | null;
+  bris8fPace: number | null;
+  bris10fPace: number | null;
+  brisLatePace: number | null;
+  brisSpeedRating: number | null;
+  speedRating: number | null;
+  trackVariant: number | null;
+  twoFFraction: number | null;
+  threeFFraction: number | null;
+  fourFFraction: number | null;
+  fiveFFraction: number | null;
+  sixFFraction: number | null;
+  sevenFFraction: number | null;
+  eightFFraction: number | null;
+  tenFFraction: number | null;
+  twelveFFraction: number | null;
+  fourteenFFraction: number | null;
+  sixteenFFraction: number | null;
+  fraction1: number | null;
+  fraction2: number | null;
+  fraction3: number | null;
+  finalTime: number | null;
+  claimedCode: string;
   trainer: string;
   jockey: string;
-  apprentice_weight_allowance: number | null;
-  race_type: string;
-  age_sex_restrictions: string;
-  statebred_flag: string;
-  restricted_qualifier_flag: string;
-  favorite_indicator: string;
-  front_bandages_indicator: string;
-  bris_speed_par_for_race: number | null;
-  bar_shoes: string;
-  company_line_codes: string;
-  low_claiming_price_of_race: number | null;
-  high_claiming_price_of_race: number | null;
-  code_for_prior_races: string;
-  claimed_and_trainer_switches_1: string;
-  claimed_and_trainer_switches_2: string;
-  claimed_and_trainer_switches_3: string;
-  claimed_and_trainer_switches_4: string;
-  claimed_and_trainer_switches_5: string;
-  claimed_and_trainer_switches_6: string;
-  extended_start_comment: string;
-  sealed_track_indicator: string;
-  previous_all_weather_surface_indicator: string;
-  equibase_abbreviated_race_condition: string;
+  apprenticeWeightAllowance: number | null;
+  raceType: string;
+  ageSexRestrictions: string;
+  statebredFlag: string;
+  restrictedQualifierFlag: string;
+  favoriteIndicator: string;
+  frontBandagesIndicator: string;
+  brisSpeedParForRace: number | null;
+  barShoes: string;
+  companyLineCodes: string;
+  lowClaimingPriceOfRace: number | null;
+  highClaimingPriceOfRace: number | null;
+  codeForPriorRaces: string;
+  claimedAndTrainerSwitches1: string;
+  claimedAndTrainerSwitches2: string;
+  claimedAndTrainerSwitches3: string;
+  claimedAndTrainerSwitches4: string;
+  claimedAndTrainerSwitches5: string;
+  claimedAndTrainerSwitches6: string;
+  extendedStartComment: string;
+  sealedTrackIndicator: string;
+  previousAllWeatherSurfaceIndicator: string;
+  equibaseAbbreviatedRaceCondition: string;
 
   constructor(data: any = {}) {
-    this.race_date = data.race_date ?? '';
-    this.days_since_last_race = data.days_since_last_race ?? null;
-    this.track_code = data.track_code ?? '';
-    this.bris_track_code = data.bris_track_code ?? '';
-    this.race_number = data.race_number ?? null;
-    this.track_condition = data.track_condition ?? '';
+    data = toCamelCaseKeys(data);
+    this.raceDate = data.raceDate ?? '';
+    this.daysSinceLastRace = data.daysSinceLastRace ?? null;
+    this.trackCode = data.trackCode ?? '';
+    this.brisTrackCode = data.brisTrackCode ?? '';
+    this.raceNumber = data.raceNumber ?? null;
+    this.trackCondition = data.trackCondition ?? '';
     this.distance = data.distance ?? null;
     this.surface = data.surface ?? '';
-    this.special_chute_indicator = data.special_chute_indicator ?? '';
+    this.specialChuteIndicator = data.specialChuteIndicator ?? '';
     this.entrants = data.entrants ?? null;
-    this.post_position = data.post_position ?? null;
+    this.postPosition = data.postPosition ?? null;
     this.equipment = data.equipment ?? '';
     this.racename = data.racename ?? '';
     this.medication = data.medication ?? null;
-    this.trip_comment = data.trip_comment ?? '';
-    this.winners_name = data.winners_name ?? '';
-    this.place_name = data.place_name ?? '';
-    this.show_name = data.show_name ?? '';
-    this.winners_weight = data.winners_weight ?? null;
-    this.place_weight = data.place_weight ?? null;
-    this.show_weight = data.show_weight ?? null;
-    this.winners_margin = data.winners_margin ?? null;
-    this.place_margin = data.place_margin ?? null;
-    this.show_margin = data.show_margin ?? null;
-    this.alternate_comment_line = data.alternate_comment_line ?? '';
+    this.tripComment = data.tripComment ?? '';
+    this.winnersName = data.winnersName ?? '';
+    this.placeName = data.placeName ?? '';
+    this.showName = data.showName ?? '';
+    this.winnersWeight = data.winnersWeight ?? null;
+    this.placeWeight = data.placeWeight ?? null;
+    this.showWeight = data.showWeight ?? null;
+    this.winnersMargin = data.winnersMargin ?? null;
+    this.placeMargin = data.placeMargin ?? null;
+    this.showMargin = data.showMargin ?? null;
+    this.alternateCommentLine = data.alternateCommentLine ?? '';
     this.weight = data.weight ?? null;
     this.odds = data.odds ?? null;
     this.entry = data.entry ?? '';
-    this.race_classication = data.race_classication ?? '';
-    this.claiming_price = data.claiming_price ?? null;
+    this.raceClassication = data.raceClassication ?? '';
+    this.claimingPrice = data.claimingPrice ?? null;
     this.purse = data.purse ?? null;
-    this.start_call_position = data.start_call_position ?? '';
-    this.first_call_position = data.first_call_position ?? '';
-    this.second_call_position = data.second_call_position ?? '';
-    this.gate_call_position = data.gate_call_position ?? '';
-    this.stretch_call_position = data.stretch_call_position ?? '';
-    this.finish_position = data.finish_position ?? '';
-    this.money_position = data.money_position ?? '';
-    this.start_call_between_lengths_leader = data.start_call_between_lengths_leader ?? null;
-    this.start_call_between_lengths = data.start_call_between_lengths ?? null;
-    this.first_call_between_lengths_leader = data.first_call_between_lengths_leader ?? null;
-    this.first_call_between_lengths = data.first_call_between_lengths ?? null;
-    this.second_call_between_lengths_leader = data.second_call_between_lengths_leader ?? null;
-    this.second_call_between_lengths = data.second_call_between_lengths ?? null;
-    this.bris_race_shape_1st_call = data.bris_race_shape_1st_call ?? null;
-    this.stretch_call_between_lengths_leader = data.stretch_call_between_lengths_leader ?? null;
-    this.stretch_call_between_lengths = data.stretch_call_between_lengths ?? null;
-    this.finish_between_lengths_leader = data.finish_between_lengths_leader ?? null;
-    this.finish_between_lengths = data.finish_between_lengths ?? null;
-    this.bris_race_shape_2nd_call = data.bris_race_shape_2nd_call ?? null;
-    this.bris_2f_pace = data.bris_2f_pace ?? null;
-    this.bris_4f_pace = data.bris_4f_pace ?? null;
-    this.bris_6f_pace = data.bris_6f_pace ?? null;
-    this.bris_8f_pace = data.bris_8f_pace ?? null;
-    this.bris_10f_pace = data.bris_10f_pace ?? null;
-    this.bris_late_pace = data.bris_late_pace ?? null;
-    this.bris_speed_rating = data.bris_speed_rating ?? null;
-    this.speed_rating = data.speed_rating ?? null;
-    this.track_variant = data.track_variant ?? null;
-    this.two_f_fraction = data.two_f_fraction ?? null;
-    this.three_f_fraction = data.three_f_fraction ?? null;
-    this.four_f_fraction = data.four_f_fraction ?? null;
-    this.five_f_fraction = data.five_f_fraction ?? null;
-    this.six_f_fraction = data.six_f_fraction ?? null;
-    this.seven_f_fraction = data.seven_f_fraction ?? null;
-    this.eight_f_fraction = data.eight_f_fraction ?? null;
-    this.ten_f_fraction = data.ten_f_fraction ?? null;
-    this.twelve_f_fraction = data.twelve_f_fraction ?? null;
-    this.fourteen_f_fraction = data.fourteen_f_fraction ?? null;
-    this.sixteen_f_fraction = data.sixteen_f_fraction ?? null;
-    this.fraction_1 = data.fraction_1 ?? null;
-    this.fraction_2 = data.fraction_2 ?? null;
-    this.fraction_3 = data.fraction_3 ?? null;
-    this.final_time = data.final_time ?? null;
-    this.claimed_code = data.claimed_code ?? '';
+    this.startCallPosition = data.startCallPosition ?? '';
+    this.firstCallPosition = data.firstCallPosition ?? '';
+    this.secondCallPosition = data.secondCallPosition ?? '';
+    this.gateCallPosition = data.gateCallPosition ?? '';
+    this.stretchCallPosition = data.stretchCallPosition ?? '';
+    this.finishPosition = data.finishPosition ?? '';
+    this.moneyPosition = data.moneyPosition ?? '';
+    this.startCallBetweenLengthsLeader = data.startCallBetweenLengthsLeader ?? null;
+    this.startCallBetweenLengths = data.startCallBetweenLengths ?? null;
+    this.firstCallBetweenLengthsLeader = data.firstCallBetweenLengthsLeader ?? null;
+    this.firstCallBetweenLengths = data.firstCallBetweenLengths ?? null;
+    this.secondCallBetweenLengthsLeader = data.secondCallBetweenLengthsLeader ?? null;
+    this.secondCallBetweenLengths = data.secondCallBetweenLengths ?? null;
+    this.brisRaceShape1stCall = data.brisRaceShape1stCall ?? null;
+    this.stretchCallBetweenLengthsLeader = data.stretchCallBetweenLengthsLeader ?? null;
+    this.stretchCallBetweenLengths = data.stretchCallBetweenLengths ?? null;
+    this.finishBetweenLengthsLeader = data.finishBetweenLengthsLeader ?? null;
+    this.finishBetweenLengths = data.finishBetweenLengths ?? null;
+    this.brisRaceShape2ndCall = data.brisRaceShape2ndCall ?? null;
+    this.bris2fPace = data.bris2fPace ?? null;
+    this.bris4fPace = data.bris4fPace ?? null;
+    this.bris6fPace = data.bris6fPace ?? null;
+    this.bris8fPace = data.bris8fPace ?? null;
+    this.bris10fPace = data.bris10fPace ?? null;
+    this.brisLatePace = data.brisLatePace ?? null;
+    this.brisSpeedRating = data.brisSpeedRating ?? null;
+    this.speedRating = data.speedRating ?? null;
+    this.trackVariant = data.trackVariant ?? null;
+    this.twoFFraction = data.twoFFraction ?? null;
+    this.threeFFraction = data.threeFFraction ?? null;
+    this.fourFFraction = data.fourFFraction ?? null;
+    this.fiveFFraction = data.fiveFFraction ?? null;
+    this.sixFFraction = data.sixFFraction ?? null;
+    this.sevenFFraction = data.sevenFFraction ?? null;
+    this.eightFFraction = data.eightFFraction ?? null;
+    this.tenFFraction = data.tenFFraction ?? null;
+    this.twelveFFraction = data.twelveFFraction ?? null;
+    this.fourteenFFraction = data.fourteenFFraction ?? null;
+    this.sixteenFFraction = data.sixteenFFraction ?? null;
+    this.fraction1 = data.fraction1 ?? null;
+    this.fraction2 = data.fraction2 ?? null;
+    this.fraction3 = data.fraction3 ?? null;
+    this.finalTime = data.finalTime ?? null;
+    this.claimedCode = data.claimedCode ?? '';
     this.trainer = data.trainer ?? '';
     this.jockey = data.jockey ?? '';
-    this.apprentice_weight_allowance = data.apprentice_weight_allowance ?? null;
-    this.race_type = data.race_type ?? '';
-    this.age_sex_restrictions = data.age_sex_restrictions ?? '';
-    this.statebred_flag = data.statebred_flag ?? '';
-    this.restricted_qualifier_flag = data.restricted_qualifier_flag ?? '';
-    this.favorite_indicator = data.favorite_indicator ?? '';
-    this.front_bandages_indicator = data.front_bandages_indicator ?? '';
-    this.bris_speed_par_for_race = data.bris_speed_par_for_race ?? null;
-    this.bar_shoes = data.bar_shoes ?? '';
-    this.company_line_codes = data.company_line_codes ?? '';
-    this.low_claiming_price_of_race = data.low_claiming_price_of_race ?? null;
-    this.high_claiming_price_of_race = data.high_claiming_price_of_race ?? null;
-    this.code_for_prior_races = data.code_for_prior_races ?? '';
-    this.claimed_and_trainer_switches_1 = data.claimed_and_trainer_switches_1 ?? '';
-    this.claimed_and_trainer_switches_2 = data.claimed_and_trainer_switches_2 ?? '';
-    this.claimed_and_trainer_switches_3 = data.claimed_and_trainer_switches_3 ?? '';
-    this.claimed_and_trainer_switches_4 = data.claimed_and_trainer_switches_4 ?? '';
-    this.claimed_and_trainer_switches_5 = data.claimed_and_trainer_switches_5 ?? '';
-    this.claimed_and_trainer_switches_6 = data.claimed_and_trainer_switches_6 ?? '';
-    this.extended_start_comment = data.extended_start_comment ?? '';
-    this.sealed_track_indicator = data.sealed_track_indicator ?? '';
-    this.previous_all_weather_surface_indicator = data.previous_all_weather_surface_indicator ?? '';
-    this.equibase_abbreviated_race_condition = data.equibase_abbreviated_race_condition ?? '';
+    this.apprenticeWeightAllowance = data.apprenticeWeightAllowance ?? null;
+    this.raceType = data.raceType ?? '';
+    this.ageSexRestrictions = data.ageSexRestrictions ?? '';
+    this.statebredFlag = data.statebredFlag ?? '';
+    this.restrictedQualifierFlag = data.restrictedQualifierFlag ?? '';
+    this.favoriteIndicator = data.favoriteIndicator ?? '';
+    this.frontBandagesIndicator = data.frontBandagesIndicator ?? '';
+    this.brisSpeedParForRace = data.brisSpeedParForRace ?? null;
+    this.barShoes = data.barShoes ?? '';
+    this.companyLineCodes = data.companyLineCodes ?? '';
+    this.lowClaimingPriceOfRace = data.lowClaimingPriceOfRace ?? null;
+    this.highClaimingPriceOfRace = data.highClaimingPriceOfRace ?? null;
+    this.codeForPriorRaces = data.codeForPriorRaces ?? '';
+    this.claimedAndTrainerSwitches1 = data.claimedAndTrainerSwitches1 ?? '';
+    this.claimedAndTrainerSwitches2 = data.claimedAndTrainerSwitches2 ?? '';
+    this.claimedAndTrainerSwitches3 = data.claimedAndTrainerSwitches3 ?? '';
+    this.claimedAndTrainerSwitches4 = data.claimedAndTrainerSwitches4 ?? '';
+    this.claimedAndTrainerSwitches5 = data.claimedAndTrainerSwitches5 ?? '';
+    this.claimedAndTrainerSwitches6 = data.claimedAndTrainerSwitches6 ?? '';
+    this.extendedStartComment = data.extendedStartComment ?? '';
+    this.sealedTrackIndicator = data.sealedTrackIndicator ?? '';
+    this.previousAllWeatherSurfaceIndicator = data.previousAllWeatherSurfaceIndicator ?? '';
+    this.equibaseAbbreviatedRaceCondition = data.equibaseAbbreviatedRaceCondition ?? '';
   }
 
   static fromObject(obj: any): PastPerformance {
@@ -938,106 +967,106 @@ export class PastPerformance {
 
   toObject(): any {
     return {
-      race_date: this.race_date,
-      days_since_last_race: this.days_since_last_race,
-      track_code: this.track_code,
-      bris_track_code: this.bris_track_code,
-      race_number: this.race_number,
-      track_condition: this.track_condition,
+      raceDate: this.raceDate,
+      daysSinceLastRace: this.daysSinceLastRace,
+      trackCode: this.trackCode,
+      brisTrackCode: this.brisTrackCode,
+      raceNumber: this.raceNumber,
+      trackCondition: this.trackCondition,
       distance: this.distance,
       surface: this.surface,
-      special_chute_indicator: this.special_chute_indicator,
+      specialChuteIndicator: this.specialChuteIndicator,
       entrants: this.entrants,
-      post_position: this.post_position,
+      postPosition: this.postPosition,
       equipment: this.equipment,
       racename: this.racename,
       medication: this.medication,
-      trip_comment: this.trip_comment,
-      winners_name: this.winners_name,
-      place_name: this.place_name,
-      show_name: this.show_name,
-      winners_weight: this.winners_weight,
-      place_weight: this.place_weight,
-      show_weight: this.show_weight,
-      winners_margin: this.winners_margin,
-      place_margin: this.place_margin,
-      show_margin: this.show_margin,
-      alternate_comment_line: this.alternate_comment_line,
+      tripComment: this.tripComment,
+      winnersName: this.winnersName,
+      placeName: this.placeName,
+      showName: this.showName,
+      winnersWeight: this.winnersWeight,
+      placeWeight: this.placeWeight,
+      showWeight: this.showWeight,
+      winnersMargin: this.winnersMargin,
+      placeMargin: this.placeMargin,
+      showMargin: this.showMargin,
+      alternateCommentLine: this.alternateCommentLine,
       weight: this.weight,
       odds: this.odds,
       entry: this.entry,
-      race_classication: this.race_classication,
-      claiming_price: this.claiming_price,
+      raceClassication: this.raceClassication,
+      claimingPrice: this.claimingPrice,
       purse: this.purse,
-      start_call_position: this.start_call_position,
-      first_call_position: this.first_call_position,
-      second_call_position: this.second_call_position,
-      gate_call_position: this.gate_call_position,
-      stretch_call_position: this.stretch_call_position,
-      finish_position: this.finish_position,
-      money_position: this.money_position,
-      start_call_between_lengths_leader: this.start_call_between_lengths_leader,
-      start_call_between_lengths: this.start_call_between_lengths,
-      first_call_between_lengths_leader: this.first_call_between_lengths_leader,
-      first_call_between_lengths: this.first_call_between_lengths,
-      second_call_between_lengths_leader: this.second_call_between_lengths_leader,
-      second_call_between_lengths: this.second_call_between_lengths,
-      bris_race_shape_1st_call: this.bris_race_shape_1st_call,
-      stretch_call_between_lengths_leader: this.stretch_call_between_lengths_leader,
-      stretch_call_between_lengths: this.stretch_call_between_lengths,
-      finish_between_lengths_leader: this.finish_between_lengths_leader,
-      finish_between_lengths: this.finish_between_lengths,
-      bris_race_shape_2nd_call: this.bris_race_shape_2nd_call,
-      bris_2f_pace: this.bris_2f_pace,
-      bris_4f_pace: this.bris_4f_pace,
-      bris_6f_pace: this.bris_6f_pace,
-      bris_8f_pace: this.bris_8f_pace,
-      bris_10f_pace: this.bris_10f_pace,
-      bris_late_pace: this.bris_late_pace,
-      bris_speed_rating: this.bris_speed_rating,
-      speed_rating: this.speed_rating,
-      track_variant: this.track_variant,
-      two_f_fraction: this.two_f_fraction,
-      three_f_fraction: this.three_f_fraction,
-      four_f_fraction: this.four_f_fraction,
-      five_f_fraction: this.five_f_fraction,
-      six_f_fraction: this.six_f_fraction,
-      seven_f_fraction: this.seven_f_fraction,
-      eight_f_fraction: this.eight_f_fraction,
-      ten_f_fraction: this.ten_f_fraction,
-      twelve_f_fraction: this.twelve_f_fraction,
-      fourteen_f_fraction: this.fourteen_f_fraction,
-      sixteen_f_fraction: this.sixteen_f_fraction,
-      fraction_1: this.fraction_1,
-      fraction_2: this.fraction_2,
-      fraction_3: this.fraction_3,
-      final_time: this.final_time,
-      claimed_code: this.claimed_code,
+      startCallPosition: this.startCallPosition,
+      firstCallPosition: this.firstCallPosition,
+      secondCallPosition: this.secondCallPosition,
+      gateCallPosition: this.gateCallPosition,
+      stretchCallPosition: this.stretchCallPosition,
+      finishPosition: this.finishPosition,
+      moneyPosition: this.moneyPosition,
+      startCallBetweenLengthsLeader: this.startCallBetweenLengthsLeader,
+      startCallBetweenLengths: this.startCallBetweenLengths,
+      firstCallBetweenLengthsLeader: this.firstCallBetweenLengthsLeader,
+      firstCallBetweenLengths: this.firstCallBetweenLengths,
+      secondCallBetweenLengthsLeader: this.secondCallBetweenLengthsLeader,
+      secondCallBetweenLengths: this.secondCallBetweenLengths,
+      brisRaceShape1stCall: this.brisRaceShape1stCall,
+      stretchCallBetweenLengthsLeader: this.stretchCallBetweenLengthsLeader,
+      stretchCallBetweenLengths: this.stretchCallBetweenLengths,
+      finishBetweenLengthsLeader: this.finishBetweenLengthsLeader,
+      finishBetweenLengths: this.finishBetweenLengths,
+      brisRaceShape2ndCall: this.brisRaceShape2ndCall,
+      bris2fPace: this.bris2fPace,
+      bris4fPace: this.bris4fPace,
+      bris6fPace: this.bris6fPace,
+      bris8fPace: this.bris8fPace,
+      bris10fPace: this.bris10fPace,
+      brisLatePace: this.brisLatePace,
+      brisSpeedRating: this.brisSpeedRating,
+      speedRating: this.speedRating,
+      trackVariant: this.trackVariant,
+      twoFFraction: this.twoFFraction,
+      threeFFraction: this.threeFFraction,
+      fourFFraction: this.fourFFraction,
+      fiveFFraction: this.fiveFFraction,
+      sixFFraction: this.sixFFraction,
+      sevenFFraction: this.sevenFFraction,
+      eightFFraction: this.eightFFraction,
+      tenFFraction: this.tenFFraction,
+      twelveFFraction: this.twelveFFraction,
+      fourteenFFraction: this.fourteenFFraction,
+      sixteenFFraction: this.sixteenFFraction,
+      fraction1: this.fraction1,
+      fraction2: this.fraction2,
+      fraction3: this.fraction3,
+      finalTime: this.finalTime,
+      claimedCode: this.claimedCode,
       trainer: this.trainer,
       jockey: this.jockey,
-      apprentice_weight_allowance: this.apprentice_weight_allowance,
-      race_type: this.race_type,
-      age_sex_restrictions: this.age_sex_restrictions,
-      statebred_flag: this.statebred_flag,
-      restricted_qualifier_flag: this.restricted_qualifier_flag,
-      favorite_indicator: this.favorite_indicator,
-      front_bandages_indicator: this.front_bandages_indicator,
-      bris_speed_par_for_race: this.bris_speed_par_for_race,
-      bar_shoes: this.bar_shoes,
-      company_line_codes: this.company_line_codes,
-      low_claiming_price_of_race: this.low_claiming_price_of_race,
-      high_claiming_price_of_race: this.high_claiming_price_of_race,
-      code_for_prior_races: this.code_for_prior_races,
-      claimed_and_trainer_switches_1: this.claimed_and_trainer_switches_1,
-      claimed_and_trainer_switches_2: this.claimed_and_trainer_switches_2,
-      claimed_and_trainer_switches_3: this.claimed_and_trainer_switches_3,
-      claimed_and_trainer_switches_4: this.claimed_and_trainer_switches_4,
-      claimed_and_trainer_switches_5: this.claimed_and_trainer_switches_5,
-      claimed_and_trainer_switches_6: this.claimed_and_trainer_switches_6,
-      extended_start_comment: this.extended_start_comment,
-      sealed_track_indicator: this.sealed_track_indicator,
-      previous_all_weather_surface_indicator: this.previous_all_weather_surface_indicator,
-      equibase_abbreviated_race_condition: this.equibase_abbreviated_race_condition
+      apprenticeWeightAllowance: this.apprenticeWeightAllowance,
+      raceType: this.raceType,
+      ageSexRestrictions: this.ageSexRestrictions,
+      statebredFlag: this.statebredFlag,
+      restrictedQualifierFlag: this.restrictedQualifierFlag,
+      favoriteIndicator: this.favoriteIndicator,
+      frontBandagesIndicator: this.frontBandagesIndicator,
+      brisSpeedParForRace: this.brisSpeedParForRace,
+      barShoes: this.barShoes,
+      companyLineCodes: this.companyLineCodes,
+      lowClaimingPriceOfRace: this.lowClaimingPriceOfRace,
+      highClaimingPriceOfRace: this.highClaimingPriceOfRace,
+      codeForPriorRaces: this.codeForPriorRaces,
+      claimedAndTrainerSwitches1: this.claimedAndTrainerSwitches1,
+      claimedAndTrainerSwitches2: this.claimedAndTrainerSwitches2,
+      claimedAndTrainerSwitches3: this.claimedAndTrainerSwitches3,
+      claimedAndTrainerSwitches4: this.claimedAndTrainerSwitches4,
+      claimedAndTrainerSwitches5: this.claimedAndTrainerSwitches5,
+      claimedAndTrainerSwitches6: this.claimedAndTrainerSwitches6,
+      extendedStartComment: this.extendedStartComment,
+      sealedTrackIndicator: this.sealedTrackIndicator,
+      previousAllWeatherSurfaceIndicator: this.previousAllWeatherSurfaceIndicator,
+      equibaseAbbreviatedRaceCondition: this.equibaseAbbreviatedRaceCondition
     };
   }
 }

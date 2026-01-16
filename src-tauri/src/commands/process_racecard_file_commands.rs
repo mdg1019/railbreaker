@@ -1,12 +1,14 @@
 use crate::constants::single_file_indexes::*;
 use crate::files::write_json_file;
+use crate::json::to_camel_case_value;
 use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use crate::states::global_state::global_state;
+use serde_json::Value;
 use std::path::PathBuf;
 use tokio::fs;
 
 #[tauri::command]
-pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String> {
+pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
     let contents = fs::read_to_string(&path)
         .await
         .map_err(|e| format!("Failed to read racecard file: {}", e))?;
@@ -502,9 +504,12 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Racecard, String>
         .map_err(|e| format!("Failed to delete racecard file: {}", e))?;
 
     let json_path = PathBuf::from(&path).with_extension("json");
-    write_json_file(json_path, &racecard).await?;
+    let racecard_value = serde_json::to_value(&racecard)
+        .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
+    let racecard_value = to_camel_case_value(racecard_value);
+    write_json_file(json_path, &racecard_value).await?;
 
-    Ok(racecard)
+    Ok(racecard_value)
 }
 
 fn yyyymmdd_to_mmddyyyy(value: &str) -> Option<String> {

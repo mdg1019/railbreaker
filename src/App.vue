@@ -84,10 +84,10 @@ function computePrimePowerComparisons() {
 
     const entries: { post: number | string; rating: number }[] = [];
     race.horses.forEach((h: any, idx: number) => {
-        const r = h.bris_prime_power_rating;
+        const r = h.brisPrimePowerRating;
         if (r === null || r === undefined) return;
         if (Number(r) === 0) return;
-        const post = h.post_position ?? h.program_number ?? idx + 1;
+        const post = h.postPosition ?? h.programNumber ?? idx + 1;
         entries.push({ post, rating: Number(r) });
     });
 
@@ -166,8 +166,10 @@ onMounted(async () => {
 
             isProcessingRacecard.value = true;
             try {
-                let openedRacecard = await invoke<Racecard>('load_racecard_file', { path: file });
-               racecards.addRacecard(openedRacecard);
+                const openedRacecard = Racecard.fromObject(
+                    await invoke<any>('load_racecard_file', { path: file })
+                );
+                racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
@@ -203,7 +205,9 @@ onMounted(async () => {
                 let racecard_path = await invoke('process_zip_file', { path: file });
                 isProcessingZip.value = false;
                 isProcessingRacecard.value = true;               
-                let openedRacecard = await invoke<Racecard>('process_racecard_file', { path: racecard_path });
+                const openedRacecard = Racecard.fromObject(
+                    await invoke<any>('process_racecard_file', { path: racecard_path })
+                );
                 racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
@@ -252,7 +256,7 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="raceNumber" />
             <Horse
                 v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
-                :key="horse.program_number || horse.post_position || idx"
+                :key="horse.programNumber || horse.postPosition || idx"
                 :horse="horse"
                 :primePowerComparisons="primePowerComparisons"
             ></Horse>
