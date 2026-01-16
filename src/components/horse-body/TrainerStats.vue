@@ -12,7 +12,7 @@ const props = defineProps<{
         <div class="color-accent-purple">Trainer:</div>
         <div class="stats">
             <div v-for="(s, i) in horse.keyTrainerStats.filter(s => s.category !== '')" :key="i" class="stat">
-                {{ s.category }} ({{ s.starts }} {{ s.winPct?.toFixed(0) }} {{ s.roi?.toFixed(2) }})
+                {{ s.category }} ({{ s.starts }} {{ s.winPct?.toFixed(0) }}% {{ s.roi?.toFixed(2) }})
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@ const props = defineProps<{
 }
 
 .stats {
-    margin-left: 2rem;
+    margin-left: 3.5rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
