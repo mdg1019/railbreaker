@@ -1,22 +1,3 @@
-const toCamelCaseKey = (key: string): string =>
-  key.replace(/_([a-z0-9])/g, (_, letter) => letter.toUpperCase());
-
-const toCamelCaseKeys = (value: any): any => {
-  if (Array.isArray(value)) {
-    return value.map(toCamelCaseKeys);
-  }
-
-  if (value && typeof value === 'object' && value.constructor === Object) {
-    const result: Record<string, any> = {};
-    for (const [key, val] of Object.entries(value)) {
-      result[toCamelCaseKey(key)] = toCamelCaseKeys(val);
-    }
-    return result;
-  }
-
-  return value;
-};
-
 export class Racecard {
   track: string;
   date: string;
@@ -24,7 +5,6 @@ export class Racecard {
   races: Race[];
 
   constructor(data: any = {}) {
-    data = toCamelCaseKeys(data);
     this.track = data.track ?? '';
     this.date = data.date ?? '';
     this.longDate = data.longDate ?? '';
@@ -32,12 +12,11 @@ export class Racecard {
   }
 
   static fromObject(obj: any): Racecard {
-    const data = toCamelCaseKeys(obj);
     return new Racecard({
-      track: data.track,
-      date: data.date,
-      longDate: data.longDate,
-      races: data.races?.map((r: any) => Race.fromObject(r)) ?? []
+      track: obj.track,
+      date: obj.date,
+      longDate: obj.longDate,
+      races: obj.races?.map((r: any) => Race.fromObject(r)) ?? []
     });
   }
 
@@ -97,7 +76,6 @@ export class Race {
   horses: Horse[];
 
   constructor(data: any = {}) {
-    data = toCamelCaseKeys(data);
     this.raceNumber = data.raceNumber ?? null;
     this.distance = data.distance ?? null;
     this.surface = data.surface ?? '';
@@ -144,10 +122,9 @@ export class Race {
   }
 
   static fromObject(obj: any): Race {
-    const data = toCamelCaseKeys(obj);
     return new Race({
-      ...data,
-      horses: data.horses?.map((h: any) => Horse.fromObject(h)) ?? []
+      ...obj,
+      horses: obj.horses?.map((h: any) => Horse.fromObject(h)) ?? []
     });
   }
 
@@ -347,7 +324,6 @@ export class Horse {
   keyTrainerStats: KeyTrainerStat[];
 
   constructor(data: any = {}) {
-    data = toCamelCaseKeys(data);
     this.postPosition = data.postPosition ?? null;
     this.entry = data.entry ?? '';
     this.claimingPriceOfHorse = data.claimingPriceOfHorse ?? null;
@@ -495,12 +471,11 @@ export class Horse {
   }
 
   static fromObject(obj: any): Horse {
-    const data = toCamelCaseKeys(obj);
     return new Horse({
-      ...data,
-      workouts: data.workouts?.map((w: any) => Workout.fromObject(w)) ?? [],
-      pastPerformances: data.pastPerformances?.map((p: any) => PastPerformance.fromObject(p)) ?? [],
-      keyTrainerStats: data.keyTrainerStats?.map((k: any) => KeyTrainerStat.fromObject(k)) ?? []
+      ...obj,
+      workouts: obj.workouts?.map((w: any) => Workout.fromObject(w)) ?? [],
+      pastPerformances: obj.pastPerformances?.map((p: any) => PastPerformance.fromObject(p)) ?? [],
+      keyTrainerStats: obj.keyTrainerStats?.map((k: any) => KeyTrainerStat.fromObject(k)) ?? []
     });
   }
 
@@ -688,17 +663,16 @@ export class Workout {
   }
 
   static fromObject(obj: any): Workout {
-    const data = toCamelCaseKeys(obj);
     return new Workout(
-      data.date ?? '',
-      data.time ?? null,
-      data.track ?? '',
-      data.distance ?? null,
-      data.condition ?? '',
-      data.description ?? '',
-      data.mainInnerTrackIndicator ?? '',
-      data.workoutsThatDayDistance ?? null,
-      data.rank ?? null
+      obj.date ?? '',
+      obj.time ?? null,
+      obj.track ?? '',
+      obj.distance ?? null,
+      obj.condition ?? '',
+      obj.description ?? '',
+      obj.mainInnerTrackIndicator ?? '',
+      obj.workoutsThatDayDistance ?? null,
+      obj.rank ?? null
     );
   }
 
@@ -725,7 +699,6 @@ export class KeyTrainerStat {
   roi: number | null;
 
   constructor(data: any = {}) {
-    data = toCamelCaseKeys(data);
     this.category = data.category ?? '';
     this.starts = data.starts ?? null;
     this.winPct = data.winPct ?? null;
@@ -734,13 +707,12 @@ export class KeyTrainerStat {
   }
 
   static fromObject(obj: any): KeyTrainerStat {
-    const data = toCamelCaseKeys(obj);
     return new KeyTrainerStat({
-      category: data.category,
-      starts: data.starts,
-      winPct: data.winPct,
-      inTheMoneyPct: data.inTheMoneyPct,
-      roi: data.roi
+      category: obj.category,
+      starts: obj.starts,
+      winPct: obj.winPct,
+      inTheMoneyPct: obj.inTheMoneyPct,
+      roi: obj.roi
     });
   }
 
@@ -858,7 +830,6 @@ export class PastPerformance {
   equibaseAbbreviatedRaceCondition: string;
 
   constructor(data: any = {}) {
-    data = toCamelCaseKeys(data);
     this.raceDate = data.raceDate ?? '';
     this.daysSinceLastRace = data.daysSinceLastRace ?? null;
     this.trackCode = data.trackCode ?? '';
