@@ -116,13 +116,14 @@ function computePrimePowerComparisons() {
     primePowerComparisons.value = result;
 }
 
-watch(racecard, (_rc) => {
+watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
+
+    await invoke('set_print_racecard_enabled', {enabled: !!rc }).catch(() => { });
 });
 
 watch([racecard, raceNumber], () => {
     computePrimePowerComparisons();
-    console.log("Prime Power Comparisons:", primePowerComparisons.value);
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
