@@ -1,24 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Race } from '../../models/racecard'
+import { Race } from '../../models/racecard'
 import Transformers from '../../utils/transformers'
 
 const props = withDefaults(defineProps<{ race: Race | null; prefixColor?: string }>(), {
     prefixColor: 'var(--accent-yellow)'
 })
 
-const tuple = computed(() => {
-    if (!props.race) return ['', false]
-    return Transformers.getRaceClassification(props.race)
-})
-
-const prefix = computed(() => tuple.value[0])
-const race_classification = computed(() => tuple.value[1])
+const raceClassification = Transformers.getRaceClassification(props.race!);
 </script>
 
 <template>
     <span class="container">
-        <span class="prefix-adjust" :style="{ color: props.prefixColor }">{{ prefix }}</span>{{ race_classification }}
+        <span class="prefix-adjust" :style="{ color: props.prefixColor }">{{ raceClassification.prefix }}</span>{{ raceClassification.classification }}
     </span>
 </template>
 

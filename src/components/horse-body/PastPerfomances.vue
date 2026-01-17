@@ -123,11 +123,11 @@ function positionClass(position: string) {
                 <div>{{ fraction2[i]?.int }}<span class="use-superscript">{{ fraction2[i]?.fraction }}</span></div>
                 <div>{{ fraction3[i]?.int }}<span class="use-superscript">{{ fraction3[i]?.fraction }}</span></div>
                 <div>{{ finalTime[i]?.int }}<span class="use-superscript">{{ finalTime[i]?.fraction }}</span></div>
-                <div><span class="color-accent-yellow">{{ race_classification[i]?.[0] }}</span>{{
-                    race_classification[i]?.[1] }}</div>
-                <div class="align-right">{{ e1_e2_lp[i]?.[0] }}</div>
-                <div class="align-right">{{ e1_e2_lp[i]?.[1] }}</div>
-                <div class="align-right">{{ e1_e2_lp[i]?.[2] }}</div>
+                <div><span class="color-accent-yellow">{{ race_classification[i]?.prefix }}</span>{{
+                    race_classification[i]?.classification }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.e1 }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.e2 }}</div>
+                <div class="align-right">{{ e1_e2_lp[i]?.latePace }}</div>
                 <div class="align-right">{{ pps[i].brisSpeedRating }}</div>
                 <div class="align-right">{{ pps[i].postPosition }}</div>
                 <div class="align-right" :class="positionClass(pps[i].startCallPosition.toString())">{{ pps[i].startCallPosition }}</div>

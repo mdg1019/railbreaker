@@ -17,6 +17,21 @@ export class FractionalTime {
     ) {}
 }
 
+export class E1E2LatePace {
+    constructor(
+        public e1: string,
+        public e2: string,
+        public latePace: string
+    ) {}
+}
+
+export class RaceClassification {
+    constructor(
+        public prefix: string,
+        public classification: string
+    ) {}
+}
+
 export default class Transformers {
     static TITLE_EXCEPTIONS = new Set([
         "and",
@@ -52,192 +67,23 @@ export default class Transformers {
         "Dec",
     ];
 
-    static getRaceClassification(race: Race): [string, string] {
-        if (!race) return ["", ""];
+    static buildRaceConditions(race: Race): string {
+        let result =
+            race.raceConditionsLine1 +
+            race.raceConditionsLine2 +
+            race.raceConditionsLine3 +
+            race.raceConditionsLine4 +
+            race.raceConditionsLine5 +
+            race.raceConditionsLine6;
 
-        let raceClassification = race.todaysRaceClassification;
+        result = this.commas(result).trim();
+        let pursePosition = result.toLowerCase().indexOf("purse");
 
-        if (race.raceType == "M" && raceClassification.startsWith("Md ")) {
-            raceClassification = "MC " + raceClassification.slice(3);
-        }
-
-        let prefix = "";
-
-        if (race.ageSexRestrictions[2].toLowerCase() == "f") {
-            prefix += "\u00EA";
-        }
-
-        if (race.statebredFlag.toLowerCase() == "s") {
-            prefix += "\u00EB";
-        }
-
-        return [prefix, raceClassification];
-    }
-
-    static getPPRaceClassification(pp: PastPerformance): [string, string] {
-        let prefix = "";
-        let classification = pp.raceClassication;
-
-        let lowercasePrefixes = classification.match(/^([a-z]+)/);
-        classification = classification.slice(
-            lowercasePrefixes ? lowercasePrefixes[0].length : 0
-        );
-
-        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("f") !== -1) {
-            prefix += "\u00EA";
-        }
-
-        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("s") !== -1) {
-            prefix += "\u00EB";
-        }
-
-        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("r") !== -1) {
-            prefix += "\u00EC";
-        }
-
-        let mcClassification = classification.replace(/^Md\s*(\d+)/, "MC$1");
-
-        if (mcClassification !== classification) {
-            classification = mcClassification;
-        } else {
-            if (classification === "MdSpWt") {
-                classification =
-                    "Mdn " +
-                    (pp.purse ? Math.floor(pp.purse / 1000) + "k" : "");
-            }
-        }
-
-        let claimed = false;
-
-        if (pp.claimingPrice && pp.claimingPrice > 0) {
-            if (classification.endsWith("c")) {
-                classification = classification.slice(0, -1);
-                claimed = true;
-            }
-        }
-
-        if (classification.endsWith("l")) {
-            classification = classification.slice(0, -1) + "L";
-        }
-
-        if (claimed) {
-            classification += "-c";
-        }
-
-        if (pp.highClaimingPriceOfRace && !pp.claimingPrice) {
-            classification += "-N";
-        }
-
-        return [prefix, classification];
-    }
-
-    static getDistanceString(distance: number): string {
-        const FRACTION_UNICODE_MAP: { [k: number]: string } = {
-            0.0625: "\u00C0", // 1/16
-            0.125: "\u00C1", // 2/16
-            0.1875: "\u00C2", // 3/16
-            0.25: "\u00C3", // 4/16
-            0.3125: "\u00C4", // 5/16
-            0.375: "\u00C5", // 6/16
-            0.4375: "\u00C6", // 7/16
-            0.5: "\u00C7", // 8/16
-            0.5625: "\u00C8", // 9/16
-            0.625: "\u00C9", // 10/16
-            0.6875: "\u00CA", // 11/16
-            0.75: "\u00CB", // 12/16
-            0.8125: "\u00CC", // 13/16
-            0.875: "\u00CD", // 14/16
-            0.9375: "\u00CE", // 15/16
-        };
-
-        if (distance < 0) {
-            distance = -distance;
-        }
-
-        let value = 0;
-
-        switch (distance) {
-            case 1800: // 1 mile 40 yards
-                return "1\u00D9";
-            case 1830: // 1 mile 70 yards
-                return "1\u00DA";
-        }
-
-        if (distance >= 1760) {
-            value = distance / 1760;
-        } else {
-            value = distance / 220;
-        }
-
-        let whole = Math.floor(value);
-        let rem = value - whole;
-
-        let fracStr = FRACTION_UNICODE_MAP[rem] || "";
-
-        let result = String(whole) + fracStr;
-
-        return result;
-    }
-
-    static getDistanceLength(distance: number): string {
-        let result = this.getDistanceString(distance);
-
-        if (distance === 1760) {
-            result += " Mile";
-        } else if (distance > 1760) {
-            result += " Miles";
-        } else result += " Furlongs";
-
-        if (distance < 0) {
-            result += "*";
+        if (pursePosition >= 0) {
+            result = result.slice(pursePosition);
         }
 
         return result;
-    }
-
-    static getShortLength(distance: number | null): string {
-        if (distance === null || distance === undefined) {
-            return "";
-        }
-
-        let result = this.getDistanceString(distance);
-
-        if (result.length === 1) {
-            result += "f";
-        }
-
-        if (distance < 0) {
-            result += "*";
-        }
-
-        return result;
-    }
-
-    static getAgeSexRestrictionString(restriction: string): string {
-        const AGE_MAP: { [k: string]: string } = {
-            A: "2",
-            B: "3",
-            C: "4",
-            D: "5",
-            E: "3&4",
-            F: "4&5",
-            G: "3,4&5",
-            H: "All Ages",
-        };
-
-        const SEX_MAP: { [k: string]: string } = {
-            M: "Mares & Fillies",
-            C: "Colts & Geldings",
-            F: "Fillies",
-        };
-
-        let result = AGE_MAP[restriction[0]];
-
-        result += restriction[1] == "U" ? "&up" : "yo";
-
-        if (restriction[2] == "N") return result;
-
-        return result + " " + SEX_MAP[restriction[2]];
     }
 
     static capitalize(s: string): string {
@@ -270,126 +116,6 @@ export default class Transformers {
                 })
                 .join("/");
         });
-    }
-
-    static capitalizeWords(s: string): string {
-        if (!s) return "";
-
-        return s
-            .trim()
-            .split(/\s+/)
-            .map((word) => {
-                return word
-                    .split("/")
-                    .map((part) => {
-                        const m = part.match(
-                            /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
-                        );
-                        if (m) {
-                            const prefix = m[1] || "";
-                            const core = m[2] || "";
-                            const suffix = m[3] || "";
-
-                            return (
-                                prefix +
-                                core.charAt(0).toUpperCase() +
-                                core.slice(1).toLowerCase() +
-                                suffix
-                            );
-                        }
-
-                        return (
-                            part.charAt(0).toUpperCase() +
-                            part.slice(1).toLowerCase()
-                        );
-                    })
-                    .join("/");
-            })
-            .join(" ");
-    }
-
-    static commas(s: string): string {
-        return s.replace(/;/g, ",");
-    }
-
-    static buildRaceConditions(race: Race): string {
-        let result =
-            race.raceConditionsLine1 +
-            race.raceConditionsLine2 +
-            race.raceConditionsLine3 +
-            race.raceConditionsLine4 +
-            race.raceConditionsLine5 +
-            race.raceConditionsLine6;
-
-        result = this.commas(result).trim();
-        let pursePosition = result.toLowerCase().indexOf("purse");
-
-        if (pursePosition >= 0) {
-            result = result.slice(pursePosition);
-        }
-
-        return result;
-    }
-
-    static createOddsString(odds: number | null): string {
-        if (odds === null || odds === undefined) {
-            return "-";
-        }
-
-        for (let i = 1; i <= 10; i++) {
-            let numerator = odds * i;
-
-            if (Number.isInteger(numerator)) {
-                return `${numerator}/${i}`;
-            }
-        }
-
-        return "-";
-    }
-
-    static createPercentageString(
-        num: number | null | undefined,
-        denom: number | null | undefined
-    ): string {
-        if (num === null || num === undefined) return "-";
-        if (denom === null || denom === undefined) return "-";
-        if (denom === 0) return "-";
-
-        const pct = Math.round((num / denom) * 100);
-        return `${pct}%`;
-    }
-
-    static createDollarString(num: number | null | undefined): string {
-        if (num === null || num === undefined) return "-";
-
-        const rounded = Math.round(num);
-        return "$" + rounded.toLocaleString("en-US");
-    }
-
-    static createAgeString(
-        birthMonth: number | null | undefined,
-        birthYearTwoDigits: number | null | undefined
-    ): string {
-        if (birthMonth === null || birthMonth === undefined) return "";
-        if (birthYearTwoDigits === null || birthYearTwoDigits === undefined)
-            return "";
-
-        const month = Math.floor(birthMonth);
-        const year = 2000 + Math.floor(birthYearTwoDigits);
-
-        if (month < 1 || month > 12 || year < 0 || year > 9999) return "";
-
-        const now = new Date();
-        const years = now.getFullYear() - year;
-
-        return `${years} (${this.MONTH_ABBREVIATIONS[month - 1]})`;
-    }
-
-    static formatOneDecimal(value: number | null | undefined): string {
-        if (value === null || value === undefined) return "";
-        if (Number.isNaN(value)) return "";
-
-        return value.toFixed(1);
     }
 
     static capitalizeFullName(input: string): string {
@@ -463,26 +189,98 @@ export default class Transformers {
             .join(" ");
     }
 
-    static getJockeyName(input: string): string {
-        if (!input) return "";
+    static capitalizeWords(s: string): string {
+        if (!s) return "";
 
-        const tokens = input.trim().split(/\s+/).filter(Boolean);
-        if (tokens.length === 0) return "";
+        return s
+            .trim()
+            .split(/\s+/)
+            .map((word) => {
+                return word
+                    .split("/")
+                    .map((part) => {
+                        const m = part.match(
+                            /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
+                        );
+                        if (m) {
+                            const prefix = m[1] || "";
+                            const core = m[2] || "";
+                            const suffix = m[3] || "";
 
-        const rawLast = tokens[0].replace(/[^A-Za-z'\-]/g, "");
-        const last = rawLast ? this.capitalize(rawLast) : "";
+                            return (
+                                prefix +
+                                core.charAt(0).toUpperCase() +
+                                core.slice(1).toLowerCase() +
+                                suffix
+                            );
+                        }
 
-        const initials: string[] = [];
-        for (let i = 1; i < tokens.length; i++) {
-            const cleaned = tokens[i].replace(/[^A-Za-z]/g, "");
-            if (cleaned.length > 0) {
-                initials.push(cleaned.charAt(0).toUpperCase());
+                        return (
+                            part.charAt(0).toUpperCase() +
+                            part.slice(1).toLowerCase()
+                        );
+                    })
+                    .join("/");
+            })
+            .join(" ");
+    }
+
+    static commas(s: string): string {
+        return s.replace(/;/g, ",");
+    }
+
+    static createAgeString(
+        birthMonth: number | null | undefined,
+        birthYearTwoDigits: number | null | undefined
+    ): string {
+        if (birthMonth === null || birthMonth === undefined) return "";
+        if (birthYearTwoDigits === null || birthYearTwoDigits === undefined)
+            return "";
+
+        const month = Math.floor(birthMonth);
+        const year = 2000 + Math.floor(birthYearTwoDigits);
+
+        if (month < 1 || month > 12 || year < 0 || year > 9999) return "";
+
+        const now = new Date();
+        const years = now.getFullYear() - year;
+
+        return `${years} (${this.MONTH_ABBREVIATIONS[month - 1]})`;
+    }
+
+    static createDollarString(num: number | null | undefined): string {
+        if (num === null || num === undefined) return "-";
+
+        const rounded = Math.round(num);
+        return "$" + rounded.toLocaleString("en-US");
+    }
+
+    static createOddsString(odds: number | null): string {
+        if (odds === null || odds === undefined) {
+            return "-";
+        }
+
+        for (let i = 1; i <= 10; i++) {
+            let numerator = odds * i;
+
+            if (Number.isInteger(numerator)) {
+                return `${numerator}/${i}`;
             }
         }
 
-        if (initials.length === 0) return last;
+        return "-";
+    }
 
-        return `${last} ${initials.join(" ")}`;
+    static createPercentageString(
+        num: number | null | undefined,
+        denom: number | null | undefined
+    ): string {
+        if (num === null || num === undefined) return "-";
+        if (denom === null || denom === undefined) return "-";
+        if (denom === 0) return "-";
+
+        const pct = Math.round((num / denom) * 100);
+        return `${pct}%`;
     }
 
     static formatDateShort(dateStr: string): string {
@@ -512,37 +310,135 @@ export default class Transformers {
         return `${String(day).padStart(2, "0")}${monthAbbr}${yy}`;
     }
 
-    static parseNumberOrNull(value: any): number | null {
-        if (value === null || value === undefined) return null;
-        const s = String(value).trim();
-        if (s === "") return null;
-        const cleaned = s.replace(/[^0-9.-]/g, "");
-        if (cleaned === "") return null;
-        const n = Number(cleaned);
-        return Number.isFinite(n) ? n : null;
+    static formatOneDecimal(value: number | null | undefined): string {
+        if (value === null || value === undefined) return "";
+        if (Number.isNaN(value)) return "";
+
+        return value.toFixed(1);
     }
 
-    static getSurfaceString(pp: PastPerformance): string {
-        let result = "";
+    static getAgeSexRestrictionString(restriction: string): string {
+        const AGE_MAP: { [k: string]: string } = {
+            A: "2",
+            B: "3",
+            C: "4",
+            D: "5",
+            E: "3&4",
+            F: "4&5",
+            G: "3,4&5",
+            H: "All Ages",
+        };
 
-        if (pp.codeForPriorRaces.toLowerCase() === "x") {
-            return "\u00f2";
-        }
+        const SEX_MAP: { [k: string]: string } = {
+            M: "Mares & Fillies",
+            C: "Colts & Geldings",
+            F: "Fillies",
+        };
 
-        if (pp.previousAllWeatherSurfaceIndicator === "A") {
-            return "\u00f1";
-        }
+        let result = AGE_MAP[restriction[0]];
 
-        switch (pp.surface) {
-            case "T":
-                return "\u00db";
-            case "t":
-                return "\u00dc";
-            case "d":
-                return "\u00dd";
+        result += restriction[1] == "U" ? "&up" : "yo";
+
+        if (restriction[2] == "N") return result;
+
+        return result + " " + SEX_MAP[restriction[2]];
+    }
+
+    static getDistanceLength(distance: number): string {
+        let result = this.getDistanceString(distance);
+
+        if (distance === 1760) {
+            result += " Mile";
+        } else if (distance > 1760) {
+            result += " Miles";
+        } else result += " Furlongs";
+
+        if (distance < 0) {
+            result += "*";
         }
 
         return result;
+    }
+
+    static getDistanceString(distance: number): string {
+        const FRACTION_UNICODE_MAP: { [k: number]: string } = {
+            0.0625: "\u00C0", // 1/16
+            0.125: "\u00C1", // 2/16
+            0.1875: "\u00C2", // 3/16
+            0.25: "\u00C3", // 4/16
+            0.3125: "\u00C4", // 5/16
+            0.375: "\u00C5", // 6/16
+            0.4375: "\u00C6", // 7/16
+            0.5: "\u00C7", // 8/16
+            0.5625: "\u00C8", // 9/16
+            0.625: "\u00C9", // 10/16
+            0.6875: "\u00CA", // 11/16
+            0.75: "\u00CB", // 12/16
+            0.8125: "\u00CC", // 13/16
+            0.875: "\u00CD", // 14/16
+            0.9375: "\u00CE", // 15/16
+        };
+
+        if (distance < 0) {
+            distance = -distance;
+        }
+
+        let value = 0;
+
+        switch (distance) {
+            case 1800: // 1 mile 40 yards
+                return "1\u00D9";
+            case 1830: // 1 mile 70 yards
+                return "1\u00DA";
+        }
+
+        if (distance >= 1760) {
+            value = distance / 1760;
+        } else {
+            value = distance / 220;
+        }
+
+        let whole = Math.floor(value);
+        let rem = value - whole;
+
+        let fracStr = FRACTION_UNICODE_MAP[rem] || "";
+
+        let result = String(whole) + fracStr;
+
+        return result;
+    }
+
+    static getE1E2AndLatePaceString(
+        pp: PastPerformance
+    ): E1E2LatePace {
+        if (!pp.distance) return new E1E2LatePace("", "", "");
+
+        let e1 = "";
+        let e2 = "";
+        let latePace = "";
+
+        let distance = pp.distance;
+
+        if (distance < 0) distance = -distance;
+
+        if (distance < 1760) {
+            if (!pp.bris4fPace) {
+                e1 = "";
+                e2 = pp.bris2fPace ? String(pp.bris2fPace) : "";
+            } else {
+                e1 = pp.bris2fPace ? String(pp.bris2fPace) : "";
+                e2 = pp.bris4fPace ? String(pp.bris4fPace) : "";
+            }
+        } else {
+            e1 = pp.bris4fPace ? String(pp.bris4fPace) : "";
+            e2 = pp.bris6fPace ? String(pp.bris6fPace) : "";
+        }
+
+        latePace = pp.brisLatePace ? String(pp.brisLatePace) : "";
+
+        console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
+
+        return new E1E2LatePace(e1, e2, latePace);
     }
 
     static getFractionalTimeString(time: number | null): FractionalTime {
@@ -572,37 +468,83 @@ export default class Transformers {
         return new FractionalTime(main, fifths === 0 ? " " : String(fifths));
     }
 
-    static getE1E2AndLatePaceString(
-        pp: PastPerformance
-    ): [string, string, string] {
-        if (!pp.distance) return ["", "", ""];
+    static getJockeyName(input: string): string {
+        if (!input) return "";
 
-        let e1 = "";
-        let e2 = "";
-        let latePace = "";
+        const tokens = input.trim().split(/\s+/).filter(Boolean);
+        if (tokens.length === 0) return "";
 
-        let distance = pp.distance;
+        const rawLast = tokens[0].replace(/[^A-Za-z'\-]/g, "");
+        const last = rawLast ? this.capitalize(rawLast) : "";
 
-        if (distance < 0) distance = -distance;
-
-        if (distance < 1760) {
-            if (!pp.bris4fPace) {
-                e1 = "";
-                e2 = pp.bris2fPace ? String(pp.bris2fPace) : "";
-            } else {
-                e1 = pp.bris2fPace ? String(pp.bris2fPace) : "";
-                e2 = pp.bris4fPace ? String(pp.bris4fPace) : "";
+        const initials: string[] = [];
+        for (let i = 1; i < tokens.length; i++) {
+            const cleaned = tokens[i].replace(/[^A-Za-z]/g, "");
+            if (cleaned.length > 0) {
+                initials.push(cleaned.charAt(0).toUpperCase());
             }
-        } else {
-            e1 = pp.bris4fPace ? String(pp.bris4fPace) : "";
-            e2 = pp.bris6fPace ? String(pp.bris6fPace) : "";
         }
 
-        latePace = pp.brisLatePace ? String(pp.brisLatePace) : "";
+        if (initials.length === 0) return last;
 
-        console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
+        return `${last} ${initials.join(" ")}`;
+    }
 
-        return [e1, e2, latePace];
+    static getPPRaceClassification(pp: PastPerformance): RaceClassification {
+        let prefix = "";
+        let classification = pp.raceClassication;
+
+        let lowercasePrefixes = classification.match(/^([a-z]+)/);
+        classification = classification.slice(
+            lowercasePrefixes ? lowercasePrefixes[0].length : 0
+        );
+
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("f") !== -1) {
+            prefix += "\u00EA";
+        }
+
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("s") !== -1) {
+            prefix += "\u00EB";
+        }
+
+        if (lowercasePrefixes && lowercasePrefixes[0].indexOf("r") !== -1) {
+            prefix += "\u00EC";
+        }
+
+        let mcClassification = classification.replace(/^Md\s*(\d+)/, "MC$1");
+
+        if (mcClassification !== classification) {
+            classification = mcClassification;
+        } else {
+            if (classification === "MdSpWt") {
+                classification =
+                    "Mdn " +
+                    (pp.purse ? Math.floor(pp.purse / 1000) + "k" : "");
+            }
+        }
+
+        let claimed = false;
+
+        if (pp.claimingPrice && pp.claimingPrice > 0) {
+            if (classification.endsWith("c")) {
+                classification = classification.slice(0, -1);
+                claimed = true;
+            }
+        }
+
+        if (classification.endsWith("l")) {
+            classification = classification.slice(0, -1) + "L";
+        }
+
+        if (claimed) {
+            classification += "-c";
+        }
+
+        if (pp.highClaimingPriceOfRace && !pp.claimingPrice) {
+            classification += "-N";
+        }
+
+        return new RaceClassification(prefix, classification);
     }
 
     static getPositionAndLengthsBehindStrings(position: number | null, lengthsBehind: number | null): PositionLengthsBehind {
@@ -648,6 +590,79 @@ export default class Transformers {
         console.log(`Lengths Behind: ${lengthsBehind}, Int: ${lengthsBehindInt}, Fraction: ${lengthsBehindFraction}`);
 
         return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
+    }
+
+    static getRaceClassification(race: Race): RaceClassification {
+        if (!race) return new RaceClassification("", "");
+
+        let raceClassification = race.todaysRaceClassification;
+
+        if (race.raceType == "M" && raceClassification.startsWith("Md ")) {
+            raceClassification = "MC " + raceClassification.slice(3);
+        }
+
+        let prefix = "";
+
+        if (race.ageSexRestrictions[2].toLowerCase() == "f") {
+            prefix += "\u00EA";
+        }
+
+        if (race.statebredFlag.toLowerCase() == "s") {
+            prefix += "\u00EB";
+        }
+
+        return new RaceClassification(prefix, raceClassification);
+    }
+
+    static getShortLength(distance: number | null): string {
+        if (distance === null || distance === undefined) {
+            return "";
+        }
+
+        let result = this.getDistanceString(distance);
+
+        if (result.length === 1) {
+            result += "f";
+        }
+
+        if (distance < 0) {
+            result += "*";
+        }
+
+        return result;
+    }
+
+    static getSurfaceString(pp: PastPerformance): string {
+        let result = "";
+
+        if (pp.codeForPriorRaces.toLowerCase() === "x") {
+            return "\u00f2";
+        }
+
+        if (pp.previousAllWeatherSurfaceIndicator === "A") {
+            return "\u00f1";
+        }
+
+        switch (pp.surface) {
+            case "T":
+                return "\u00db";
+            case "t":
+                return "\u00dc";
+            case "d":
+                return "\u00dd";
+        }
+
+        return result;
+    }
+
+    static parseNumberOrNull(value: any): number | null {
+        if (value === null || value === undefined) return null;
+        const s = String(value).trim();
+        if (s === "") return null;
+        const cleaned = s.replace(/[^0-9.-]/g, "");
+        if (cleaned === "") return null;
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : null;
     }
 
     static stripLeadingDate(value: string): string {
