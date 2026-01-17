@@ -21,8 +21,8 @@ export async function openPrintWindowAndSendPayload(
 ) {
     const label = opts.windowLabel ?? "print";
     const url = "#/print";
-    const width = opts.width ?? 950;
-    const height = opts.height ?? 1100;
+    const width = opts.width ?? 816;
+    const height = opts.height ?? 1056;
     const timeoutMs = opts.timeoutMs ?? 8000;
 
     const win = new WebviewWindow(label, {
