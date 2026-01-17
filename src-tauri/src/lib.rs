@@ -10,6 +10,7 @@ use tauri::{Emitter, Manager};
 use commands::global_state_commands::load_global_state;
 use commands::config_file_commands::{load_config_file, save_config_file, get_config_file_path};
 use commands::process_zip_file_commands::process_zip_file;
+use commands::print_racecard::print_racecard;
 use commands::process_racecard_file_commands::process_racecard_file;
 use commands::exit_app_command::exit_app;
 use commands::load_racecard_file_command::load_racecard_file;
@@ -52,6 +53,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             load_config_file,
             save_config_file,
+            print_racecard,
             load_global_state,
             process_zip_file,
             process_racecard_file,
@@ -188,6 +190,10 @@ fn on_menu_event(app: &tauri::AppHandle, event: tauri::menu::MenuEvent) {
         }
         "exit" => {
             let _ = app.emit("menu-exit", ()).unwrap();
+        }
+        "print-racecard" => {
+            print_racecard(app.clone());
+            let _ = app.emit("menu-print", ()).unwrap();
         }
         _ => {}
     }

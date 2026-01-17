@@ -20,6 +20,7 @@ const configFileStore = useConfigFileStore();
 
 let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
+let unlistenPrintRacecard: (() => void);
 let unlistenExit: (() => void);
 
 const isProcessingZip = ref(false);
@@ -221,6 +222,10 @@ onMounted(async () => {
         }
     });
 
+    unlistenPrintRacecard = await listen("menu-print", async () => {
+        console.log("Print Racecard menu item clicked");
+    });
+
     unlistenExit = await listen("menu-exit", async () => {
         await invoke('exit_app');
     });
@@ -232,6 +237,7 @@ onMounted(async () => {
 onUnmounted(() => {
     unlistenOpen();
     unlistenOpenZip();
+    unlistenPrintRacecard();
     unlistenExit();
 });
 </script>
