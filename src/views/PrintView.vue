@@ -4,6 +4,7 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { RaceCardPrintPayload } from "../models/print";
 import { PRINT_PAYLOAD_EVENT } from "../utils/openPrintWindowEvent";
+import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import "../scss/_main.scss";
 
 const payload = ref<RaceCardPrintPayload | null>(null);
@@ -71,11 +72,16 @@ onBeforeUnmount(() => {
     <div class="container">
         <div class="page">
             <header class="hdr">
-                <h1 class="title">{{ payload?.raceCard.track ?? "Print" }}</h1>
+                <RacecardHeader
+                    v-if="payload"
+                    :racecard="payload!.raceCard"
+                    :race="1"
+                    :print="true"
+                 />
             </header>
 
             <main v-if="payload">
-                Race Card Goes Here
+                EMPTY!!!
             </main>
         </div>
     </div>

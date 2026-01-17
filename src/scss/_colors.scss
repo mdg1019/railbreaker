@@ -27,12 +27,20 @@
     :root {
         --bg: white;
         --fg: black;
+        --accent-yellow: black;
+        --accent-green: black;
+        --accent-red: black;
+        --accent-purple: black;
     }
 }
 
 .print-preview {
     --bg: white;
     --fg: black;
+    --accent-yellow: black;
+    --accent-green: black;
+    --accent-red: black;
+    --accent-purple: black;
 }
 
 $hyperlink-active-color: rgba(color.scale(blue, $lightness: 30%), 0.8);
