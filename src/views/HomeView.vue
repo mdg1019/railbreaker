@@ -12,6 +12,7 @@ import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
 import MessageDialog from "../components/ui/MessageDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
+import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 
@@ -20,6 +21,7 @@ const configFileStore = useConfigFileStore();
 
 let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
+let unlistenPrintRacecard: (() => void);
 let unlistenExit: (() => void);
 
 const isProcessingZip = ref(false);
@@ -115,13 +117,14 @@ function computePrimePowerComparisons() {
     primePowerComparisons.value = result;
 }
 
-watch(racecard, (_rc) => {
+watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
+
+    await invoke('set_print_racecard_enabled', {enabled: !!rc }).catch(() => { });
 });
 
 watch([racecard, raceNumber], () => {
     computePrimePowerComparisons();
-    console.log("Prime Power Comparisons:", primePowerComparisons.value);
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
@@ -221,6 +224,18 @@ onMounted(async () => {
         }
     });
 
+    unlistenPrintRacecard = await listen("menu-print", async () => {
+        if (!racecard.value) {
+            return;
+        }
+
+        const raceCardPrintPayload = {
+            raceCard: racecard.value,
+        };
+
+        await openPrintWindowAndSendPayload(raceCardPrintPayload, {});
+    });
+
     unlistenExit = await listen("menu-exit", async () => {
         await invoke('exit_app');
     });
@@ -232,6 +247,7 @@ onMounted(async () => {
 onUnmounted(() => {
     unlistenOpen();
     unlistenOpenZip();
+    unlistenPrintRacecard();
     unlistenExit();
 });
 </script>

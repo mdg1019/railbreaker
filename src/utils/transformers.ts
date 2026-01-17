@@ -436,8 +436,6 @@ export default class Transformers {
 
         latePace = pp.brisLatePace ? String(pp.brisLatePace) : "";
 
-        console.log(`E1: ${e1}, E2: ${e2}, Late Pace: ${latePace}`);
-
         return new E1E2LatePace(e1, e2, latePace);
     }
 
