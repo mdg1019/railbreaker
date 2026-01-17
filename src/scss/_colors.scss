@@ -19,8 +19,20 @@
     --accent-yellow: #f5c242;
     --accent-green: #22c55e;
     --accent-red: #ef4444;
-    --accent-purple: #bba2ff; 
+    --accent-purple: #bba2ff;
     --label: #3584e4;
+}
+
+@media print {
+    :root {
+        --bg: white;
+        --fg: black;
+    }
+}
+
+.print-preview {
+    --bg: white;
+    --fg: black;
 }
 
 $hyperlink-active-color: rgba(color.scale(blue, $lightness: 30%), 0.8);
