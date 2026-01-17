@@ -94,12 +94,23 @@ onBeforeUnmount(() => {
 
 .page {
     font-family: MGSans, sans-serif;
-    padding: 18px;
+    margin-top: 56px;
 }
 
 
+.hdr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
 @media print {
     @page {
+        size: letter;
         margin: 0.4in;
     }
 }
