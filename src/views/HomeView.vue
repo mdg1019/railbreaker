@@ -12,6 +12,7 @@ import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
 import MessageDialog from "../components/ui/MessageDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
+import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 
@@ -224,7 +225,15 @@ onMounted(async () => {
     });
 
     unlistenPrintRacecard = await listen("menu-print", async () => {
-        console.log("Print Racecard menu item clicked");
+        if (!racecard.value) {
+            return;
+        }
+
+        const raceCardPrintPayload = {
+            raceCard: racecard.value,
+        };
+
+        await openPrintWindowAndSendPayload(raceCardPrintPayload, {});
     });
 
     unlistenExit = await listen("menu-exit", async () => {
