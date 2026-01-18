@@ -1,4 +1,4 @@
-use tauri::{menu::{Menu, MenuItem, Submenu, PredefinedMenuItem}, App};
+use tauri::{menu::{Menu, MenuItem, Submenu, PredefinedMenuItem}, App, Manager};
 
 pub fn setup_menus(app: &App) -> tauri::Result<()> {
     let open = MenuItem::with_id(app, "open", "Open Racecard…", true, Some("CmdOrCtrl+O"))?;
@@ -19,7 +19,9 @@ pub fn setup_menus(app: &App) -> tauri::Result<()> {
 
     let menu = Menu::with_items(app, &[&file_menu])?;
 
-    app.set_menu(menu)?;
+    if let Some(window) = app.get_webview_window("main") {
+        window.set_menu(menu)?;
+    }
 
     Ok(())
 }
