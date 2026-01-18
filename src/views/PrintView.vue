@@ -1,13 +1,37 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, nextTick } from "vue";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { onMounted, onBeforeUnmount, ref, nextTick, computed } from "vue";
+import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import type { Racecard } from "../models/racecard";
 import type { RaceCardPrintPayload } from "../models/print";
-import { PRINT_PAYLOAD_EVENT } from "../utils/openPrintWindowEvent";
+import { PRINT_PAYLOAD_EVENT, PRINT_PAYLOAD_STORAGE_KEY, PRINT_READY_EVENT } from "../utils/openPrintWindowEvent";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import "../scss/_main.scss";
 
-const payload = ref<RaceCardPrintPayload | null>(null);
+const payload = ref<Racecard | RaceCardPrintPayload | null>(null);
+const printRaces = ref<number[]>([]);
+let hasPrinted = false;
+const racecard = computed(() => {
+    const value = payload.value;
+    if (!value) {
+        return null;
+    }
+    if (typeof value === "object" && "raceCard" in value) {
+        return (value as RaceCardPrintPayload).raceCard ?? null;
+    }
+    return value as Racecard;
+});
+
+async function handlePayload(value: Racecard | RaceCardPrintPayload) {
+    payload.value = value;
+    const raceCount = racecard.value?.races?.length ?? 0;
+    printRaces.value = Array.from({ length: raceCount }, (_, idx) => idx + 1);
+    if (!hasPrinted) {
+        hasPrinted = true;
+        await doPrintAndClose();
+    }
+}
+
 let unlisten: UnlistenFn | null = null;
 
 async function waitForFonts() {
@@ -21,8 +45,10 @@ async function doPrintAndClose() {
     await nextTick();
     await Promise.race([
         waitForFonts(),
-        new Promise<void>((resolve) => setTimeout(resolve, 300)),
+        new Promise<void>((resolve) => setTimeout(resolve, 800)),
     ]);
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise<void>((resolve) => setTimeout(resolve, 200));
 
     window.print();
 
@@ -35,10 +61,21 @@ async function doPrintAndClose() {
 
 onMounted(async () => {
     document.body.classList.add("print-preview");
-    unlisten = await listen<RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
-        payload.value = event.payload;
-        await doPrintAndClose();
+    unlisten = await listen<Racecard | RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
+        await handlePayload(event.payload);
     });
+    setTimeout(() => {
+        emit(PRINT_READY_EVENT, { label: getCurrentWindow().label }).catch(() => { });
+    }, 0);
+
+    try {
+        const cached = localStorage.getItem(PRINT_PAYLOAD_STORAGE_KEY);
+        if (cached && !payload.value) {
+            await handlePayload(JSON.parse(cached));
+        }
+    } catch {
+        // ignore cache errors
+    }
 
     setTimeout(() => {
         if (!payload.value) {
@@ -56,19 +93,16 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="container">
-        <div class="page">
-            <header class="header">
-                <RacecardHeader
-                    v-if="payload"
-                    :racecard="payload!.raceCard"
-                    :race="1"
-                    :print="true"
-                 />
-            </header>
+        <div v-for="raceNumber in printRaces" :key="raceNumber" class="page">
+            <div class="race">
+                <header class="header">
+                    <RacecardHeader v-if="racecard" :racecard="racecard" :race="raceNumber" :print="true" />
+                </header>
 
-            <main v-if="payload">
-                EMPTY!!!
-            </main>
+                <main v-if="racecard">
+                    Empty Print View
+                </main>
+            </div>
         </div>
     </div>
 </template>
@@ -77,30 +111,42 @@ onBeforeUnmount(() => {
 .container {
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
     background-color: var(--bg);
     color: var(--fg);
 }
 
 .page {
     font-family: MGSans, sans-serif;
-    margin-top: 56px;
+    margin: 0 auto;
+}
+
+.race {
+    break-after: page;
 }
 
 
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
 
 @media print {
+    .page {
+        break-after: page;
+    }
+
+    .page:last-child {
+        break-after: auto;
+    }
+
+    body,
+    .container,
+    .page {
+        background: #fff;
+        color: #000;
+    }
+
     @page {
         size: letter;
         margin: 0.4in;
