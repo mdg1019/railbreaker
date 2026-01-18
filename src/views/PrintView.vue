@@ -10,20 +10,6 @@ import "../scss/_main.scss";
 const payload = ref<RaceCardPrintPayload | null>(null);
 let unlisten: UnlistenFn | null = null;
 
-async function waitForImages() {
-    const imgs = Array.from(document.images);
-    await Promise.all(
-        imgs.map(
-            (img) =>
-                new Promise<void>((resolve) => {
-                    if (img.complete) return resolve();
-                    img.addEventListener("load", () => resolve(), { once: true });
-                    img.addEventListener("error", () => resolve(), { once: true });
-                })
-        )
-    );
-}
-
 async function waitForFonts() {
     const anyDoc = document as any;
     if (anyDoc.fonts?.ready) {
@@ -33,10 +19,10 @@ async function waitForFonts() {
 
 async function doPrintAndClose() {
     await nextTick();
-    await new Promise<void>((r) => requestAnimationFrame(() => r()));
-    await waitForFonts();
-    await waitForImages();
-    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    await Promise.race([
+        waitForFonts(),
+        new Promise<void>((resolve) => setTimeout(resolve, 300)),
+    ]);
 
     window.print();
 
@@ -71,7 +57,7 @@ onBeforeUnmount(() => {
 <template>
     <div class="container">
         <div class="page">
-            <header class="hdr">
+            <header class="header">
                 <RacecardHeader
                     v-if="payload"
                     :racecard="payload!.raceCard"
@@ -104,7 +90,7 @@ onBeforeUnmount(() => {
 }
 
 
-.hdr {
+.header {
     position: fixed;
     top: 0;
     left: 0;
