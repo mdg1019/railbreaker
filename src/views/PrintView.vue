@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, nextTick, computed } from "vue";
+import { useRouter } from "vue-router";
 import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { Racecard } from "../models/racecard";
 import type { RaceCardPrintPayload } from "../models/print";
@@ -11,6 +13,7 @@ import "../scss/_main.scss";
 const payload = ref<Racecard | RaceCardPrintPayload | null>(null);
 const printRaces = ref<number[]>([]);
 let hasPrinted = false;
+const router = useRouter();
 const racecard = computed(() => {
     const value = payload.value;
     if (!value) {
@@ -50,10 +53,27 @@ async function doPrintAndClose() {
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     await new Promise<void>((resolve) => setTimeout(resolve, 200));
 
-    window.print();
+    const closeSoon = () => setTimeout(async () => {
+        document.body.classList.remove("print-preview");
+        try {
+            const win = getCurrentWindow();
+            if (win.label === "print") {
+                await invoke("close_print_window").catch(() => { });
+                await win.hide().catch(() => { });
+                await win.close().catch(() => { });
+                setTimeout(() => {
+                    win.destroy().catch(() => { });
+                }, 1000);
+                return;
+            }
+        } catch {
+            // fall through to route change
+        }
+        router.replace("/").catch(() => { });
+    }, 250);
 
-    const win = getCurrentWindow();
-    const closeSoon = () => setTimeout(() => win.close().catch(() => { }), 250);
+    window.print();
+    closeSoon();
 
     window.addEventListener("afterprint", closeSoon, { once: true });
     setTimeout(closeSoon, 10000);
@@ -61,6 +81,7 @@ async function doPrintAndClose() {
 
 onMounted(async () => {
     document.body.classList.add("print-preview");
+    invoke("hide_print_window_menu").catch(() => { });
     unlisten = await listen<Racecard | RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
         await handlePayload(event.payload);
     });

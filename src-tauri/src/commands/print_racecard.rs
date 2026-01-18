@@ -1,4 +1,4 @@
-use tauri::menu::MenuItemKind;
+use tauri::{menu::MenuItemKind, Manager};
 
 #[tauri::command]
 pub fn print_racecard(_: tauri::AppHandle) {}
@@ -17,4 +17,31 @@ pub fn set_print_racecard_enabled(app: tauri::AppHandle, enabled: bool) {
             }
         }
     }
+}
+
+#[tauri::command]
+pub fn close_print_window(app: tauri::AppHandle) -> bool {
+    if let Some(window) = app.get_webview_window("print") {
+        let _ = window.hide();
+        let _ = window.close();
+        let _ = window.destroy();
+        return true;
+    }
+
+    false
+}
+
+#[tauri::command]
+pub fn hide_print_window_menu(app: tauri::AppHandle) -> bool {
+    if cfg!(target_os = "macos") {
+        return false;
+    }
+
+    if let Some(window) = app.get_webview_window("print") {
+        let _ = window.remove_menu();
+        let _ = window.hide_menu();
+        return true;
+    }
+
+    false
 }

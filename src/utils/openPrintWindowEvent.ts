@@ -1,5 +1,6 @@
 // src/utils/print/openPrintWindowEvent.ts
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { PhysicalPosition } from "@tauri-apps/api/window";
 import type { RaceCardPrintPayload } from "../models/print";
@@ -81,6 +82,8 @@ export async function openPrintWindowAndSendPayload(
     } else {
         win.setPosition(offscreenPosition).catch(() => { });
     }
+
+    invoke("hide_print_window_menu").catch(() => { });
 
     const start = Date.now();
     while (!pageLoaded && Date.now() - start < timeoutMs) {
