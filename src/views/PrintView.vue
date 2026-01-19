@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container print-view">
         <div v-for="raceNumber in printRaces" :key="raceNumber" class="page">
             <div class="race">
                 <header class="header">

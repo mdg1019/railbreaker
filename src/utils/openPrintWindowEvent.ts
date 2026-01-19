@@ -101,7 +101,16 @@ export async function openPrintWindowAndSendPayload(
     }
 
     await waitForPrintReady(label, Math.min(2000, timeoutMs));
-    await win.emit(PRINT_PAYLOAD_EVENT, payload);
 
-    await win.setFocus();
+    const activeWin = await WebviewWindow.getByLabel(label);
+    if (!activeWin) {
+        return;
+    }
+
+    try {
+        await activeWin.emit(PRINT_PAYLOAD_EVENT, payload);
+        await activeWin.setFocus();
+    } catch {
+        // Window was likely closed before we could send/focus.
+    }
 }

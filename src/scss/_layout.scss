@@ -10,3 +10,17 @@
 .align-right {
   text-align: right;
 }
+
+.font-large {
+    font-size: 2rem;
+}
+
+
+.print-view {
+    font-size: 1.2rem !important;
+
+    & .font-large {
+        font-size: 1.4rem;
+    }
+}
+
