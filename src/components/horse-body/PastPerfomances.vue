@@ -4,9 +4,11 @@ import Transformers from "../../utils/transformers";
 import Finishers from './Finishers.vue';
 import Tooltip from '../ui/Tooltip.vue';
 
-const props = defineProps<{
-    horse: Horse;
-}>();
+const props = withDefaults(defineProps<{
+    horse: Horse, print: boolean;
+}>(), {
+    print: false,
+});
 
 const pps = props.horse?.pastPerformances ?? [];
 
@@ -34,6 +36,10 @@ const finishPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindSt
     Transformers.parseNumberOrNull(pp.finishBetweenLengths)
 ));
 
+const cols = !props.print ?
+        '9rem 1rem 4rem 4rem 3rem 3rem 3rem 8rem 3rem 3rem 3rem 3rem 3rem 3rem 3rem 1rem 3rem 1rem 3rem 1rem 3rem 3rem 10rem 1rem 4rem 30rem 22rem 2rem' :
+        '7rem 1rem 3rem 3rem 2rem 2rem 2rem 6rem 2rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 2rem 1rem 2rem 1rem 2rem 2rem 8rem 1rem 3rem 25rem 16rem 1rem';
+
 function positionClass(position: string) {
     switch (position) {
         case '1':
@@ -51,7 +57,7 @@ function positionClass(position: string) {
 <template>
     <div class="font-small">
         <div v-if="pps && pps[0] && pps[0].raceDate !== ''"
-            class="pp-grid title-row color-accent-green">
+            class="pp-grid title-row color-accent-green" :style="{ gridTemplateColumns: cols }">
             <div>DATE TRK</div>
             <div></div>
             <div>DIST</div>
@@ -101,7 +107,7 @@ function positionClass(position: string) {
                 </div>
             </div>
 
-            <div class="pp-grid perf-row"
+            <div class="pp-grid perf-row" :style="{ gridTemplateColumns: cols }"
                 v-if="pps && pps[i] && pps[i].raceDate !== ''">
                 <div :style="{
                     borderBottom: (i === 0 && pps?.[i]?.daysSinceLastRace && pps[i].daysSinceLastRace > 45)
@@ -168,63 +174,63 @@ function positionClass(position: string) {
 .pp-grid {
     margin-top: 0.25rem;
     display: grid;
-    grid-template-columns:
-        // 1. DATETRK
-        9rem 
-        // 2. Surface Prefix — narrow minimum so gap is small
-        1rem
-        // 3. DIST 
-        4rem 
-        // 4. Fraction # 1
-        4rem 
-        // 5. Fraction # 2
-        3rem 
-        // 6. Fraction # 3
-        3rem 
-        // 7. Final Time
-        3rem 
-        // 8. RACETYPE
-        8rem 
-        // 9. E1
-        3rem 
-        // 10. E2
-        3rem 
-        // 11. LP
-        3rem
-        // 12. SPD
-        3rem
-        // 13. PP
-        3rem
-        // 14. ST
-        3rem
-        // 15. 1C Position
-        3rem
-        // 16. 1C Lengths
-        1rem
-        // 17. 2C Position
-        3rem
-        // 18. 2C Lengths
-        1rem
-        // 19. Stretch Position
-        3rem
-        // 20. Stretch Lengths
-        1rem
-        // 19. Finish Position
-        3rem
-        // 20. Finish Lengths
-        3rem
-        // 21. Jockey
-        10rem
-        // 22. Bandages/Favorite indicator
-        1rem
-        // 23. Odds
-        4rem
-        // 24. Top Finishers
-        30rem
-        // 25. Comments
-        22rem
-        // 26. Entries
-        2rem;
+    // grid-template-columns:
+    //     // 1. DATETRK
+    //     9rem 
+    //     // 2. Surface Prefix — narrow minimum so gap is small
+    //     1rem
+    //     // 3. DIST 
+    //     4rem 
+    //     // 4. Fraction # 1
+    //     4rem 
+    //     // 5. Fraction # 2
+    //     3rem 
+    //     // 6. Fraction # 3
+    //     3rem 
+    //     // 7. Final Time
+    //     3rem 
+    //     // 8. RACETYPE
+    //     8rem 
+    //     // 9. E1
+    //     3rem 
+    //     // 10. E2
+    //     3rem 
+    //     // 11. LP
+    //     3rem
+    //     // 12. SPD
+    //     3rem
+    //     // 13. PP
+    //     3rem
+    //     // 14. ST
+    //     3rem
+    //     // 15. 1C Position
+    //     3rem
+    //     // 16. 1C Lengths
+    //     1rem
+    //     // 17. 2C Position
+    //     3rem
+    //     // 18. 2C Lengths
+    //     1rem
+    //     // 19. Stretch Position
+    //     3rem
+    //     // 20. Stretch Lengths
+    //     1rem
+    //     // 19. Finish Position
+    //     3rem
+    //     // 20. Finish Lengths
+    //     3rem
+    //     // 21. Jockey
+    //     10rem
+    //     // 22. Bandages/Favorite indicator
+    //     1rem
+    //     // 23. Odds
+    //     4rem
+    //     // 24. Top Finishers
+    //     30rem
+    //     // 25. Comments
+    //     22rem
+    //     // 26. Entries
+    //     2rem;
 }
 
 .claimed-row {
