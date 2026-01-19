@@ -9,11 +9,14 @@ import Workouts from "../horse-body/Workouts.vue";
 import TrainerStats from "../horse-body/TrainerStats.vue";
 import TrainerJockey from "../horse-body/TrainerJockey.vue";
 
-const props = defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]> }>();
+const props = withDefaults(defineProps<{ horse: Horse, primePowerComparisons: Array<[number | string, string, string]>; print: boolean; }>(), {
+    print: false,
+});
+
 </script>
 
 <template>
-    <Panel>
+    <Panel :print="props.print">
         <div class="horse">
             <div class="horse-header">
 

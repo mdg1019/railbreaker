@@ -5,17 +5,19 @@ import Panel from "../ui/Panel.vue";
 import Transformers from "../../utils/transformers";
 import RaceClassification from "./RaceClassification.vue";
 
-const props = defineProps<{ racecard: Racecard; race: number }>();
+const props = withDefaults(defineProps<{ racecard: Racecard; race: number; print: boolean; }>(), {
+    print: false,
+});
 
 const raceIndex = computed(() => Math.max(0, props.race - 1));
 const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 </script>
 
 <template>
-    <Panel>
+    <Panel :print="props.print">
         <div class="race-details">
             <div class="race-details-left">
-                <div class="race-number color-accent-yellow">{{ props.race }}</div>
+                <div class="race-number color-accent-yellow font-super-large">{{ props.race }}</div>
             </div>
             <div class="race-details-center">
                 <div class="wager-list">
@@ -76,7 +78,6 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 }
 
 .race-details-left {
-    font-size: 5rem;
     text-align: left;
     flex: 0 0 5%;
     display: flex;

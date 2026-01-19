@@ -8,7 +8,10 @@ import type { Racecard } from "../models/racecard";
 import type { RaceCardPrintPayload } from "../models/print";
 import { PRINT_PAYLOAD_EVENT, PRINT_PAYLOAD_STORAGE_KEY, PRINT_READY_EVENT } from "../utils/openPrintWindowEvent";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
+import RaceDetails from "../components/racecard/RaceDetails.vue";
+import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
+import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 
 const payload = ref<Racecard | RaceCardPrintPayload | null>(null);
 const printRaces = ref<number[]>([]);
@@ -25,6 +28,21 @@ const racecard = computed(() => {
     return value as Racecard;
 });
 
+
+const primePowerComparisonsByRace = computed<Record<number, Array<[number | string, string, string]>>>(() => {
+    const result: Record<number, Array<[number | string, string, string]>> = {};
+    const rc = racecard.value;
+    if (!rc) {
+        return result;
+    }
+    const raceCount = rc.races?.length ?? 0;
+    for (let raceIdx = 0; raceIdx < raceCount; raceIdx += 1) {
+        const raceNo = raceIdx + 1;
+        result[raceNo] = computePrimePowerComparisons(rc, raceNo);
+    }
+    return result;
+});
+
 async function handlePayload(value: Racecard | RaceCardPrintPayload) {
     payload.value = value;
     const raceCount = racecard.value?.races?.length ?? 0;
@@ -35,7 +53,7 @@ async function handlePayload(value: Racecard | RaceCardPrintPayload) {
     }
 }
 
-let unlisten: UnlistenFn | null = null;
+let unlisten: UnlistenFn | null = null
 
 async function waitForFonts() {
     const anyDoc = document as any;
@@ -121,7 +139,13 @@ onBeforeUnmount(() => {
                 </header>
 
                 <main v-if="racecard">
-                    Empty Print View
+                    <RaceDetails :racecard="racecard" :race="raceNumber" :print="true" />
+                    <div>
+                        <div class="horizontal-rule"></div>
+                        <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
+                            :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
+                            :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []" :print="true"></Horse>
+                    </div>
                 </main>
             </div>
         </div>
@@ -135,6 +159,11 @@ onBeforeUnmount(() => {
     display: block;
     background-color: var(--bg);
     color: var(--fg);
+}
+
+.horizontal-rule {
+    border-top: 2px solid var(--fg);
+    margin: 0.5rem 0;
 }
 
 .page {

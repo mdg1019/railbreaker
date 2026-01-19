@@ -13,6 +13,7 @@ import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
 import MessageDialog from "../components/ui/MessageDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
+import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 
@@ -65,58 +66,6 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
-function ordinal(n: number): string {
-    const s = ["th", "st", "nd", "rd"], v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-}
-
-function computePrimePowerComparisons() {
-    const result: Array<[number | string, string, string]> = [];
-    if (!racecard.value) {
-        primePowerComparisons.value = result;
-        return
-    }
-    const raceIdx = raceNumber.value - 1;
-    const race = racecard.value.races?.[raceIdx];
-    if (!race || !Array.isArray(race.horses)) {
-        primePowerComparisons.value = result;
-        return
-    }
-
-    const entries: { post: number | string; rating: number }[] = [];
-    race.horses.forEach((h: any, idx: number) => {
-        const r = h.brisPrimePowerRating;
-        if (r === null || r === undefined) return;
-        if (Number(r) === 0) return;
-        const post = h.postPosition ?? h.programNumber ?? idx + 1;
-        entries.push({ post, rating: Number(r) });
-    });
-
-    if (entries.length === 0) {
-        primePowerComparisons.value = result;
-    }
-
-    entries.sort((a, b) => b.rating - a.rating);
-
-    const N = entries.length;
-    const tier = Math.ceil(N / 3);
-
-    entries.forEach((e, i) => {
-        const position = i + 1; 
-        let color = "var(--accent-yellow)";
-        if (position <= tier) {
-            color = "var(--accent-green)";
-        } else if (position > 2 * tier) {
-            color = "var(--accent-red)";
-        }
-
-        const tuple: [number | string, string, string] = [e.post, ordinal(position), color];
-        result.push(tuple);
-    });
-
-    primePowerComparisons.value = result;
-}
-
 watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
@@ -124,7 +73,7 @@ watch(racecard, async (rc) => {
 });
 
 watch([racecard, raceNumber], () => {
-    computePrimePowerComparisons();
+    primePowerComparisons.value = computePrimePowerComparisons(racecard.value, raceNumber.value);
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
