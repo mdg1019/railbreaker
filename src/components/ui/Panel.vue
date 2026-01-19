@@ -25,10 +25,8 @@
 
 .panel.print {
     box-sizing: border-box;
-    margin-top: .5rem;
-    margin-bottom: .5rem;
+    margin: 0;
     border: none;
-    border-radius: 0;
     background: transparent;
 }
 </style>

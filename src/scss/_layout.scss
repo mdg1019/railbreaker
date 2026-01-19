@@ -11,24 +11,35 @@
   text-align: right;
 }
 
+.font-small {
+    font-size: 1.1rem;
+}
+
 .font-large {
     font-size: 2rem;
 }
 
 .font-super-large {
-    font-size: 5rem;
+    font-size: 6rem;
 }
 
 
 .print-view {
-    font-size: 1.2rem !important;
+    font-size: 1.4rem !important;
 
     & .font-large {
-        font-size: 1.4rem;
+        font-size: 1.6rem;
     }
 
     & .font-super-large {
         font-size: 3rem;
     }
+}
+
+.horizontal-rule {
+    border-top: 2px solid var(--fg);
+    width: 100%;
+    margin-bottom: 0.5rem;
+    transform: translateY(-1rem);
 }
 

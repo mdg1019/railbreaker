@@ -15,7 +15,7 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 
 <template>
     <Panel :print="props.print">
-        <div class="race-details">
+        <div :class="['race-details', props.print ? 'horizontal-rule' : '']">
             <div class="race-details-left">
                 <div class="race-number color-accent-yellow font-super-large">{{ props.race }}</div>
             </div>

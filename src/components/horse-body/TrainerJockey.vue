@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="container">
+    <div class="container font-small">
         <div class="color-accent-purple">Trainer/Jockey:</div>
         <div class="meet color-accent-yellow">Meet: ({{ horse.trainerJockeyComboStartsMeet }} {{(horse.trainerJockeyComboWinsMeet && horse.trainerJockeyComboStartsMeet) ? ((horse.trainerJockeyComboWinsMeet / horse.trainerJockeyComboStartsMeet) * 100).toFixed(0) : "0" }}% {{ horse.trainerJockeyComboRoiMeet?.toFixed(2) }})</div>
         <div class="l365 color-accent-green">Last 365: ({{ horse.trainerJockeyComboStarts }} {{(horse.trainerJockeyComboWins && horse.trainerJockeyComboStarts) ? ((horse.trainerJockeyComboWins / horse.trainerJockeyComboStarts) * 100).toFixed(0) : "0" }}% {{ horse.trainerJockeyComboRoi?.toFixed(2) }})</div>
@@ -18,7 +18,6 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 .container {
-    font-size: 1.4rem;
     display: flex;
     flex-direction: row;
     gap: 0.25rem;

@@ -19,7 +19,7 @@ const workoutTimes = props.workouts.map(w => {
 </script>
 
 <template>
-    <div v-if="visibleWorkouts.length > 0" class="workouts">
+    <div v-if="visibleWorkouts.length > 0" class="workouts font-small">
         <div v-for="(w, i) in visibleWorkouts" :key="i" class="workout">
             <div class="bullet color-accent-red align-right">{{ bullets[i] }}</div>
             <div>{{ Transformers.formatDateShort(w.date) }}</div>
@@ -36,7 +36,6 @@ const workoutTimes = props.workouts.map(w => {
 
 <style lang="scss" scoped>
 .workouts {
-    font-size: 1.4rem;
     display: flex;
     flex-direction: row;
     gap: 0.5rem;

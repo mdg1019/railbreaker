@@ -141,7 +141,6 @@ onBeforeUnmount(() => {
                 <main v-if="racecard">
                     <RaceDetails :racecard="racecard" :race="raceNumber" :print="true" />
                     <div>
-                        <div class="horizontal-rule"></div>
                         <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                             :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                             :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []" :print="true"></Horse>
@@ -159,11 +158,6 @@ onBeforeUnmount(() => {
     display: block;
     background-color: var(--bg);
     color: var(--fg);
-}
-
-.horizontal-rule {
-    border-top: 2px solid var(--fg);
-    margin: 0.5rem 0;
 }
 
 .page {

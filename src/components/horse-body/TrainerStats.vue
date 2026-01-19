@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="container">
+    <div class="container font-small">
         <div class="color-accent-purple">Trainer:</div>
         <div class="stats">
             <div v-for="(s, i) in horse.keyTrainerStats.filter(s => s.category !== '')" :key="i" class="stat">
@@ -20,7 +20,6 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 .container {
-    font-size: 1.4rem;
     display: flex;
     flex-direction: row;
     gap: 0.25rem;

@@ -49,7 +49,7 @@ function positionClass(position: string) {
 </script>
 
 <template>
-    <div>
+    <div class="font-small">
         <div v-if="pps && pps[0] && pps[0].raceDate !== ''"
             class="pp-grid title-row color-accent-green">
             <div>DATE TRK</div>
@@ -166,7 +166,6 @@ function positionClass(position: string) {
 
 <style lang="scss" scoped>
 .pp-grid {
-    font-size: 1.4rem;
     margin-top: 0.25rem;
     display: grid;
     grid-template-columns:
