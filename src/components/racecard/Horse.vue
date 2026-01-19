@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<{ horse: Horse, primePowerComparisons: Ar
 </script>
 
 <template>
-    <Panel :print="props.print">
+    <Panel :print="props.print" class="horse-panel">
         <div class="horse">
             <div v-if="props.print" class="horizontal-rule"></div>
             <div class="horse-header">
