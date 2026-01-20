@@ -88,7 +88,7 @@ export default class Transformers {
 
     static capitalize(s: string): string {
         if (!s) return "";
-        return s.toLowerCase().replace(/\w\S*/g, (txt, _offset, _str) => {
+        return s.toLowerCase().replace(/\w\S*/g, (txt, offset, str) => {
             return txt
                 .split("/")
                 .map((part) => {
@@ -101,7 +101,17 @@ export default class Transformers {
                         const suffix = m[3] || "";
 
                         if (this.TITLE_EXCEPTIONS.has(core)) {
-                            return prefix + core + suffix;
+                            const before = str.slice(0, offset);
+                            const isStartWord = /^[^a-zA-Z]*$/.test(before);
+                            if (!isStartWord) {
+                                return prefix + core + suffix;
+                            }
+                            return (
+                                prefix +
+                                core.charAt(0).toUpperCase() +
+                                core.slice(1) +
+                                suffix
+                            );
                         }
 
                         return (
