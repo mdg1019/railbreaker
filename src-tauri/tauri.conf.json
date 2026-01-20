@@ -29,12 +29,12 @@
     },
     "bundle": {
         "active": true,
-        "targets": ["deb", "rpm"],
-        "icon": [
+        "targets": ["deb", "rpm", "msi"],
+            "icon": [
             "icons/32x32.png",
             "icons/128x128.png",
             "icons/256x256.png",
-            "icons/icons.ico"
+            "icons/icon.ico"
         ],
         "resources": ["resources/tracks.csv"]
     }

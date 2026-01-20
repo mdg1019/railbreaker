@@ -217,12 +217,13 @@ onUnmounted(() => {
         </div>
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />
-            <RaceDetails :racecard="racecard" :race="raceNumber" />
+            <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
             <Horse
                 v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx"
                 :horse="horse"
                 :primePowerComparisons="primePowerComparisons"
+                :print="false"
             ></Horse>
         </div>
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />

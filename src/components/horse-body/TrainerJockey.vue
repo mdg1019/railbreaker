@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Horse } from "../../models/racecard";
 
-const props = defineProps<{
+const { horse } = defineProps<{
     horse: Horse;
 }>();
 
