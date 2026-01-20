@@ -12,31 +12,8 @@
 }
 
 html {
-  font-size: 62.5%; // 1rem = 10px
-
-  @include mixins.respond(x-large) {
     font-size: 68.75%; // 1rem = 11px
-  }
-
-  //   @include respond(xx-large) {
-  //       font-size: 75%;             // 1rem = 12px
-  //   }
-
-  @include mixins.respond(large) {
-    font-size: 56.25%; // 1rem = 9px
-  }
-
-  @include mixins.respond(medium) {
-    font-size: 50%; // 1rem = 8px
-  }
-
-  @include mixins.respond(small) {
-    font-size: 43.75%; // 1rem = 7px
-  }
-
-  @include mixins.respond(x-small) {
-    font-size: 37.5%; // 1rem = 6px
-  }
+  
 }
 
 body {
