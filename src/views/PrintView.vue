@@ -73,6 +73,7 @@ async function doPrintAndClose() {
 
     const closeSoon = () => setTimeout(async () => {
         document.body.classList.remove("print-preview");
+        document.documentElement.classList.remove("print-preview");
         try {
             const win = getCurrentWindow();
             if (win.label === "print") {
@@ -99,6 +100,7 @@ async function doPrintAndClose() {
 
 onMounted(async () => {
     document.body.classList.add("print-preview");
+    document.documentElement.classList.add("print-preview");
     invoke("hide_print_window_menu").catch(() => { });
     unlisten = await listen<Racecard | RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
         await handlePayload(event.payload);
@@ -125,6 +127,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     document.body.classList.remove("print-preview");
+    document.documentElement.classList.remove("print-preview");
     if (unlisten) unlisten();
     unlisten = null;
 });

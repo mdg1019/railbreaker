@@ -3,6 +3,8 @@
 @use './layout';
 @use './typography';
 
+$print-root-size: 5pt;
+
 *,
 *::after,
 *::before {
@@ -36,6 +38,16 @@ html {
 
   @include mixins.respond(x-small) {
     font-size: 37.5%; // 1rem = 6px
+  }
+}
+
+html.print-preview {
+  font-size: $print-root-size !important;
+}
+
+@media print {
+  html {
+    font-size: $print-root-size !important;
   }
 }
 
