@@ -31,6 +31,10 @@
 .print-view {
     font-size: 1.4rem !important;
 
+    & .font-small {
+        font-size: 1.2rem;
+    }
+
     & .font-large {
         font-size: 1.6rem;
     }
