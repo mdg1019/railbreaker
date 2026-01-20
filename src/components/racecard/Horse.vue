@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<{ horse: Horse, primePowerComparisons: Ar
                 <div v-if="!props.print" class="horizontal-line"></div>
                 <PastPerfomances :horse="props.horse" :print="props.print" />
                 
-                <Workouts :workouts="props.horse.workouts" />
+                <Workouts :workouts="props.horse.workouts" :print="props.print" />
 
                 <TrainerStats :horse="props.horse" />
 

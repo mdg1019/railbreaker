@@ -2,8 +2,6 @@
 
 Is a Rust/Tauri app for handicapping horse races. It uses the single-file data files from Brisnet.
 
-Please remember that the main purpose of the app is to be used while betting from home or wherever your laptop will go. So printouts aren't a huge priority, but I will get to those eventually. You can use Brisnet's Custom PP Generator in the meantime.
-
 #### Railbreaker can do this at present:
 
 - Unzip and load a racecard file.
@@ -12,13 +10,12 @@ Please remember that the main purpose of the app is to be used while betting fro
 - The basic racecard is complete. (I need to proofread it more against Brisnet PPs.)
 - App is responsive. It may need tweaking when I complete the racecard.
 - Added a tooltip to the comments. When clicking on a comment, you can see the extended comment if one is available. I'll be adding more helpful tooltips like this where I think they'd be useful.
+- Printouts are working. It prints the whole card right now, but I plan to add a dialog box to allow the user to select either all races or select which ones to print.
 
 #### Things to do:
 
 - Allow creating and editing notes for the races and the horses.
 - Do analysis of the racecard data and see what's useful to know.
-- Useful highlighting of the racecard info.
-- Provide printouts of racecards.
 
 #### Racecard is Complete:
 
@@ -27,3 +24,7 @@ Please remember that the main purpose of the app is to be used while betting fro
 #### Sliding Menu
 
 ![sliding menu](images/sliding-menu.png)
+
+#### Sample Printout
+
+![sample printout](images/printed-form.png)

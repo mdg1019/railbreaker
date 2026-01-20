@@ -96,7 +96,6 @@ const props = defineProps<{
     }
 
     .program-number {
-        font-size: 3rem;
         font-weight: 700;
     }
 

@@ -12,11 +12,15 @@
 }
 
 .font-small {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .font-large {
     font-size: 2rem;
+}
+
+.font-extra-large { 
+        font-size: 3rem;
 }
 
 .font-super-large {
@@ -31,8 +35,12 @@
         font-size: 1.6rem;
     }
 
+    & .font-extra-large {
+        font-size: 2.0rem;
+    }
+
     & .font-super-large {
-        font-size: 3rem;
+        font-size: 4rem;
     }
 
     & .race-details.horizontal-rule {

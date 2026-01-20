@@ -38,7 +38,7 @@ const finishPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindSt
 
 const cols = !props.print ?
         '9rem 1rem 4rem 4rem 3rem 3rem 3rem 8rem 3rem 3rem 3rem 3rem 3rem 3rem 3rem 1rem 3rem 1rem 3rem 1rem 3rem 3rem 10rem 1rem 4rem 30rem 22rem 2rem' :
-        '7rem 1rem 3rem 3rem 2rem 2rem 2rem 6rem 2rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 2rem 1rem 2rem 1rem 2rem 2rem 8rem 1rem 3rem 25rem 16rem 1rem';
+        '7rem 1rem 3rem 3rem 2rem 2rem 3rem 6rem 2rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 2rem 1rem 2rem 1rem 2rem 2rem 8rem 1rem 3rem 25rem 16rem 1rem';
 
 function positionClass(position: string) {
     switch (position) {

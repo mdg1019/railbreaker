@@ -2,9 +2,12 @@
 import type { Workout } from "../../models/racecard";
 import Transformers from "../../utils/transformers";
 
-const props = defineProps<{
-    workouts: Workout[];
-}>();
+const props = withDefaults(defineProps<{
+    workouts: Workout[],
+    print: boolean;
+}>(), {
+    print: false,
+});
 
 const visibleWorkouts = props.workouts.filter(w => w.date !== null && w.date !== '');
 
@@ -16,11 +19,14 @@ const workoutTimes = props.workouts.map(w => {
     return { time: time.int, fraction: time.fraction };
 });
 
+const cols = !props.print ?
+        '2rem 4rem 2rem 2rem 2rem 2rem 2rem 1rem 4rem' :
+        '1rem 4rem 2rem 2rem 1rem 1rem 1rem 1rem 3rem';
 </script>
 
 <template>
     <div v-if="visibleWorkouts.length > 0" class="workouts font-small">
-        <div v-for="(w, i) in visibleWorkouts" :key="i" class="workout">
+        <div v-for="(w, i) in visibleWorkouts" :key="i" class="workout" :style="{ gridTemplateColumns: cols }">
             <div class="bullet color-accent-red align-right">{{ bullets[i] }}</div>
             <div>{{ Transformers.formatDateShort(w.date) }}</div>
             <div>{{ surface[i] }}</div>
@@ -44,7 +50,7 @@ const workoutTimes = props.workouts.map(w => {
 
 .workout {
     display: grid;
-    grid-template-columns: 2rem 5rem 2rem 2rem 2rem 2rem 2rem 1rem 5rem;
+    // grid-template-columns: 2rem 5rem 2rem 2rem 2rem 2rem 2rem 1rem 5rem;
 }
 
 .workout:nth-child(odd) {
