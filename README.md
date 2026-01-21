@@ -28,3 +28,7 @@ Is a Rust/Tauri app for handicapping horse races. It uses the single-file data f
 #### Sample Printout
 
 ![sample printout](images/printed-form.png)
+
+#### Print Dialog Box
+
+![print dialog box](images/print-dialog.png)
