@@ -5,7 +5,7 @@ import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { Racecard } from "../models/racecard";
-import type { RaceCardPrintPayload } from "../models/print";
+import { RaceCardPrintPayload } from "../models/print";
 import { PRINT_PAYLOAD_EVENT, PRINT_PAYLOAD_STORAGE_KEY, PRINT_READY_EVENT } from "../utils/openPrintWindowEvent";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
@@ -13,8 +13,7 @@ import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 
-const payload = ref<Racecard | RaceCardPrintPayload | null>(null);
-const printRaces = ref<number[]>([]);
+const payload = ref<RaceCardPrintPayload | null>(null);
 let hasPrinted = false;
 const router = useRouter();
 const racecard = computed(() => {
@@ -44,9 +43,14 @@ const primePowerComparisonsByRace = computed<Record<number, Array<[number | stri
 });
 
 async function handlePayload(value: Racecard | RaceCardPrintPayload) {
-    payload.value = value;
-    const raceCount = racecard.value?.races?.length ?? 0;
-    printRaces.value = Array.from({ length: raceCount }, (_, idx) => idx + 1);
+    const nextPayload = ("raceCard" in value)
+        ? (value as RaceCardPrintPayload)
+        : new RaceCardPrintPayload(value as Racecard, []);
+    if (!nextPayload.printRaces?.length) {
+        const raceCount = nextPayload.raceCard?.races?.length ?? 0;
+        nextPayload.printRaces = Array.from({ length: raceCount }, (_, idx) => idx + 1);
+    }
+    payload.value = nextPayload;
     if (!hasPrinted) {
         hasPrinted = true;
         await doPrintAndClose();
@@ -102,7 +106,7 @@ onMounted(async () => {
     document.body.classList.add("print-preview");
     document.documentElement.classList.add("print-preview");
     invoke("hide_print_window_menu").catch(() => { });
-    unlisten = await listen<Racecard | RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
+    unlisten = await listen<RaceCardPrintPayload>(PRINT_PAYLOAD_EVENT, async (event) => {
         await handlePayload(event.payload);
     });
     setTimeout(() => {
@@ -134,17 +138,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="container print-view">
-        <div v-for="raceNumber in printRaces" :key="raceNumber" class="page">
+    <div v-if="payload" class="container print-view">
+        <div v-for="raceNumber in (payload!.printRaces || [])" :key="raceNumber" class="page">
             <div class="race">
                 <header class="header">
                     <RacecardHeader v-if="racecard" :racecard="racecard" :race="raceNumber" :print="true" />
                 </header>
 
-                <main v-if="racecard">
-                    <RaceDetails :racecard="racecard" :race="raceNumber" :print="true" />
+                <main>
+                    <RaceDetails :racecard="payload!.raceCard" :race="raceNumber" :print="true" />
                     <div>
-                        <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
+                        <Horse v-for="(horse, idx) in (payload!.raceCard.races[raceNumber - 1]?.horses || [])"
                             :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                             :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []" :print="true"></Horse>
                     </div>

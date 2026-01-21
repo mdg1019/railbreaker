@@ -177,9 +177,13 @@ onMounted(async () => {
         if (!racecard.value) {
             return;
         }
+    
+        const raceCount = racecard.value?.races?.length ?? 0;
+        let printRaces = Array.from({ length: raceCount }, (_, idx) => idx + 1);
 
         const raceCardPrintPayload = {
             raceCard: racecard.value,
+            printRaces: printRaces
         };
 
         await openPrintWindowAndSendPayload(raceCardPrintPayload, {});
