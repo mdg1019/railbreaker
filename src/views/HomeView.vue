@@ -11,6 +11,7 @@ import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
 import MessageDialog from "../components/ui/MessageDialog.vue";
+import PrintDialog from "../components/ui/PrintDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
@@ -43,6 +44,31 @@ const raceContainerRef = ref<HTMLElement | null>(null);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
+const showPrintDialog = ref(false);
+let pendingPrintResolve: ((value: number[] | null) => void) | null = null;
+
+function requestPrintRaces(): Promise<number[] | null> {
+    showPrintDialog.value = true;
+    return new Promise((resolve) => {
+        pendingPrintResolve = resolve;
+    });
+}
+
+function handlePrintDialogUpdate(value: boolean) {
+    showPrintDialog.value = value;
+    if (!value && pendingPrintResolve) {
+        pendingPrintResolve(null);
+        pendingPrintResolve = null;
+    }
+}
+
+function handlePrintDialogPrint(value: number[]) {
+    showPrintDialog.value = false;
+    if (pendingPrintResolve) {
+        pendingPrintResolve(value);
+        pendingPrintResolve = null;
+    }
+}
 
 function handleSelectedRace(value: number) {
     raceNumber.value = value;
@@ -177,13 +203,17 @@ onMounted(async () => {
         if (!racecard.value) {
             return;
         }
-    
-        const raceCount = racecard.value?.races?.length ?? 0;
-        let printRaces = Array.from({ length: raceCount }, (_, idx) => idx + 1);
+        const selectedRaces = await requestPrintRaces();
+
+        console.log("Selected races to print:", selectedRaces);
+
+        if (!selectedRaces) {
+            return;
+        }
 
         const raceCardPrintPayload = {
             raceCard: racecard.value,
-            printRaces: printRaces
+            printRaces: selectedRaces
         };
 
         await openPrintWindowAndSendPayload(raceCardPrintPayload, {});
@@ -230,6 +260,12 @@ onUnmounted(() => {
                 :print="false"
             ></Horse>
         </div>
+        <PrintDialog
+            v-model="showPrintDialog"
+            :racecard="racecard"
+            @update:modelValue="handlePrintDialogUpdate"
+            @print="handlePrintDialogPrint"
+        />
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>
 </template>

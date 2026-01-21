@@ -3,7 +3,8 @@ import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = defineProps<{
   modelValue: boolean
-  title?: string
+  title?: string,
+  titleColor?: string
 }>()
 
 const emit = defineEmits<{
@@ -40,7 +41,6 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
     const style = window.getComputedStyle(el)
     if (style.visibility === 'hidden' || style.display === 'none') return false
 
-    // If the element is not in layout, it can't be focused by the user.
     if (el.offsetParent === null && style.position !== 'fixed') return false
     return true
   })
@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
         <div ref="dialogRef" class="dialog" role="dialog" aria-modal="true" tabindex="-1">
           <div class="header-content-wrapper">
             <header class="titlebar">
-              <span class="title">{{ title }}</span>
+              <span class="title" :style="titleColor ? 'color: var(' + titleColor + ')' : 'color: var(--fg)'">{{ title }}</span>
             </header>
 
             <section class="content">
