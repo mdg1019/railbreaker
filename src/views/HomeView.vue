@@ -7,6 +7,7 @@ import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
 import { Racecards } from "../models/racecards";
+import { Note } from "../models/note";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
@@ -106,6 +107,15 @@ function racecardFilenameExists(path: string, removeTrailingAlpha = false): bool
     return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath, removeTrailingAlpha) === targetStem);
 }
 
+async function loadNotes(path: string): Promise<Note[]> {
+    let notesPath = path.replace(/\.json$/i, "_NOTES.json");
+    const rawNotes = await invoke<any>("load_notes_file", { path: notesPath });
+
+    return Array.isArray(rawNotes)
+        ? rawNotes.map((n: any) => Note.fromObject(n))
+        : [Note.fromObject(rawNotes)];
+}
+
 watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
@@ -168,7 +178,10 @@ onMounted(async () => {
                 const openedRacecard = Racecard.fromObject(
                     await invoke<any>('load_racecard_file', { path: path })
                 );
-                racecards.addRacecard(openedRacecard, path);
+
+                const notes = await loadNotes(path);
+
+                racecards.addRacecard(openedRacecard, notes, path);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
@@ -211,6 +224,8 @@ onMounted(async () => {
 
             try {
                 const processedPath = await invoke<string>('process_zip_file', { path: path });
+                const racecardPath = processedPath.replace(/\.drf$/i, ".json");
+                    console.log("Processed path:", processedPath);
 
                 isProcessingZip.value = false;
 
@@ -218,7 +233,10 @@ onMounted(async () => {
                 const openedRacecard = Racecard.fromObject(
                     await invoke<any>('process_racecard_file', { path: processedPath })
                 );
-                racecards.addRacecard(openedRacecard, processedPath);
+
+                const notes = await loadNotes(racecardPath);
+
+                racecards.addRacecard(openedRacecard, notes, racecardPath);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;

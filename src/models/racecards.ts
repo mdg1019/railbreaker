@@ -1,3 +1,4 @@
+import { Note } from './note';
 import { Racecard } from './racecard';
 
 export class Racecards {
@@ -10,8 +11,8 @@ export class Racecards {
     this.racecardPaths = [];
   }
 
-  addRacecard(racecard: Racecard, path: string): void {
-   this.racecardEntries.push(new RacecardEntry(racecard));
+  addRacecard(racecard: Racecard, notes: Note[], path: string): void {
+   this.racecardEntries.push(new RacecardEntry(racecard, notes));
    this.racecardPaths.push(path);
   }
   
@@ -29,10 +30,12 @@ export class RacecardEntry {
     id: string;
     racecard: Racecard;
     last_opened_race: number;
+    notes: Note[];
 
-    constructor(racecard: Racecard) {
+    constructor(racecard: Racecard, notes: Note[]) {
         this.id = crypto.randomUUID();
         this.racecard = racecard;
         this.last_opened_race = 0;
+        this.notes = notes;
     }
 }
