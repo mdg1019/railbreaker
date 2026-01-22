@@ -107,9 +107,22 @@ function racecardFilenameExists(path: string, removeTrailingAlpha = false): bool
     return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath, removeTrailingAlpha) === targetStem);
 }
 
-async function loadNotes(path: string): Promise<Note[]> {
+async function loadNotes(path: string, racecard: Racecard): Promise<Note[]> {
     let notesPath = path.replace(/\.json$/i, "_NOTES.json");
-    const rawNotes = await invoke<any>("load_notes_file", { path: notesPath });
+
+    const emptyNotesConfig = (): Array<[number, number]> => {
+        const notesPerRaces: Array<[number, number]> = [];
+        const number_of_races = racecard?.races.length ?? 0;
+        for (let i = 0; i < number_of_races; i++) {
+            for (let j = 0; j < racecard.races![i].horses!.length; j++) {
+                notesPerRaces.push([i + 1, j + 1]);
+            }
+        }
+
+        return notesPerRaces;
+    };
+
+    const rawNotes = await invoke<any>("load_notes_file", { path: notesPath, races: emptyNotesConfig() });
 
     return Array.isArray(rawNotes)
         ? rawNotes.map((n: any) => Note.fromObject(n))
@@ -179,7 +192,7 @@ onMounted(async () => {
                     await invoke<any>('load_racecard_file', { path: path })
                 );
 
-                const notes = await loadNotes(path);
+                const notes = await loadNotes(path, openedRacecard);
 
                 racecards.addRacecard(openedRacecard, notes, path);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
@@ -225,7 +238,6 @@ onMounted(async () => {
             try {
                 const processedPath = await invoke<string>('process_zip_file', { path: path });
                 const racecardPath = processedPath.replace(/\.drf$/i, ".json");
-                    console.log("Processed path:", processedPath);
 
                 isProcessingZip.value = false;
 
@@ -234,7 +246,7 @@ onMounted(async () => {
                     await invoke<any>('process_racecard_file', { path: processedPath })
                 );
 
-                const notes = await loadNotes(racecardPath);
+                const notes = await loadNotes(racecardPath, openedRacecard);
 
                 racecards.addRacecard(openedRacecard, notes, racecardPath);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
