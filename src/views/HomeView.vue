@@ -92,14 +92,18 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
-function getFileStem(path: string): string {
+function getFileStem(path: string, removeTrailingAlpha: boolean): string {
     const filename = path.split(/[\\/]/).pop() ?? "";
-    return filename.replace(/\.[^/.]+$/, "").toLowerCase();
+    let stem = filename.replace(/\.[^/.]+$/, "");
+    if (removeTrailingAlpha) {
+        stem = stem.replace(/[a-z]+$/i, "");
+    }
+    return stem.toLowerCase();
 }
 
-function racecardFilenameExists(path: string): boolean {
-    const targetStem = getFileStem(path);
-    return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath) === targetStem);
+function racecardFilenameExists(path: string, removeTrailingAlpha = false): boolean {
+    const targetStem = getFileStem(path, removeTrailingAlpha);
+    return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath, removeTrailingAlpha) === targetStem);
 }
 
 watch(racecard, async (rc) => {
@@ -150,7 +154,7 @@ onMounted(async () => {
         if (path) {
             if (racecardFilenameExists(path)) {
                 currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
-                    return getFileStem(racecards.racecardPaths[idx]) === getFileStem(path);
+                    return getFileStem(racecards.racecardPaths[idx], true) === getFileStem(path, true);
                 });
 
                 return;
@@ -190,6 +194,16 @@ onMounted(async () => {
         });
 
         if (path) {
+            if (racecardFilenameExists(path, true)) {
+                currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
+                    return getFileStem(racecards.racecardPaths[idx], true) === getFileStem(path, true);
+                });
+
+                racecard.value = racecards.racecardEntries[currentRacecardIndex.value].racecard;
+
+                return;
+            }
+
             racecard.value = null;
             await nextTick();
 
@@ -199,16 +213,6 @@ onMounted(async () => {
                 const processedPath = await invoke<string>('process_zip_file', { path: path });
 
                 isProcessingZip.value = false;
-
-                if (racecardFilenameExists(processedPath)) {
-                    currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
-                        return getFileStem(racecards.racecardPaths[idx]) === getFileStem(processedPath);
-                    });
-
-                    racecard.value = racecards.racecardEntries[currentRacecardIndex.value].racecard;
-
-                    return;
-                }
 
                 isProcessingRacecard.value = true;
                 const openedRacecard = Racecard.fromObject(
