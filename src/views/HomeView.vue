@@ -92,10 +92,20 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
+function getFileStem(path: string): string {
+    const filename = path.split(/[\\/]/).pop() ?? "";
+    return filename.replace(/\.[^/.]+$/, "").toLowerCase();
+}
+
+function racecardFilenameExists(path: string): boolean {
+    const targetStem = getFileStem(path);
+    return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath) === targetStem);
+}
+
 watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
-    await invoke('set_print_racecard_enabled', {enabled: !!rc }).catch(() => { });
+    await invoke('set_print_racecard_enabled', { enabled: !!rc }).catch(() => { });
 });
 
 watch([racecard, raceNumber], () => {
@@ -126,7 +136,7 @@ document.documentElement.classList.add('dark');
 
 onMounted(async () => {
     unlistenOpen = await listen("menu-open", async () => {
-        const file = await open({
+        const path = await open({
             multiple: false,
             filters: [
                 {
@@ -137,16 +147,24 @@ onMounted(async () => {
             defaultPath: globalStateStore.globalState.racecardsDirectory
         });
 
-        if (file) {
+        if (path) {
+            if (racecardFilenameExists(path)) {
+                currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
+                    return getFileStem(racecards.racecardPaths[idx]) === getFileStem(path);
+                });
+
+                return;
+            }
+
             racecard.value = null;
             await nextTick();
 
             isProcessingRacecard.value = true;
             try {
                 const openedRacecard = Racecard.fromObject(
-                    await invoke<any>('load_racecard_file', { path: file })
+                    await invoke<any>('load_racecard_file', { path: path })
                 );
-                racecards.addRacecard(openedRacecard);
+                racecards.addRacecard(openedRacecard, path);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
@@ -160,7 +178,7 @@ onMounted(async () => {
     });
 
     unlistenOpenZip = await listen("menu-open-zip", async () => {
-        const file = await open({
+        const path = await open({
             multiple: false,
             filters: [
                 {
@@ -171,21 +189,32 @@ onMounted(async () => {
             defaultPath: configFileStore.configState.lastDirectory
         });
 
-
-        if (file) {
+        if (path) {
             racecard.value = null;
             await nextTick();
 
             isProcessingZip.value = true;
 
-            try { 
-                let racecard_path = await invoke('process_zip_file', { path: file });
+            try {
+                const processedPath = await invoke<string>('process_zip_file', { path: path });
+
                 isProcessingZip.value = false;
-                isProcessingRacecard.value = true;               
+
+                if (racecardFilenameExists(processedPath)) {
+                    currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
+                        return getFileStem(racecards.racecardPaths[idx]) === getFileStem(processedPath);
+                    });
+
+                    racecard.value = racecards.racecardEntries[currentRacecardIndex.value].racecard;
+
+                    return;
+                }
+
+                isProcessingRacecard.value = true;
                 const openedRacecard = Racecard.fromObject(
-                    await invoke<any>('process_racecard_file', { path: racecard_path })
+                    await invoke<any>('process_racecard_file', { path: processedPath })
                 );
-                racecards.addRacecard(openedRacecard);
+                racecards.addRacecard(openedRacecard, processedPath);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 isProcessingRacecard.value = false;
@@ -204,8 +233,6 @@ onMounted(async () => {
             return;
         }
         const selectedRaces = await requestPrintRaces();
-
-        console.log("Selected races to print:", selectedRaces);
 
         if (!selectedRaces) {
             return;
@@ -237,8 +264,10 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards" v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen" :currentRace="raceNumber"
-            @update:selectedRace="handleSelectedRace" @delete:racecard="handleDeleteRacecard" />
+        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards"
+            v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen"
+            :currentRace="raceNumber" @update:selectedRace="handleSelectedRace"
+            @delete:racecard="handleDeleteRacecard" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
             <br />
@@ -252,20 +281,12 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />
             <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
-            <Horse
-                v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
-                :key="horse.programNumber || horse.postPosition || idx"
-                :horse="horse"
-                :primePowerComparisons="primePowerComparisons"
-                :print="false"
-            ></Horse>
+            <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
+                :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
+                :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
         </div>
-        <PrintDialog
-            v-model="showPrintDialog"
-            :racecard="racecard"
-            @update:modelValue="handlePrintDialogUpdate"
-            @print="handlePrintDialogPrint"
-        />
+        <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
+            @print="handlePrintDialogPrint" />
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
     </main>
 </template>

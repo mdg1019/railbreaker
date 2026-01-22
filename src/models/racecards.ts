@@ -2,14 +2,17 @@ import { Racecard } from './racecard';
 
 export class Racecards {
     racecardEntries: RacecardEntry[];
+    racecardPaths: string[] = [];
 
 
   constructor() {
     this.racecardEntries = [];
+    this.racecardPaths = [];
   }
 
-  addRacecard(racecard: Racecard): void {
+  addRacecard(racecard: Racecard, path: string): void {
    this.racecardEntries.push(new RacecardEntry(racecard));
+   this.racecardPaths.push(path);
   }
   
   deleteRacecardAt(index: number): void {
@@ -18,6 +21,7 @@ export class Racecards {
     }
 
     this.racecardEntries.splice(index, 1);
+    this.racecardPaths.splice(index, 1);
   }
 }
 

@@ -526,6 +526,7 @@ fn yyyymmdd_to_mmddyyyy(value: &str) -> Option<String> {
     let day = value.get(6..8)?;
     Some(format!("{}/{}/{}", month, day, year))
 }
+
 fn prepend_weekday(s: &str) -> Option<String> {
     let s = s.trim();
 
