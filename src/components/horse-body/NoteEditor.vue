@@ -33,7 +33,7 @@ function handleInput(event: Event) {
             :readonly="props.print"
             @input="handleInput"
         ></textarea>
-        <div v-else>
+        <div v-else class="note-content">
             {{ props.note.content }}
         </div>
     </div>
@@ -66,5 +66,9 @@ function handleInput(event: Event) {
     padding: 0.5rem;
     background-color: var(--bg);
     color: var(--accent-green);
+}
+
+.note-content {
+    white-space: pre-wrap;
 }
 </style>
