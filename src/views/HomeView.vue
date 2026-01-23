@@ -16,6 +16,7 @@ import PrintDialog from "../components/ui/PrintDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
+import { getNoteContent } from "../utils/getNoteContent";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 
@@ -91,13 +92,6 @@ function handleDeleteRacecard(index: number) {
 
     const newIndex = index - 1 >= 0 ? index - 1 : 0;
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
-}
-
-function getNoteContent(race: number, idx: number): string {
-    const entry = racecards.racecardEntries[currentRacecardIndex.value];
-    const notes: Array<Note> = entry.notes;
-
-    return notes.find((n) => n.race == race + 1 && n.horse == idx + 1)?.content || "";
 }
 
 function getFileStem(path: string, removeTrailingAlpha: boolean): string {
@@ -281,6 +275,7 @@ onMounted(async () => {
 
         const raceCardPrintPayload = {
             raceCard: racecard.value,
+            notes: racecards.racecardEntries[currentRacecardIndex.value].notes,
             printRaces: selectedRaces
         };
 
@@ -325,7 +320,7 @@ onUnmounted(() => {
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :raceNumber="raceNumber" :horseNumber="idx + 1" 
-                :noteContent="getNoteContent(raceNumber - 1, idx)" 
+                :noteContent="getNoteContent(racecards.racecardEntries[currentRacecardIndex].notes, raceNumber - 1, idx)" 
                 :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"

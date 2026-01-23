@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Horse } from "../../models/racecard";
-import type { Note } from "../../models/note";
 import Panel from "../ui/Panel.vue";
 import HorseHeaderLeft from "../horse-body/horse-header/HorseHeaderLeft.vue";
 import HorseHeaderRight from "../horse-body/horse-header/HorseHeaderRight.vue";
