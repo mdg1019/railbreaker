@@ -93,6 +93,13 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
+function getNoteContent(race: number, idx: number): string {
+    const entry = racecards.racecardEntries[currentRacecardIndex.value];
+    const notes: Array<Note> = entry.notes;
+
+    return notes.find((n) => n.race == race + 1 && n.horse == idx + 1)?.content || "";
+}
+
 function getFileStem(path: string, removeTrailingAlpha: boolean): string {
     const filename = path.split(/[\\/]/).pop() ?? "";
     let stem = filename.replace(/\.[^/.]+$/, "");
@@ -317,6 +324,8 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
+                :raceNumber="raceNumber" :horseNumber="idx + 1" 
+                :noteContent="getNoteContent(raceNumber - 1, idx)" 
                 :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
