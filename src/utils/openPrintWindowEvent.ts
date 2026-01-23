@@ -7,7 +7,6 @@ import type { RaceCardPrintPayload } from "../models/print";
 
 export const PRINT_PAYLOAD_EVENT = "print:payload";
 export const PRINT_READY_EVENT = "print:ready";
-export const PRINT_PAYLOAD_STORAGE_KEY = "print:payload-cache";
 
 type OpenOptions = {
     windowLabel?: string;
@@ -91,14 +90,6 @@ export async function openPrintWindowAndSendPayload(
     }
 
     win.setPosition(offscreenPosition).catch(() => { });
-
-    try {
-        if (typeof window !== "undefined" && window.localStorage) {
-            window.localStorage.setItem(PRINT_PAYLOAD_STORAGE_KEY, JSON.stringify(payload));
-        }
-    } catch {
-        // best-effort cache for the print window
-    }
 
     await waitForPrintReady(label, Math.min(2000, timeoutMs));
 

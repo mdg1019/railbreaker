@@ -1,23 +1,41 @@
 <script setup lang="ts">
+import { Note } from "../../models/note";
+
 const props = withDefaults(defineProps<{
-    raceNumber: number,
-    horseNumber: number,
-    content: string,
+    note: Note,
     print: boolean;
 }>(), {
     print: false,
 });
+
+const emit = defineEmits<{
+  (e: "update:note", value: Note): void;
+}>();
+
+function handleInput(event: Event) {
+  emit("update:note", new Note(
+    props.note.race,
+    props.note.horse,
+    (event.target as HTMLTextAreaElement).value
+  ));
+}
 </script>
 
 <template>
-    <div class="container font-small">
-        <div class="label">Notes:</div>
+    <div v-if="!props.print || props.note.content !== ''" class="container font-small">
+        <div class="label" :class="{ 'is-print': props.print }">Notes:</div>
         <textarea
+            v-if="!props.print"
             class="note-textarea font-small"
             rows="5"
             cols="40"
-            :value="content"
+            :value="props.note.content"
+            :readonly="props.print"
+            @input="handleInput"
         ></textarea>
+        <div v-else>
+            {{ props.note.content }}
+        </div>
     </div>
 </template>
 
@@ -35,6 +53,10 @@ const props = withDefaults(defineProps<{
 .label {
     color: var(--accent-yellow);
     margin-top: 0.75rem;
+}
+
+.label.is-print {
+    margin-top: 0;
 }
 
 .note-textarea {

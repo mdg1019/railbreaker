@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Horse } from "../../models/racecard";
+import { Note } from "../../models/note";
 import Panel from "../ui/Panel.vue";
 import HorseHeaderLeft from "../horse-body/horse-header/HorseHeaderLeft.vue";
 import HorseHeaderRight from "../horse-body/horse-header/HorseHeaderRight.vue";
@@ -9,10 +10,52 @@ import Workouts from "../horse-body/Workouts.vue";
 import TrainerStats from "../horse-body/TrainerStats.vue";
 import TrainerJockey from "../horse-body/TrainerJockey.vue";
 import NoteEditor from "../horse-body/NoteEditor.vue";
-const props = withDefaults(defineProps<{ horse: Horse, raceNumber: number, horseNumber: number, noteContent: string, primePowerComparisons: Array<[number | string, string, string]>; print: boolean; }>(), {
+import { invoke } from "@tauri-apps/api/core";
+
+const props = withDefaults(defineProps<{
+    horse: Horse,
+    notes: Array<Note>,
+    note: Note,
+    racecardPath: string,
+    primePowerComparisons: Array<[number | string, string, string]>;
+    print: boolean;
+}>(), {
     print: false,
 });
 
+const emit = defineEmits<{
+    (e: "update:notes", value: Array<Note>): void;
+}>();
+
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function updateNote(note: Note) {
+    if (props.print) {
+        return;
+    }
+
+    const updatedNotes = props.notes.map((item) => new Note(item.race, item.horse, item.content));
+    const idx = updatedNotes.findIndex((n) => n.race === note.race && n.horse === note.horse);
+
+    if (idx >= 0) {
+        updatedNotes[idx] = note;
+    } else {
+        updatedNotes.push(note);
+    }
+
+    emit("update:notes", updatedNotes);
+
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+    }
+
+    const notesPath = props.racecardPath.replace(/\.json$/i, ".notes");
+    const payload = updatedNotes.map((item) => item.toObject());
+
+    saveTimeout = setTimeout(async () => {
+        await invoke("save_notes_file", { path: notesPath, notes: payload }).catch(() => { });
+    }, 500);
+}
 </script>
 
 <template>
@@ -39,7 +82,7 @@ const props = withDefaults(defineProps<{ horse: Horse, raceNumber: number, horse
 
                 <TrainerJockey :horse="props.horse" />
 
-                <NoteEditor :raceNumber="props.raceNumber" :horseNumber="props.horseNumber" :content="props.noteContent" :print="props.print" />
+                <NoteEditor :note="props.note" :print="props.print" @update:note="updateNote"/>
             </div>
         </div>
     </Panel>

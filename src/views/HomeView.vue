@@ -16,7 +16,6 @@ import PrintDialog from "../components/ui/PrintDialog.vue";
 import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
-import { getNoteContent } from "../utils/getNoteContent";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 
@@ -33,6 +32,8 @@ const isProcessingRacecard = ref(false);
 
 const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
+const currentNotes = ref<Note[]>([]);
+const lastNoteUpdateAt = ref(0);
 
 const raceNumber = ref(1);
 
@@ -109,7 +110,7 @@ function racecardFilenameExists(path: string, removeTrailingAlpha = false): bool
 }
 
 async function loadNotes(path: string, racecard: Racecard): Promise<Note[]> {
-    let notesPath = path.replace(/\.json$/i, "_NOTES.json");
+    let notesPath = path.replace(/\.json$/i, ".notes");
 
     const emptyNotesConfig = (): Array<[number, number]> => {
         const notesPerRaces: Array<[number, number]> = [];
@@ -130,6 +131,15 @@ async function loadNotes(path: string, racecard: Racecard): Promise<Note[]> {
         : [Note.fromObject(rawNotes)];
 }
 
+function updateNotes(value: Array<Note>) {
+    const entry = racecards.racecardEntries[currentRacecardIndex.value];
+    if (entry) {
+        entry.notes = value;
+    }
+    currentNotes.value = value.slice();
+    lastNoteUpdateAt.value = Date.now();
+}
+
 watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
@@ -148,6 +158,7 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
 
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
+    currentNotes.value = entry?.notes ?? [];
     if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
         raceNumber.value = entry.last_opened_race;
     } else {
@@ -198,6 +209,7 @@ onMounted(async () => {
                 racecards.addRacecard(openedRacecard, notes, path);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
+                currentNotes.value = notes;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingRacecard.value = false;
@@ -252,6 +264,7 @@ onMounted(async () => {
                 racecards.addRacecard(openedRacecard, notes, racecardPath);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
+                currentNotes.value = notes;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
@@ -273,9 +286,15 @@ onMounted(async () => {
             return;
         }
 
+        await nextTick();
+        const elapsed = Date.now() - lastNoteUpdateAt.value;
+        if (elapsed < 200) {
+            await new Promise((resolve) => setTimeout(resolve, 200 - elapsed));
+        }
+
         const raceCardPrintPayload = {
             raceCard: racecard.value,
-            notes: racecards.racecardEntries[currentRacecardIndex.value].notes,
+            notes: currentNotes.value.map((note) => note.toObject()),
             printRaces: selectedRaces
         };
 
@@ -319,9 +338,12 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
-                :raceNumber="raceNumber" :horseNumber="idx + 1" 
-                :noteContent="getNoteContent(racecards.racecardEntries[currentRacecardIndex].notes, raceNumber - 1, idx)" 
-                :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
+                :note="currentNotes.find(n => n.race === raceNumber && n.horse === (idx + 1)) as Note"
+                :notes="currentNotes"
+                :racecardPath="racecards.racecardPaths[currentRacecardIndex]"
+                :primePowerComparisons="primePowerComparisons" :print="false"
+                @update:notes="updateNotes"
+                ></Horse>
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />

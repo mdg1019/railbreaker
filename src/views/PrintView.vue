@@ -6,17 +6,19 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { Racecard } from "../models/racecard";
 import { RaceCardPrintPayload } from "../models/print";
-import { PRINT_PAYLOAD_EVENT, PRINT_PAYLOAD_STORAGE_KEY, PRINT_READY_EVENT } from "../utils/openPrintWindowEvent";
+import { PRINT_PAYLOAD_EVENT, PRINT_READY_EVENT } from "../utils/openPrintWindowEvent";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import Horse from "../components/racecard/Horse.vue";
-import "../scss/_main.scss";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
-import { getNoteContent } from "../utils/getNoteContent";
+import { Note } from "../models/note";
+import "../scss/_main.scss";
 
 const payload = ref<RaceCardPrintPayload | null>(null);
+
 let hasPrinted = false;
 const router = useRouter();
+
 const racecard = computed(() => {
     const value = payload.value;
     if (!value) {
@@ -28,6 +30,13 @@ const racecard = computed(() => {
     return value as Racecard;
 });
 
+const notes = computed(() => {
+    const value = payload.value;
+    if (!value) {
+        return [];
+    }
+    return value.notes;
+});
 
 const primePowerComparisonsByRace = computed<Record<number, Array<[number | string, string, string]>>>(() => {
     const result: Record<number, Array<[number | string, string, string]>> = {};
@@ -114,15 +123,6 @@ onMounted(async () => {
         emit(PRINT_READY_EVENT, { label: getCurrentWindow().label }).catch(() => { });
     }, 0);
 
-    try {
-        const cached = localStorage.getItem(PRINT_PAYLOAD_STORAGE_KEY);
-        if (cached && !payload.value) {
-            await handlePayload(JSON.parse(cached));
-        }
-    } catch {
-        // ignore cache errors
-    }
-
     setTimeout(() => {
         if (!payload.value) {
             getCurrentWindow().close().catch(() => { });
@@ -150,10 +150,13 @@ onBeforeUnmount(() => {
                     <RaceDetails :racecard="payload!.raceCard" :race="raceNumber" :print="true" />
                     <div>
                         <Horse v-for="(horse, idx) in (payload!.raceCard.races[raceNumber - 1]?.horses || [])"
-                            :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
-                            :raceNumber="raceNumber" :horseNumber="idx + 1"
-                            :noteContent="getNoteContent(payload!.notes, raceNumber - 1, idx)"
-                            :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []" :print="true"></Horse>
+                            :key="horse.programNumber || horse.postPosition || idx" 
+                            :horse="horse"
+                            :note="notes.find(n => n.race === raceNumber && n.horse === (idx + 1)) as Note"
+                            :notes="notes"
+                            :racecardPath="''" 
+                            :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []"
+                            :print="true"></Horse>
                     </div>
                 </main>
             </div>

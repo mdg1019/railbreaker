@@ -12,7 +12,7 @@ pub async fn load_notes_file(path: String, races: Vec<(u32, u32)>) -> Result<Val
             let mut empty_notes = Value::Array(vec![]);
 
             for race in races {
-                let note = Note { race: race.0 , horse: race.1, content: format!("Race {} Horse {}", race.0, race.1) };
+                let note = Note { race: race.0 , horse: race.1, content: "".to_string()};
                 let note_value = serde_json::to_value(&note)
                     .map_err(|e| format!("Failed to serialize note: {}", e))?;
                 empty_notes.as_array_mut().unwrap().push(note_value);
