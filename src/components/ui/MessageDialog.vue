@@ -28,7 +28,7 @@ export default defineComponent({
     },
     okButtonColor: {
       type: String as PropType<string>,
-      default: ''
+      default: '--accent-yellow'
     }
   },
   emits: ['update:modelValue'],
@@ -71,7 +71,7 @@ export default defineComponent({
       <button
         ref="okButton"
         type="button"
-        :style="okButtonColor ? 'background-color: var(' + okButtonColor + ')' : undefined"
+        :style="okButtonColor ? 'color: var(' + okButtonColor + ')' : undefined"
         @click="close"
       >
         OK

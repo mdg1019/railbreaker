@@ -63,7 +63,7 @@ watch(
 </script>
 
 <template>
-    <ModalDialog :model-value="modelValue" :title="title" :titleColor="'--accent-green'" @update:modelValue="close">
+    <ModalDialog :model-value="modelValue" :title="title" :titleColor="'--accent-yellow'" @update:modelValue="close">
         <div class="race-list" role="list">
             <label v-for="(race, idx) in races" :key="race.raceNumber ?? idx" class="race-row" role="listitem">
                 <input class="race-checkbox" type="checkbox" :checked="selectedRaces.includes(raceNumberFor(race, idx))"
@@ -83,7 +83,7 @@ watch(
                 type="button"
                 @click="confirmPrint"
                 :disabled="selectedRaces.length === 0"
-                :style="selectedRaces.length !== 0 ? { color: 'var(--accent-green)' } : undefined"
+                :style="selectedRaces.length !== 0 ? { color: 'var(--accent-yellow)' } : undefined"
             >
                 Print
             </button>
