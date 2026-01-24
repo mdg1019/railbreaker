@@ -5,6 +5,7 @@ mod menus;
 mod models;
 mod constants;
 mod states;
+mod sqlite;
 
 use tauri::{Emitter, Manager};
 use commands::global_state_commands::load_global_state;
@@ -15,6 +16,7 @@ use commands::process_racecard_file_commands::process_racecard_file;
 use commands::exit_app_command::exit_app;
 use commands::load_racecard_file_command::load_racecard_file;
 use commands::notes_commands::{load_notes_file, save_notes_file};
+use sqlite::racecards::add_racecard;
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -24,7 +26,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .setup(move |app| {
-            init_setup()?;
+            init_setup(app)?;
 
             menus::setup_menus(app)?;
 
@@ -40,6 +42,8 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 load_or_init_config(app_handle).await;
             });
+
+
 
             Ok(())
         })
@@ -65,12 +69,13 @@ pub fn run() {
             load_notes_file,
             save_notes_file,
             exit_app,
+            add_racecard,
         ])
         .run(context)
         .expect("error while running tauri application");
 }
 
-fn init_setup() -> Result<(), String> {
+fn init_setup(app: &tauri::App) -> Result<(), String> {
     let current_directory =
         std::env::current_dir().map_err(|e| format!("Failed to get current directory: {}", e))?;
 
@@ -97,6 +102,16 @@ fn init_setup() -> Result<(), String> {
 
         gs.racecards_directory = racecard_path.to_string_lossy().to_string();
     }
+
+    let database_url = sqlite::get_database_file_path()?;
+    
+    let pool = tauri::async_runtime::block_on(async {
+        let pool = sqlite::db::make_pool(&database_url).await?;
+        sqlite::db::create_tables(&pool).await?;
+        Ok::<_, anyhow::Error>(pool)
+    })
+    .map_err(|e| format!("Failed to initialize database: {}", e))?;
+    app.manage(pool);
 
     Ok(())
 }

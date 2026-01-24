@@ -2,13 +2,17 @@ use crate::constants::single_file_indexes::*;
 use crate::files::write_json_file;
 use crate::json::to_camel_case_value;
 use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
+use crate::sqlite::racecards::add_racecard;
 use crate::states::global_state::global_state;
 use serde_json::Value;
+use tauri::AppHandle;
+use tauri::Manager;
+use sqlx::SqlitePool;
 use std::path::PathBuf;
 use tokio::fs;
 
 #[tauri::command]
-pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
+pub async fn process_racecard_file(app: AppHandle, path: String) -> Result<Value, String> {
     let contents = fs::read_to_string(&path)
         .await
         .map_err(|e| format!("Failed to read racecard file: {}", e))?;
@@ -50,6 +54,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
             idx
         } else {
             let race = Race {
+                id: 0,
+                racecard_id: 0,
                 race_number: race_number,
                 distance: line[SF_DISTANCE].parse::<i32>().ok(),
                 surface: line[SF_SURFACE].clone(),
@@ -103,6 +109,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
         };
 
         let mut horse = Horse {
+            id: 0,
+            race_id: 0,
             post_position: line[SF_POST_POSITION].parse::<u32>().ok(),
             entry: line[SF_ENTRY].clone(),
             claiming_price_of_horse: line[SF_CLAIMING_PRICE_OF_HORSE].parse::<u32>().ok(),
@@ -289,6 +297,7 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
             trainer_jockey_combo_roi_meet: line[SF_TRAINER_JOCKEY_COMBO_ROI_MEET]
                 .parse::<f64>()
                 .ok(),
+            note: "".to_string(),
             workouts: Vec::new(),
             past_performances: Vec::new(),
             key_trainer_stats: Vec::new(),
@@ -296,6 +305,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
 
         for j in 0..12 {
             let workout = Workout {
+                id: 0,
+                horse_id: 0,
                 date: yyyymmdd_to_mmddyyyy(&line[SF_WORKOUT_DATE + j])
                     .unwrap_or_else(|| line[SF_WORKOUT_DATE + j].clone()),
                 time: line[SF_WORKOUT_TIME + j].parse::<f64>().ok(),
@@ -315,6 +326,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
 
         for j in 0..10 {
             let pp = PastPerformance {
+                id: 0,
+                horse_id: 0,
                 race_date: yyyymmdd_to_mmddyyyy(&line[SF_PP_RACE_DATE + j])
                     .unwrap_or_else(|| "".to_string()),
                 days_since_last_race: line[SF_PP_NUMBER_OF_DAYS_SINCE_LAST_RACE + j]
@@ -469,6 +482,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
 
         for j in 0..6 {
             let key_trainer_stat = KeyTrainerStat {
+                id: 0,
+                horse_id: 0,
                 category: lines[0][SF_KEY_TRAINER_STAT + j * 5].clone(),
                 starts: lines[0][SF_KEY_TRAINER_STAT + 1 + j * 5]
                     .parse::<u32>()
@@ -491,6 +506,8 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
     }
 
     let racecard = Racecard {
+        id: 0,
+        zip_file_name: "".to_string(),
         track: track_name,
         date: yyyymmdd_to_mmddyyyy(&lines[0][SF_RACE_DATE])
             .unwrap_or_else(|| lines[0][SF_RACE_DATE].clone()),
@@ -503,11 +520,17 @@ pub async fn process_racecard_file<'a>(path: String) -> Result<Value, String> {
         .await
         .map_err(|e| format!("Failed to delete racecard file: {}", e))?;
 
-    let json_path = PathBuf::from(&path).with_extension("json");
+    // let json_path = PathBuf::from(&path).with_extension("json");
+    // let json_racecard_value = serde_json::to_value(&racecard)
+    //     .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
+    // let json_racecard_value = to_camel_case_value(json_racecard_value);
+    // write_json_file(json_path, &json_racecard_value).await?;
+
+    let racecard = add_racecard(app.state::<SqlitePool>(), racecard).await?;
+
     let racecard_value = serde_json::to_value(&racecard)
         .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
     let racecard_value = to_camel_case_value(racecard_value);
-    write_json_file(json_path, &racecard_value).await?;
 
     Ok(racecard_value)
 }

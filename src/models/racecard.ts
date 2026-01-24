@@ -1,10 +1,14 @@
 export class Racecard {
+  id: number | null;
+  zipFileName: string;
   track: string;
   date: string;
   longDate: string;
   races: Race[];
 
   constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.zipFileName = data.zipFileName ?? '';
     this.track = data.track ?? '';
     this.date = data.date ?? '';
     this.longDate = data.longDate ?? '';
@@ -13,6 +17,8 @@ export class Racecard {
 
   static fromObject(obj: any): Racecard {
     return new Racecard({
+      id: obj.id,
+      zipFileName: obj.zipFileName,
       track: obj.track,
       date: obj.date,
       longDate: obj.longDate,
@@ -22,6 +28,8 @@ export class Racecard {
 
   toObject(): any {
     return {
+      id: this.id,
+      zipFileName: this.zipFileName,
       track: this.track,
       date: this.date,
       longDate: this.longDate,
@@ -31,6 +39,8 @@ export class Racecard {
 }
 
 export class Race {
+  id: number | null;
+  racecardId: number | null;
   raceNumber: number | null;
   distance: number | null;
   surface: string;
@@ -76,6 +86,8 @@ export class Race {
   horses: Horse[];
 
   constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.racecardId = data.racecardId ?? null;
     this.raceNumber = data.raceNumber ?? null;
     this.distance = data.distance ?? null;
     this.surface = data.surface ?? '';
@@ -130,6 +142,8 @@ export class Race {
 
   toObject(): any {
     return {
+      id: this.id,
+      racecardId: this.racecardId,
       raceNumber: this.raceNumber,
       distance: this.distance,
       surface: this.surface,
@@ -178,6 +192,8 @@ export class Race {
 }
 
 export class Horse {
+  id: number | null;
+  raceId: number | null;
   postPosition: number | null;
   entry: string;
   claimingPriceOfHorse: number | null;
@@ -324,6 +340,8 @@ export class Horse {
   keyTrainerStats: KeyTrainerStat[];
 
   constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.raceId = data.raceId ?? null;
     this.postPosition = data.postPosition ?? null;
     this.entry = data.entry ?? '';
     this.claimingPriceOfHorse = data.claimingPriceOfHorse ?? null;
@@ -481,6 +499,8 @@ export class Horse {
 
   toObject(): any {
     return {
+      id: this.id,
+      raceId: this.raceId,
       postPosition: this.postPosition,
       entry: this.entry,
       claimingPriceOfHorse: this.claimingPriceOfHorse,
@@ -630,6 +650,8 @@ export class Horse {
 }
 
 export class Workout {
+  id: number | null;
+  horseId: number | null;
   date: string;
   time: number | null;
   track: string;
@@ -640,44 +662,28 @@ export class Workout {
   workoutsThatDayDistance: number | null;
   rank: number | null;
 
-  constructor(
-    date: string = '',
-    time: number | null = null,
-    track: string = '',
-    distance: number | null = null,
-    condition: string = '',
-    description: string = '',
-    mainInnerTrackIndicator: string = '',
-    workoutsThatDayDistance: number | null = null,
-    rank: number | null = null
-  ) {
-    this.date = date;
-    this.time = time;
-    this.track = track;
-    this.distance = distance;
-    this.condition = condition;
-    this.description = description;
-    this.mainInnerTrackIndicator = mainInnerTrackIndicator;
-    this.workoutsThatDayDistance = workoutsThatDayDistance;
-    this.rank = rank;
+  constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.horseId = data.horseId ?? null;
+    this.date = data.date ?? '';
+    this.time = data.time ?? null;
+    this.track = data.track ?? '';
+    this.distance = data.distance ?? null;
+    this.condition = data.condition ?? '';
+    this.description = data.description ?? '';
+    this.mainInnerTrackIndicator = data.mainInnerTrackIndicator ?? '';
+    this.workoutsThatDayDistance = data.workoutsThatDayDistance ?? null;
+    this.rank = data.rank ?? null;
   }
 
   static fromObject(obj: any): Workout {
-    return new Workout(
-      obj.date ?? '',
-      obj.time ?? null,
-      obj.track ?? '',
-      obj.distance ?? null,
-      obj.condition ?? '',
-      obj.description ?? '',
-      obj.mainInnerTrackIndicator ?? '',
-      obj.workoutsThatDayDistance ?? null,
-      obj.rank ?? null
-    );
+    return new Workout(obj);
   }
 
   toObject(): any {
     return {
+      id: this.id,
+      horseId: this.horseId,
       date: this.date,
       time: this.time,
       track: this.track,
@@ -692,6 +698,8 @@ export class Workout {
 }
 
 export class KeyTrainerStat {
+  id: number | null;
+  horseId: number | null;
   category: string;
   starts: number | null;
   winPct: number | null;
@@ -699,6 +707,8 @@ export class KeyTrainerStat {
   roi: number | null;
 
   constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.horseId = data.horseId ?? null;
     this.category = data.category ?? '';
     this.starts = data.starts ?? null;
     this.winPct = data.winPct ?? null;
@@ -708,6 +718,8 @@ export class KeyTrainerStat {
 
   static fromObject(obj: any): KeyTrainerStat {
     return new KeyTrainerStat({
+      id: obj.id,
+      horseId: obj.horseId,
       category: obj.category,
       starts: obj.starts,
       winPct: obj.winPct,
@@ -718,6 +730,8 @@ export class KeyTrainerStat {
 
   toObject(): any {
     return {
+      id: this.id,
+      horseId: this.horseId,
       category: this.category,
       starts: this.starts,
       winPct: this.winPct,
@@ -728,6 +742,8 @@ export class KeyTrainerStat {
 }
 
 export class PastPerformance {
+  id: number | null;
+  horseId: number | null;
   raceDate: string;
   daysSinceLastRace: number | null;
   trackCode: string;
@@ -830,6 +846,8 @@ export class PastPerformance {
   equibaseAbbreviatedRaceCondition: string;
 
   constructor(data: any = {}) {
+    this.id = data.id ?? null;
+    this.horseId = data.horseId ?? null;
     this.raceDate = data.raceDate ?? '';
     this.daysSinceLastRace = data.daysSinceLastRace ?? null;
     this.trackCode = data.trackCode ?? '';
@@ -938,6 +956,8 @@ export class PastPerformance {
 
   toObject(): any {
     return {
+      id: this.id,
+      horseId: this.horseId,
       raceDate: this.raceDate,
       daysSinceLastRace: this.daysSinceLastRace,
       trackCode: this.trackCode,

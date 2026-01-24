@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Racecard {
+    pub id: i64,
+    pub zip_file_name: String,
     pub track: String,
     pub date: String,
     pub long_date: String,
@@ -10,6 +12,8 @@ pub struct Racecard {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Race {
+    pub id: i64,
+    pub racecard_id: i64,
     pub race_number: Option<u32>,
     pub distance: Option<i32>,
     pub surface: String,
@@ -57,6 +61,8 @@ pub struct Race {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Horse {
+    pub id: i64,
+    pub race_id: i64,
     pub post_position: Option<u32>,
     pub entry: String,
     pub claiming_price_of_horse: Option<u32>,
@@ -198,6 +204,7 @@ pub struct Horse {
     pub trainer_jockey_combo_places_meet: Option<u32>,
     pub trainer_jockey_combo_shows_meet: Option<u32>,
     pub trainer_jockey_combo_roi_meet: Option<f64>,
+    pub note: String,
     pub workouts: Vec<Workout>,
     pub past_performances: Vec<PastPerformance>,
     pub key_trainer_stats: Vec<KeyTrainerStat>,
@@ -205,6 +212,8 @@ pub struct Horse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Workout {
+    pub id: i64,
+    pub horse_id: i64,
     pub date: String,
     pub time: Option<f64>,
     pub track: String,
@@ -218,6 +227,8 @@ pub struct Workout {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PastPerformance {
+    pub id: i64,
+    pub horse_id: i64,
     pub race_date: String,
     pub days_since_last_race: Option<u32>,
     pub track_code: String,
@@ -322,6 +333,8 @@ pub struct PastPerformance {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KeyTrainerStat {
+    pub id: i64,
+    pub horse_id: i64,
     pub category: String,
     pub starts: Option<u32>,
     pub win_pct: Option<f64>,

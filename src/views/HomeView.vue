@@ -259,6 +259,8 @@ onMounted(async () => {
                     await invoke<any>('process_racecard_file', { path: processedPath })
                 );
 
+                console.log(openedRacecard);
+
                 const notes = await loadNotes(racecardPath, openedRacecard);
 
                 racecards.addRacecard(openedRacecard, notes, racecardPath);

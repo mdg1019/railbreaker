@@ -611,7 +611,7 @@ export default class Transformers {
 
         let prefix = "";
 
-        if (race.ageSexRestrictions[2].toLowerCase() == "f") {
+        if (race.ageSexRestrictions?.length > 2 && race.ageSexRestrictions[2].toLowerCase() == "f") {
             prefix += "\u00EA";
         }
 
