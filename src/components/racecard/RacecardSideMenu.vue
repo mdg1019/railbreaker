@@ -64,7 +64,7 @@ function selectRace(raceNumber: number) {
                         </div>
 
                         <ul v-if="racecards.racecardEntries.length > 1 && showDropdown" class="dropdown-list">
-                            <li v-for="(entry, idx) in racecards.racecardEntries" :key="entry.id"
+                            <li v-for="(entry, idx) in racecards.racecardEntries" :key="idx"
                                 :class="{ active: idx === currentRacecardIndex }" @click.stop="selectRacecardIndex(idx)">
                                 <div class="entry-track">{{ entry.racecard.track }}</div>
                                 <div class="entry-date">{{ entry.racecard.date }}</div>
@@ -77,7 +77,7 @@ function selectRace(raceNumber: number) {
 
             <nav class="races" aria-label="Race list">
                 <button class="race" type="button" v-for="(race, idx) in racecardEntry?.racecard.races"
-                    :key="race.raceNumber ?? idx" :class="{ selected: (race.raceNumber ?? idx + 1) === currentRace }"
+                    :key="idx" :class="{ selected: (race.raceNumber ?? idx + 1) === currentRace }"
                     @click="selectRace(race.raceNumber ?? idx + 1)">
                     <div class="race-row">
                         <div class="race-left">

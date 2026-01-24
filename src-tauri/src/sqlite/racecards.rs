@@ -57,6 +57,32 @@ pub async fn get_racecard_by_id(
 }
 
 #[tauri::command]
+pub async fn get_all_racecards(
+    pool: State<'_, SqlitePool>,
+) -> Result<Value, String> {
+    let rows = sqlx::query("SELECT * FROM racecards ORDER BY track ASC, date DESC;")
+        .fetch_all(&*pool)
+        .await
+        .map_err(|e| format!("Failed to load racecards: {}", e))?;
+
+    let racecards: Vec<Racecard> = rows
+        .into_iter()
+        .map(|row| Racecard {
+            id: row.get("id"),
+            zip_file_name: row.get("zip_file_name"),
+            track: row.get("track"),
+            date: row.get("date"),
+            long_date: row.get("long_date"),
+            races: Vec::new(),
+        })
+        .collect();
+
+    let value = serde_json::to_value(&racecards)
+        .map_err(|e| format!("Failed to serialize racecards: {}", e))?;
+    Ok(to_camel_case_value(value))
+}
+
+#[tauri::command]
 pub async fn update_note(
     pool: State<'_, SqlitePool>,
     horse_id: i64,

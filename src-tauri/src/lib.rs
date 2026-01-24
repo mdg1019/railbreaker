@@ -14,7 +14,9 @@ use commands::process_zip_file_commands::process_zip_file;
 use commands::print_racecard::{close_print_window, hide_print_window_menu, print_racecard, set_print_racecard_enabled};
 use commands::process_racecard_file_commands::process_racecard_file;
 use commands::exit_app_command::exit_app;
-use sqlite::racecards::{add_racecard, get_racecard_by_id, racecard_exists_by_zip_name, update_note};
+use sqlite::racecards::{
+    add_racecard, get_all_racecards, get_racecard_by_id, racecard_exists_by_zip_name, update_note,
+};
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -65,6 +67,7 @@ pub fn run() {
             hide_print_window_menu,
             exit_app,
             add_racecard,
+            get_all_racecards,
             get_racecard_by_id,
             racecard_exists_by_zip_name,
             update_note,

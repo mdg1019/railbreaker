@@ -17,6 +17,7 @@ import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
+import SelectRacecardDialog from "../components/ui/SelectRacecardDialog.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -46,6 +47,8 @@ const raceContainerRef = ref<HTMLElement | null>(null);
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
 const showPrintDialog = ref(false);
+const showSelectRacecardDialog = ref(false);
+const filteredRacecards = ref<Racecard[]>([]);
 let pendingPrintResolve: ((value: number[] | null) => void) | null = null;
 
 function requestPrintRaces(): Promise<number[] | null> {
@@ -119,6 +122,26 @@ function updateNote([note, horseId]: [string, number]) {
     }
 }
 
+async function handleOpenRacecard(id: number | null) {
+    if (id === null) {
+        return;
+    }
+
+    isProcessingRacecard.value = true;
+    try {
+        const rc = Racecard.fromObject(await invoke<any>('get_racecard_by_id', { racecardId: id }));
+        console.log(rc);
+        racecards.addRacecard(rc);
+        currentRacecardIndex.value = racecards.racecardEntries.length - 1;
+        racecard.value = rc;
+        isProcessingRacecard.value = false;
+    } catch (error) {
+        isProcessingRacecard.value = false;
+        errorMessage.value = String(error);
+        showErrorDialog.value = true;
+    }
+}
+
 watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
@@ -153,21 +176,31 @@ document.documentElement.classList.add('dark');
 
 onMounted(async () => {
     unlistenOpen = await listen("menu-open", async () => {
-        isProcessingRacecard.value = true;
-        try {
-            let rc: Racecard = await invoke('get_racecard_by_id', { racecardId: 1 }); // Dummy to keep structure
+        let racecardsInDatabase= await invoke<Array<Racecard>>('get_all_racecards').catch(() => null);
 
-            console.log(rc);
-            racecards.addRacecard(rc);
-            currentRacecardIndex.value = racecards.racecardEntries.length - 1;
-            racecard.value = rc;
-            isProcessingRacecard.value = false;
-        } catch (error) {
-            isProcessingRacecard.value = false;
-
-            errorMessage.value = String(error);
+        if (!racecardsInDatabase || racecardsInDatabase.length === 0) {
+            errorMessage.value = "No racecards found in the database. Please import a ZIP file.";
             showErrorDialog.value = true;
+            return;
         }
+
+        let filteredRacecardsList = racecardsInDatabase.filter(rc => {
+            return !racecards.racecardEntries.some(entry => {
+                if (entry.racecard.id != null && rc.id != null) {
+                    return entry.racecard.id === rc.id;
+                }
+                return entry.racecard.zipFileName === rc.zipFileName;
+            });
+        });
+
+        if (filteredRacecardsList.length === 0) {
+            errorMessage.value = "All racecards in the database are already opened.";
+            showErrorDialog.value = true;
+            return;
+        }
+
+        filteredRacecards.value = filteredRacecardsList;
+        showSelectRacecardDialog.value = true;
     });
 
     unlistenOpenZip = await listen("menu-open-zip", async () => {
@@ -287,6 +320,10 @@ onUnmounted(() => {
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" messageColor="--accent-green" title="Error" titleColor="--accent-red" />
+        <SelectRacecardDialog v-model="showSelectRacecardDialog" :racecards="filteredRacecards"
+            :selectedRacecardId="racecard?.id"
+            @update:modelValue="showSelectRacecardDialog = $event"
+            @open="handleOpenRacecard" />
     </main>
 </template>
 
