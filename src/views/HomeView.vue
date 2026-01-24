@@ -233,6 +233,16 @@ onMounted(async () => {
         });
 
         if (path) {
+            const filename = path.split(/[\\/]/).pop() ?? "";
+            const exists = await invoke("racecard_exists_by_zip_name", { zipFileName: filename });
+
+            if (exists) {
+                errorMessage.value = `Racecard with ${filename} already exists in the database.`;
+                showErrorDialog.value = true;
+
+                return;
+            }
+
             if (racecardFilenameExists(path, true)) {
                 currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
                     return getFileStem(racecards.racecardPaths[idx], true) === getFileStem(path, true);
@@ -256,7 +266,7 @@ onMounted(async () => {
 
                 isProcessingRacecard.value = true;
                 const openedRacecard = Racecard.fromObject(
-                    await invoke<any>('process_racecard_file', { path: processedPath })
+                    await invoke<any>('process_racecard_file', { path: processedPath, zipFileName: path })
                 );
 
                 console.log(openedRacecard);

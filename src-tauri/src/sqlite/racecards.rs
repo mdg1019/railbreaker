@@ -18,12 +18,29 @@ pub async fn add_racecard(
     pool: State<'_, SqlitePool>,
     racecard: Racecard,
 ) -> Result<Racecard, String> {
-    create_racecard(&pool, racecard)
+    add_racecard_inner(&pool, racecard)
         .await
-        .map_err(|e| format!("Failed to create racecard: {}", e))
+        .map_err(|e| format!("Failed to add racecard: {}", e))
 }
 
-pub async fn create_racecard(pool: &SqlitePool, mut racecard: Racecard) -> Result<Racecard, sqlx::Error> {
+#[tauri::command]
+pub async fn racecard_exists_by_zip_name(
+    pool: State<'_, SqlitePool>,
+    zip_file_name: String,
+) -> Result<bool, String> {
+    let exists = sqlx::query_scalar::<_, i64>(
+        "SELECT 1 FROM racecards WHERE zip_file_name = ? LIMIT 1;",
+    )
+    .bind(zip_file_name)
+    .fetch_optional(&*pool)
+    .await
+    .map_err(|e| format!("Failed to check racecard: {}", e))?
+    .is_some();
+
+    Ok(exists)
+}
+
+pub async fn add_racecard_inner(pool: &SqlitePool, mut racecard: Racecard) -> Result<Racecard, sqlx::Error> {
     let mut tx = pool.begin().await?;
 
     let result = sqlx::query(

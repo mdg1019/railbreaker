@@ -12,7 +12,7 @@ use std::path::PathBuf;
 use tokio::fs;
 
 #[tauri::command]
-pub async fn process_racecard_file(app: AppHandle, path: String) -> Result<Value, String> {
+pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: String) -> Result<Value, String> {
     let contents = fs::read_to_string(&path)
         .await
         .map_err(|e| format!("Failed to read racecard file: {}", e))?;
@@ -505,9 +505,16 @@ pub async fn process_racecard_file(app: AppHandle, path: String) -> Result<Value
         races[race_idx].horses.push(horse);
     }
 
+    let filename = PathBuf::from(&zip_file_name)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .ok_or_else(|| "Invalid zip file name".to_string())?
+        .to_string();
+
+
     let racecard = Racecard {
         id: 0,
-        zip_file_name: "".to_string(),
+        zip_file_name: filename,
         track: track_name,
         date: yyyymmdd_to_mmddyyyy(&lines[0][SF_RACE_DATE])
             .unwrap_or_else(|| lines[0][SF_RACE_DATE].clone()),

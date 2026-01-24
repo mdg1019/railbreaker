@@ -16,7 +16,7 @@ use commands::process_racecard_file_commands::process_racecard_file;
 use commands::exit_app_command::exit_app;
 use commands::load_racecard_file_command::load_racecard_file;
 use commands::notes_commands::{load_notes_file, save_notes_file};
-use sqlite::racecards::add_racecard;
+use sqlite::racecards::{add_racecard, racecard_exists_by_zip_name};
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -70,6 +70,7 @@ pub fn run() {
             save_notes_file,
             exit_app,
             add_racecard,
+            racecard_exists_by_zip_name,
         ])
         .run(context)
         .expect("error while running tauri application");
