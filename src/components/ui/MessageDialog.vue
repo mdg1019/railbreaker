@@ -17,6 +17,18 @@ export default defineComponent({
     message: {
       type: String as PropType<string>,
       required: true
+    },
+    titleColor: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    messageColor: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    okButtonColor: {
+      type: String as PropType<string>,
+      default: ''
     }
   },
   emits: ['update:modelValue'],
@@ -50,12 +62,20 @@ export default defineComponent({
   <ModalDialog
     :model-value="modelValue"
     :title="title"
+    :title-color="titleColor"
     @update:modelValue="updateModelValue"
   >
-    <p>{{ message }}</p>
+    <p :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">{{ message }}</p>
 
     <template #actions>
-      <button ref="okButton" type="button" @click="close">OK</button>
+      <button
+        ref="okButton"
+        type="button"
+        :style="okButtonColor ? 'background-color: var(' + okButtonColor + ')' : undefined"
+        @click="close"
+      >
+        OK
+      </button>
     </template>
   </ModalDialog>
 </template>

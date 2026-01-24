@@ -197,7 +197,6 @@ onMounted(async () => {
 
             try {
                 const processedPath = await invoke<string>('process_zip_file', { path: path });
-                const racecardPath = processedPath.replace(/\.drf$/i, ".json");
 
                 isProcessingZip.value = false;
 
@@ -287,7 +286,7 @@ onUnmounted(() => {
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />
-        <MessageDialog v-model="showErrorDialog" :message="errorMessage" title="Error" />
+        <MessageDialog v-model="showErrorDialog" :message="errorMessage" messageColor="--accent-green" title="Error" titleColor="--accent-red" />
     </main>
 </template>
 
