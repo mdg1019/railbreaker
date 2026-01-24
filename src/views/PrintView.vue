@@ -11,7 +11,6 @@ import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import Horse from "../components/racecard/Horse.vue";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
-import { Note } from "../models/note";
 import "../scss/_main.scss";
 
 const payload = ref<RaceCardPrintPayload | null>(null);
@@ -28,14 +27,6 @@ const racecard = computed(() => {
         return (value as RaceCardPrintPayload).raceCard ?? null;
     }
     return value as Racecard;
-});
-
-const notes = computed(() => {
-    const value = payload.value;
-    if (!value) {
-        return [];
-    }
-    return value.notes;
 });
 
 const primePowerComparisonsByRace = computed<Record<number, Array<[number | string, string, string]>>>(() => {
@@ -152,9 +143,6 @@ onBeforeUnmount(() => {
                         <Horse v-for="(horse, idx) in (payload!.raceCard.races[raceNumber - 1]?.horses || [])"
                             :key="horse.programNumber || horse.postPosition || idx" 
                             :horse="horse"
-                            :note="notes.find(n => n.race === raceNumber && n.horse === (idx + 1)) as Note"
-                            :notes="notes"
-                            :racecardPath="''" 
                             :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []"
                             :print="true"></Horse>
                     </div>

@@ -1,4 +1,3 @@
-// src/utils/print/openPrintWindowEvent.ts
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";

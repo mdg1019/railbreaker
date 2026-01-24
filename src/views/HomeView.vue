@@ -7,7 +7,6 @@ import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
 import { Racecards } from "../models/racecards";
-import { Note } from "../models/note";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
@@ -32,7 +31,6 @@ const isProcessingRacecard = ref(false);
 
 const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
-const currentNotes = ref<Note[]>([]);
 const lastNoteUpdateAt = ref(0);
 
 const raceNumber = ref(1);
@@ -95,49 +93,30 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
-function getFileStem(path: string, removeTrailingAlpha: boolean): string {
-    const filename = path.split(/[\\/]/).pop() ?? "";
-    let stem = filename.replace(/\.[^/.]+$/, "");
-    if (removeTrailingAlpha) {
-        stem = stem.replace(/[a-z]+$/i, "");
+function updateNote([note, horseId]: [string, number]) {
+
+    console.log(`Updating note for horse ID ${horseId}: ${note}`);
+
+    const entry = racecards.racecardEntries[currentRacecardIndex.value];
+    if (!entry) {
+        return;
     }
-    return stem.toLowerCase();
-}
 
-function racecardFilenameExists(path: string, removeTrailingAlpha = false): boolean {
-    const targetStem = getFileStem(path, removeTrailingAlpha);
-    return racecards.racecardPaths.some((existingPath) => getFileStem(existingPath, removeTrailingAlpha) === targetStem);
-}
-
-async function loadNotes(path: string, racecard: Racecard): Promise<Note[]> {
-    let notesPath = path.replace(/\.json$/i, ".notes");
-
-    const emptyNotesConfig = (): Array<[number, number]> => {
-        const notesPerRaces: Array<[number, number]> = [];
-        const number_of_races = racecard?.races.length ?? 0;
-        for (let i = 0; i < number_of_races; i++) {
-            for (let j = 0; j < racecard.races![i].horses!.length; j++) {
-                notesPerRaces.push([i + 1, j + 1]);
+    const updateHorseNote = (rc: Racecard) => {
+        for (const race of rc.races ?? []) {
+            const horse = race.horses?.find(h => h.id === horseId);
+            if (horse) {
+                horse.note = note;
+                return true;
             }
         }
-
-        return notesPerRaces;
+        return false;
     };
 
-    const rawNotes = await invoke<any>("load_notes_file", { path: notesPath, races: emptyNotesConfig() });
-
-    return Array.isArray(rawNotes)
-        ? rawNotes.map((n: any) => Note.fromObject(n))
-        : [Note.fromObject(rawNotes)];
-}
-
-function updateNotes(value: Array<Note>) {
-    const entry = racecards.racecardEntries[currentRacecardIndex.value];
-    if (entry) {
-        entry.notes = value;
+    updateHorseNote(entry.racecard);
+    if (racecard.value && racecard.value !== entry.racecard) {
+        updateHorseNote(racecard.value);
     }
-    currentNotes.value = value.slice();
-    lastNoteUpdateAt.value = Date.now();
 }
 
 watch(racecard, async (rc) => {
@@ -158,7 +137,6 @@ watch(currentRacecardIndex, (idx, oldIdx) => {
 
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
-    currentNotes.value = entry?.notes ?? [];
     if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
         raceNumber.value = entry.last_opened_race;
     } else {
@@ -180,15 +158,9 @@ onMounted(async () => {
             let rc: Racecard = await invoke('get_racecard_by_id', { racecardId: 1 }); // Dummy to keep structure
 
             console.log(rc);
-
-            return;
-
-            const notes: Array<Note> = [];
-
-            racecards.addRacecard(rc, notes, "");
+            racecards.addRacecard(rc);
             currentRacecardIndex.value = racecards.racecardEntries.length - 1;
             racecard.value = rc;
-            currentNotes.value = notes;
             isProcessingRacecard.value = false;
         } catch (error) {
             isProcessingRacecard.value = false;
@@ -221,19 +193,6 @@ onMounted(async () => {
                 return;
             }
 
-            if (racecardFilenameExists(path, true)) {
-                currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
-                    return getFileStem(racecards.racecardPaths[idx], true) === getFileStem(path, true);
-                });
-
-                racecard.value = racecards.racecardEntries[currentRacecardIndex.value].racecard;
-
-                return;
-            }
-
-            racecard.value = null;
-            await nextTick();
-
             isProcessingZip.value = true;
 
             try {
@@ -249,12 +208,9 @@ onMounted(async () => {
 
                 console.log(openedRacecard);
 
-                const notes = await loadNotes(racecardPath, openedRacecard);
-
-                racecards.addRacecard(openedRacecard, notes, racecardPath);
+                racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
-                currentNotes.value = notes;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
@@ -284,7 +240,6 @@ onMounted(async () => {
 
         const raceCardPrintPayload = {
             raceCard: racecard.value,
-            notes: currentNotes.value.map((note) => note.toObject()),
             printRaces: selectedRaces
         };
 
@@ -328,9 +283,7 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
-                :note="currentNotes.find(n => n.race === raceNumber && n.horse === (idx + 1)) as Note"
-                :notes="currentNotes" :racecardPath="racecards.racecardPaths[currentRacecardIndex]"
-                :primePowerComparisons="primePowerComparisons" :print="false" @update:notes="updateNotes"></Horse>
+                :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />

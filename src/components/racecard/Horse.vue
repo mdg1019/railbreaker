@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Horse } from "../../models/racecard";
-import { Note } from "../../models/note";
 import Panel from "../ui/Panel.vue";
 import HorseHeaderLeft from "../horse-body/horse-header/HorseHeaderLeft.vue";
 import HorseHeaderRight from "../horse-body/horse-header/HorseHeaderRight.vue";
@@ -14,9 +13,6 @@ import { invoke } from "@tauri-apps/api/core";
 
 const props = withDefaults(defineProps<{
     horse: Horse,
-    notes: Array<Note>,
-    note: Note,
-    racecardPath: string,
     primePowerComparisons: Array<[number | string, string, string]>;
     print: boolean;
 }>(), {
@@ -24,36 +20,25 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-    (e: "update:notes", value: Array<Note>): void;
+    (e: "update:note", value: [string, number]): void;
 }>();
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
-function updateNote(note: Note) {
+function updateNote([note, horseId]: [string, number]) {
+    console.log("Updating note for horse ID:", horseId, "with note:", note);
     if (props.print) {
         return;
     }
 
-    const updatedNotes = props.notes.map((item) => new Note(item.race, item.horse, item.content));
-    const idx = updatedNotes.findIndex((n) => n.race === note.race && n.horse === note.horse);
-
-    if (idx >= 0) {
-        updatedNotes[idx] = note;
-    } else {
-        updatedNotes.push(note);
-    }
-
-    emit("update:notes", updatedNotes);
+    emit("update:note", [note, horseId]);
 
     if (saveTimeout) {
         clearTimeout(saveTimeout);
     }
 
-    const notesPath = props.racecardPath.replace(/\.json$/i, ".notes");
-    const payload = updatedNotes.map((item) => item.toObject());
-
     saveTimeout = setTimeout(async () => {
-        await invoke("save_notes_file", { path: notesPath, notes: payload }).catch(() => { });
+        await invoke("update_note", { note: note, horseId: horseId }).catch(() => { });
     }, 500);
 }
 </script>
@@ -82,7 +67,7 @@ function updateNote(note: Note) {
 
                 <TrainerJockey :horse="props.horse" />
 
-                <NoteEditor :note="props.note" :print="props.print" @update:note="updateNote"/>
+                <NoteEditor :horse="props.horse" :print="props.print" @update:note="updateNote"/>
             </div>
         </div>
     </Panel>

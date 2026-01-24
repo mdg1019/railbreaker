@@ -14,9 +14,7 @@ use commands::process_zip_file_commands::process_zip_file;
 use commands::print_racecard::{close_print_window, hide_print_window_menu, print_racecard, set_print_racecard_enabled};
 use commands::process_racecard_file_commands::process_racecard_file;
 use commands::exit_app_command::exit_app;
-use commands::load_racecard_file_command::load_racecard_file;
-use commands::notes_commands::{load_notes_file, save_notes_file};
-use sqlite::racecards::{add_racecard, get_racecard_by_id, racecard_exists_by_zip_name};
+use sqlite::racecards::{add_racecard, get_racecard_by_id, racecard_exists_by_zip_name, update_note};
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -62,16 +60,14 @@ pub fn run() {
             load_global_state,
             process_zip_file,
             process_racecard_file,
-            load_racecard_file,
             set_print_racecard_enabled,
             close_print_window,
             hide_print_window_menu,
-            load_notes_file,
-            save_notes_file,
             exit_app,
             add_racecard,
             get_racecard_by_id,
             racecard_exists_by_zip_name,
+            update_note,
         ])
         .run(context)
         .expect("error while running tauri application");

@@ -335,6 +335,7 @@ export class Horse {
   trainerJockeyComboPlacesMeet: number | null;
   trainerJockeyComboShowsMeet: number | null;
   trainerJockeyComboRoiMeet: number | null;
+  note: string = '';
   workouts: Workout[];
   pastPerformances: PastPerformance[];
   keyTrainerStats: KeyTrainerStat[];
@@ -483,6 +484,7 @@ export class Horse {
     this.trainerJockeyComboPlacesMeet = data.trainerJockeyComboPlacesMeet ?? null;
     this.trainerJockeyComboShowsMeet = data.trainerJockeyComboShowsMeet ?? null;
     this.trainerJockeyComboRoiMeet = data.trainerJockeyComboRoiMeet ?? null;
+    this.note = data.note ?? '';
     this.workouts = data.workouts ?? [];
     this.pastPerformances = data.pastPerformances ?? [];
     this.keyTrainerStats = data.keyTrainerStats ?? [];
@@ -642,6 +644,7 @@ export class Horse {
       trainerJockeyComboPlacesMeet: this.trainerJockeyComboPlacesMeet,
       trainerJockeyComboShowsMeet: this.trainerJockeyComboShowsMeet,
       trainerJockeyComboRoiMeet: this.trainerJockeyComboRoiMeet,
+      note: this.note,
       workouts: this.workouts.map(w => w.toObject()),
       pastPerformances: this.pastPerformances.map(p => p.toObject()),
       keyTrainerStats: this.keyTrainerStats.map(k => k.toObject())
