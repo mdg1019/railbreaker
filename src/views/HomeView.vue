@@ -175,48 +175,26 @@ document.documentElement.classList.add('dark');
 
 onMounted(async () => {
     unlistenOpen = await listen("menu-open", async () => {
-        const path = await open({
-            multiple: false,
-            filters: [
-                {
-                    name: "Racecard Files",
-                    extensions: ["json"],
-                },
-            ],
-            defaultPath: globalStateStore.globalState.racecardsDirectory
-        });
+        isProcessingRacecard.value = true;
+        try {
+            let rc: Racecard = await invoke('get_racecard_by_id', { racecardId: 1 }); // Dummy to keep structure
 
-        if (path) {
-            if (racecardFilenameExists(path)) {
-                currentRacecardIndex.value = racecards.racecardEntries.findIndex((_, idx) => {
-                    return getFileStem(racecards.racecardPaths[idx], true) === getFileStem(path, true);
-                });
+            console.log(rc);
 
-                return;
-            }
+            return;
 
-            racecard.value = null;
-            await nextTick();
+            const notes: Array<Note> = [];
 
-            isProcessingRacecard.value = true;
-            try {
-                const openedRacecard = Racecard.fromObject(
-                    await invoke<any>('load_racecard_file', { path: path })
-                );
+            racecards.addRacecard(rc, notes, "");
+            currentRacecardIndex.value = racecards.racecardEntries.length - 1;
+            racecard.value = rc;
+            currentNotes.value = notes;
+            isProcessingRacecard.value = false;
+        } catch (error) {
+            isProcessingRacecard.value = false;
 
-                const notes = await loadNotes(path, openedRacecard);
-
-                racecards.addRacecard(openedRacecard, notes, path);
-                currentRacecardIndex.value = racecards.racecardEntries.length - 1;
-                racecard.value = openedRacecard;
-                currentNotes.value = notes;
-                isProcessingRacecard.value = false;
-            } catch (error) {
-                isProcessingRacecard.value = false;
-
-                errorMessage.value = String(error);
-                showErrorDialog.value = true;
-            }
+            errorMessage.value = String(error);
+            showErrorDialog.value = true;
         }
     });
 
@@ -351,11 +329,8 @@ onUnmounted(() => {
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :note="currentNotes.find(n => n.race === raceNumber && n.horse === (idx + 1)) as Note"
-                :notes="currentNotes"
-                :racecardPath="racecards.racecardPaths[currentRacecardIndex]"
-                :primePowerComparisons="primePowerComparisons" :print="false"
-                @update:notes="updateNotes"
-                ></Horse>
+                :notes="currentNotes" :racecardPath="racecards.racecardPaths[currentRacecardIndex]"
+                :primePowerComparisons="primePowerComparisons" :print="false" @update:notes="updateNotes"></Horse>
         </div>
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />
