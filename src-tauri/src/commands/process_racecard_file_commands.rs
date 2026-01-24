@@ -304,6 +304,10 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         };
 
         for j in 0..12 {
+            if &line[SF_WORKOUT_DATE + j] == "" {
+                continue;
+            }
+
             let workout = Workout {
                 id: 0,
                 horse_id: 0,
@@ -325,6 +329,10 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         }
 
         for j in 0..10 {
+            if &line[SF_PP_RACE_DATE + j] == "" {
+                continue;
+            }
+
             let pp = PastPerformance {
                 id: 0,
                 horse_id: 0,
@@ -481,6 +489,10 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         }
 
         for j in 0..6 {
+            if &lines[0][SF_KEY_TRAINER_STAT + j * 5] == "" {
+                continue;
+            }
+
             let key_trainer_stat = KeyTrainerStat {
                 id: 0,
                 horse_id: 0,
@@ -526,7 +538,9 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
     fs::remove_file(&path)
         .await
         .map_err(|e| format!("Failed to delete racecard file: {}", e))?;
-
+    //
+    // Keep this for debugging purposes
+    //
     // let json_path = PathBuf::from(&path).with_extension("json");
     // let json_racecard_value = serde_json::to_value(&racecard)
     //     .map_err(|e| format!("Failed to serialize racecard: {}", e))?;

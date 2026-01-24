@@ -130,7 +130,6 @@ async function handleOpenRacecard(id: number | null) {
     isProcessingRacecard.value = true;
     try {
         const rc = Racecard.fromObject(await invoke<any>('get_racecard_by_id', { racecardId: id }));
-        console.log(rc);
         racecards.addRacecard(rc);
         currentRacecardIndex.value = racecards.racecardEntries.length - 1;
         racecard.value = rc;
@@ -301,14 +300,10 @@ onUnmounted(() => {
             :currentRace="raceNumber" @update:selectedRace="handleSelectedRace"
             @delete:racecard="handleDeleteRacecard" />
         <div class="processing" v-if="isProcessingZip">
-            <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
-            <br />
-            Processing ZIP File
+            <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing ZIP File'" />
         </div>
         <div class="processing" v-if="isProcessingRacecard">
-            <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" />
-            <br />
-            Processing Racecard File
+            <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing Racecard File'" />
         </div>
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />

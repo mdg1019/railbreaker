@@ -8,14 +8,23 @@ type RacecardRow = {
   date: string;
 };
 
-const props = defineProps<{
-  modelValue: boolean;
-  racecards: RacecardRow[];
-  selectedRacecardId?: number | null;
-  titleColor?: string;
-  buttonColor?: string;
-  rowColor?: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean;
+    racecards: RacecardRow[];
+    selectedRacecardId?: number | null;
+    titleColor?: string;
+    cancelButtonColor?: string;
+    openButtonColor?: string;
+    rowColor?: string;
+  }>(),
+  {
+    titleColor: "--accent-yellow",
+    cancelButtonColor: "--accent-red",
+    openButtonColor: "--accent-yellow",
+    rowColor: "--accent-green",
+  },
+);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;
@@ -66,18 +75,19 @@ function handleOpen() {
         class="racecard-row"
         :style="rowColor ? 'background-color: var(' + rowColor + ')' : undefined"
       >
-        <button
-          type="button"
-          class="select-button"
-          :class="{ selected: racecard.id === selectedId }"
-          :style="buttonColor ? 'background-color: var(' + buttonColor + ')' : undefined"
-          @click="handleSelect(racecard.id ?? null)"
-        >
-          {{ racecard.id === selectedId ? "Selected" : "Select" }}
-        </button>
+        <label class="select-option">
+          <input
+            type="radio"
+            name="racecard-select"
+            class="select-radio"
+            :value="racecard.id ?? null"
+            :checked="racecard.id === selectedId"
+            @change="handleSelect(racecard.id ?? null)"
+          />
+        </label>
         <div class="racecard-text">
-          <span class="track">{{ racecard.track }}</span>
-          <span class="date">{{ racecard.date }}</span>
+          <div class="track">{{ racecard.track }}</div>
+          <div class="date">{{ racecard.date }}</div>
         </div>
       </div>
     </div>
@@ -86,7 +96,7 @@ function handleOpen() {
       <button
         type="button"
         class="action-button"
-        :style="buttonColor ? 'background-color: var(' + buttonColor + ')' : undefined"
+        :style="cancelButtonColor ? 'color: var(' + cancelButtonColor + ')' : undefined"
         @click="close"
       >
         Cancel
@@ -95,7 +105,7 @@ function handleOpen() {
         type="button"
         class="action-button"
         :disabled="!canOpen"
-        :style="buttonColor ? 'background-color: var(' + buttonColor + ')' : undefined"
+        :style="openButtonColor ? 'color: var(' + openButtonColor + ')' : undefined"
         @click="handleOpen"
       >
         Open
@@ -109,18 +119,35 @@ function handleOpen() {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .racecard-row {
   display: flex;
-  align-items: center;
   gap: 0.75rem;
+  justify-content: flex-start;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   background: var(--bg-2);
+  width: 100%;
 }
 
-.select-button,
+.racecard-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1;
+}
+
+.track {
+  text-align: left;
+}
+
+.date {
+  text-align: right;
+}
+
 .action-button {
   border: none;
   background: var(--accent);
@@ -131,24 +158,20 @@ function handleOpen() {
   font-weight: 600;
 }
 
-.select-button.selected {
-  opacity: 0.9;
-  box-shadow: inset 0 0 0 2px var(--fg);
+.select-option {
+  display: inline-flex;
+  align-items: center;
 }
 
-.racecard-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+.select-radio {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--fg);
+  cursor: pointer;
 }
 
-.track {
-  font-weight: 600;
-}
-
-.date {
-  opacity: 0.8;
-  font-size: 0.9rem;
+.select-radio:checked {
+  accent-color: var(--fg);
 }
 
 .action-button:disabled {
