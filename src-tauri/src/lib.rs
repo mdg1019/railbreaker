@@ -74,6 +74,7 @@ pub fn run() {
             racecard_exists_by_zip_name,
             add_card_analysis,
             get_card_analysis_by_racecard_id,
+            update_note,
         ])
         .run(context)
         .expect("error while running tauri application");

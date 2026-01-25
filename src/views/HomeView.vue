@@ -324,7 +324,7 @@ onUnmounted(() => {
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
-            <Analysis v-if="cardAnalysis" :analysis="cardAnalysis" :print="false" />
+            <Analysis v-if="cardAnalysis" :analysis="cardAnalysis" :raceNumber="raceNumber" :print="false" />
         </div>
         
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
