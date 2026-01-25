@@ -9,7 +9,7 @@ pub async fn add_card_analysis(
     pool: State<'_, SqlitePool>,
     racecard_id: i64,
     analysis: CardAnalysis,
-) -> Result<(), String> {
+) -> Result<CardAnalysis, String> {
     add_card_analysis_inner(&pool, racecard_id, analysis)
         .await
         .map_err(|e| format!("Failed to add card analysis: {}", e))
@@ -29,7 +29,7 @@ pub async fn add_card_analysis_inner(
     pool: &SqlitePool,
     racecard_id: i64,
     analysis: CardAnalysis,
-) -> Result<(), sqlx::Error> {
+) -> Result<CardAnalysis, sqlx::Error> {
     if racecard_id != analysis.racecard_id {
         return Err(sqlx::Error::Protocol(format!(
             "racecard_id mismatch: arg={}, analysis={}",
@@ -39,11 +39,10 @@ pub async fn add_card_analysis_inner(
 
     sqlx::query(
         r#"
-        INSERT OR REPLACE INTO card_analyses (id, racecard_id, track, date)
-        VALUES (?, ?, ?, ?);
+        INSERT OR REPLACE INTO card_analyses (racecard_id, track, date)
+        VALUES (?, ?, ?);
         "#,
     )
-    .bind(analysis.racecard_id)
     .bind(analysis.racecard_id)
     .bind(&analysis.track)
     .bind(&analysis.date)
@@ -54,8 +53,8 @@ pub async fn add_card_analysis_inner(
         sqlx::query(
             r#"
             INSERT OR REPLACE INTO race_rank_results (
-                id,
-                card_analysis_id,
+                race_id,
+                racecard_id,
                 race_number,
                 surface_mode,
                 distance_f,
@@ -81,8 +80,8 @@ pub async fn add_card_analysis_inner(
             sqlx::query(
                 r#"
                 INSERT OR REPLACE INTO horse_ranks (
-                    id,
-                    race_rank_result_id,
+                    horse_id,
+                    race_id,
                     program_number,
                     horse_name,
                     post_position,
@@ -120,7 +119,7 @@ pub async fn add_card_analysis_inner(
         }
     }
 
-    Ok(())
+    read_card_analysis_by_racecard_id(pool, analysis.racecard_id).await
 }
 
 pub async fn read_card_analysis_by_racecard_id(
@@ -131,7 +130,6 @@ pub async fn read_card_analysis_by_racecard_id(
         r#"
         SELECT * FROM card_analyses
         WHERE racecard_id = ?
-        ORDER BY id DESC
         LIMIT 1;
         "#,
     )
@@ -139,7 +137,6 @@ pub async fn read_card_analysis_by_racecard_id(
     .fetch_one(pool)
     .await?;
 
-    let card_analysis_id = analysis_row.get::<i64, _>("id");
     let mut analysis = CardAnalysis {
         racecard_id: analysis_row.get("racecard_id"),
         track: analysis_row.get("track"),
@@ -150,25 +147,25 @@ pub async fn read_card_analysis_by_racecard_id(
     let race_rows = sqlx::query(
         r#"
         SELECT * FROM race_rank_results
-        WHERE card_analysis_id = ?
-        ORDER BY id;
+        WHERE racecard_id = ?
+        ORDER BY race_id;
         "#,
     )
-    .bind(card_analysis_id)
+    .bind(analysis.racecard_id)
     .fetch_all(pool)
     .await?;
 
     for race_row in race_rows {
-        let race_rank_result_id = race_row.get::<i64, _>("id");
+        let race_id = race_row.get::<i64, _>("race_id");
 
         let horse_rows = sqlx::query(
             r#"
             SELECT * FROM horse_ranks
-            WHERE race_rank_result_id = ?
-            ORDER BY id;
+            WHERE race_id = ?
+            ORDER BY horse_id;
             "#,
         )
-        .bind(race_rank_result_id)
+        .bind(race_id)
         .fetch_all(pool)
         .await?;
 
@@ -179,8 +176,8 @@ pub async fn read_card_analysis_by_racecard_id(
                 let shape = shape_from_i64(horse_row.get::<i64, _>("shape"))?;
 
                 Ok(HorseRank {
-                    race_id: race_rank_result_id,
-                    horse_id: horse_row.get("id"),
+                    race_id: horse_row.get("race_id"),
+                    horse_id: horse_row.get("horse_id"),
                     program_number: horse_row.get("program_number"),
                     horse_name: horse_row.get("horse_name"),
                     post_position: opt_i64_to_u32(horse_row.get::<Option<i64>, _>("post_position")),
@@ -208,7 +205,7 @@ pub async fn read_card_analysis_by_racecard_id(
 
         analysis.races.push(RaceRankResult {
             racecard_id: analysis.racecard_id,
-            race_id: race_rank_result_id,
+            race_id: race_id,
             race_number: opt_i64_to_u32(race_row.get::<Option<i64>, _>("race_number")),
             surface_mode,
             distance_f: race_row.get("distance_f"),
