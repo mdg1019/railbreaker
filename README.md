@@ -19,6 +19,10 @@ Is a Rust/Tauri app for handicapping horse races. It uses the single-file data f
 - Add more bells and whistles over time to the UI.
 - Do analysis of the racecard data and see what's useful to know.
 
+
+#### Windows Users:
+I do not have a signing certificate. You will be asked about this during installation. Go ahead and install it. To run the app, you need to run it as an Administrator. Just right-click the app's icon and select ***Run as Administrator***.
+
 #### Racecard is Complete:
 
 ![racecard](images/racecard.png)
