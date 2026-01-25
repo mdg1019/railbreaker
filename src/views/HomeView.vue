@@ -7,6 +7,7 @@ import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
 import { Racecards } from "../models/racecards";
+import { CardAnalysis } from "../models/analysis";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
@@ -32,6 +33,7 @@ const isProcessingRacecard = ref(false);
 
 const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
+const cardAnalysis = ref<CardAnalysis | null>(null);
 const lastNoteUpdateAt = ref(0);
 
 const raceNumber = ref(1);
@@ -233,15 +235,22 @@ onMounted(async () => {
                 isProcessingZip.value = false;
 
                 isProcessingRacecard.value = true;
-                const openedRacecard = Racecard.fromObject(
-                    await invoke<any>('process_racecard_file', { path: processedPath, zipFileName: path })
+
+                const [racecardValue, analysisValue] = await invoke<[any, any]>(
+                    'process_racecard_file',
+                    { path: processedPath, zipFileName: path }
                 );
 
-                console.log(openedRacecard);
+                const openedRacecard = Racecard.fromObject(racecardValue);
+                const openedAnalysis = CardAnalysis.fromObject(analysisValue);
+                
+                console.log(openedAnalysis);
+
 
                 racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
+                cardAnalysis.value = openedAnalysis;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;

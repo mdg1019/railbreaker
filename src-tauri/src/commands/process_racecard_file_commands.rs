@@ -1,3 +1,4 @@
+use crate::analysis;
 use crate::analysis::contextual_speed_and_pace_model::analyze_racecard;
 use crate::constants::single_file_indexes::*;
 // use crate::files::write_json_file;
@@ -14,7 +15,7 @@ use std::path::PathBuf;
 use tokio::fs;
 
 #[tauri::command]
-pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: String) -> Result<Value, String> {
+pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: String) -> Result<(Value, Value), String> {
     let contents = fs::read_to_string(&path)
         .await
         .map_err(|e| format!("Failed to read racecard file: {}", e))?;
@@ -550,12 +551,14 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
     let racecard_value = to_camel_case_value(racecard_value);
 
     let analysis_results = analyze_racecard(&racecard);
-    //println!("Racecard Analysis Results:\n{:?}", results);
     let analysis = add_card_analysis(app.state::<SqlitePool>(), racecard.id, analysis_results).await?;
-    println!("Added Racecard Analysis: {:?}", analysis);
+
+    let analysis_value = serde_json::to_value(&analysis)
+        .map_err(|e| format!("Failed to serialize analysis: {}", e))?;
+    let analysis_value = to_camel_case_value(analysis_value);
     
 
-    Ok(racecard_value)
+    Ok((racecard_value, analysis_value))
 }
 
 fn yyyymmdd_to_mmddyyyy(value: &str) -> Option<String> {
