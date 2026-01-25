@@ -1,2 +1,2 @@
-pub mod track;
+pub mod tracks;
 pub mod racecard;

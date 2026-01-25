@@ -83,14 +83,10 @@ fn init_setup(app: &tauri::App) -> Result<(), String> {
     let downloads_directory =
         dirs::download_dir().ok_or_else(|| "Could not find downloads directory".to_string())?;
 
-    let resource_path = current_directory.join("resources/tracks.csv");
-    let tracks = models::track::load_tracks(&resource_path).unwrap_or_default();
-
     let global_state = global_state();
 
     {
         let mut gs = global_state.lock().unwrap();
-        gs.tracks = tracks;
         gs.current_directory = current_directory.to_string_lossy().to_string();
         gs.downloads_directory = downloads_directory.to_string_lossy().to_string();
 

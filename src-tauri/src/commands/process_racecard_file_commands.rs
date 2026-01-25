@@ -3,7 +3,7 @@ use crate::constants::single_file_indexes::*;
 use crate::json::to_camel_case_value;
 use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use crate::sqlite::racecards::add_racecard;
-use crate::states::global_state::global_state;
+use crate::models::tracks::TRACKS;
 use serde_json::Value;
 use tauri::AppHandle;
 use tauri::Manager;
@@ -35,13 +35,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
     }
 
     let track_code = &lines[0][SF_TRACK];
-    let track_name = {
-        let gs = global_state().lock().unwrap();
-        gs.tracks
-            .get(track_code)
-            .cloned()
-            .unwrap_or_else(|| track_code.clone())
-    };
+    let track_name = TRACKS.get(track_code).copied().unwrap_or("track_code");
 
     let mut races = Vec::<Race>::new();
 
@@ -527,7 +521,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
     let racecard = Racecard {
         id: 0,
         zip_file_name: filename,
-        track: track_name,
+        track: track_name.to_string(),
         date: yyyymmdd_to_mmddyyyy(&lines[0][SF_RACE_DATE])
             .unwrap_or_else(|| lines[0][SF_RACE_DATE].clone()),
         long_date: prepend_weekday(&lines[0][SF_RACE_DATE])

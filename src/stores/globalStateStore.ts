@@ -20,9 +20,6 @@ export const useGlobalStateStore = defineStore('globalState', {
         this.loading = false;
       }
     },
-    getTracks(): Map<string, string> {
-      return this.globalState.tracks;
-    },
     getCurrentDirectory(): string {
       return this.globalState.currentDirectory;
     },
