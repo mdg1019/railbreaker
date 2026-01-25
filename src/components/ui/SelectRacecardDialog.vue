@@ -74,6 +74,7 @@ function handleOpen() {
         :key="racecard.id ?? idx"
         class="racecard-row"
         :style="rowColor ? 'background-color: var(' + rowColor + ')' : undefined"
+        @click="handleSelect(racecard.id ?? null)"
       >
         <label class="select-option">
           <input
@@ -130,6 +131,7 @@ function handleOpen() {
   border-radius: 0.5rem;
   background: var(--bg-2);
   width: 100%;
+  cursor: pointer;
 }
 
 .racecard-text {
@@ -164,8 +166,8 @@ function handleOpen() {
 }
 
 .select-radio {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.4rem;
+  height: 1.4rem;
   accent-color: var(--fg);
   cursor: pointer;
 }
