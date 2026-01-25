@@ -1,5 +1,6 @@
 pub mod db;
 pub mod racecards;
+pub mod analysis;
 
 use crate::global_state;
 

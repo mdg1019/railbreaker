@@ -6,6 +6,7 @@ mod models;
 mod constants;
 mod states;
 mod sqlite;
+mod analysis;
 
 use tauri::{Emitter, Manager};
 use commands::global_state_commands::load_global_state;
@@ -17,6 +18,7 @@ use commands::exit_app_command::exit_app;
 use sqlite::racecards::{
     add_racecard, get_all_racecards, get_racecard_by_id, racecard_exists_by_zip_name, update_note,
 };
+use sqlite::analysis::{add_card_analysis, get_card_analysis_by_racecard_id};
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -70,7 +72,8 @@ pub fn run() {
             get_all_racecards,
             get_racecard_by_id,
             racecard_exists_by_zip_name,
-            update_note,
+            add_card_analysis,
+            get_card_analysis_by_racecard_id,
         ])
         .run(context)
         .expect("error while running tauri application");

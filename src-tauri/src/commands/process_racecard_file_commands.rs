@@ -1,3 +1,4 @@
+use crate::analysis::contextual_speed_and_pace_model::analyze_racecard;
 use crate::constants::single_file_indexes::*;
 // use crate::files::write_json_file;
 use crate::json::to_camel_case_value;
@@ -547,6 +548,9 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
     let racecard_value = to_camel_case_value(racecard_value);
 
+    let results = analyze_racecard(&racecard);
+    println!("Racecard Analysis Results:\n{:?}", results);
+    
     Ok(racecard_value)
 }
 

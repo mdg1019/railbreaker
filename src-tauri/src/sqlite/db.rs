@@ -367,6 +367,48 @@ pub async fn create_tables(pool: &SqlitePool) -> Result<()> {
             FOREIGN KEY (horse_id) REFERENCES horses(id) ON DELETE CASCADE
         );
         "#,
+        r#"
+        CREATE TABLE IF NOT EXISTS card_analyses (
+            racecard_id INTEGER NOT NULL,
+            track TEXT NOT NULL,
+            date TEXT NOT NULL,
+            FOREIGN KEY (racecard_id) REFERENCES racecards(id) ON DELETE CASCADE
+        );
+        "#,
+        r#"
+        CREATE TABLE IF NOT EXISTS race_rank_results (
+            racecard_id INTEGER NOT NULL,
+            race_id INTEGER NOT NULL,
+            race_number INTEGER,
+            surface_mode TEXT NOT NULL,
+            distance_f REAL NOT NULL,
+            shape TEXT NOT NULL,
+            pace_heat INTEGER NOT NULL,
+            epi REAL NOT NULL,
+            FOREIGN KEY (card_analysis_id) REFERENCES card_analyses(id) ON DELETE CASCADE
+        );
+        "#,
+        r#"
+        CREATE TABLE IF NOT EXISTS horse_ranks (
+            racecard_id INTEGER NOT NULL,
+            race_id INTEGER NOT NULL,
+            horse_id INTEGER NOT NULL,
+            program_number TEXT NOT NULL,
+            horse_name TEXT NOT NULL,
+            post_position INTEGER,
+            run_style TEXT NOT NULL,
+            quirin INTEGER,
+            shape TEXT NOT NULL,
+            score REAL,
+            rep_speed REAL,
+            rep_early REAL,
+            rep_late REAL,
+            workout_recent_works INTEGER NOT NULL,
+            workout_top_rank_works INTEGER NOT NULL,
+            workout_score REAL NOT NULL,
+            FOREIGN KEY (race_rank_result_id) REFERENCES race_rank_results(id) ON DELETE CASCADE
+        );
+        "#,
     ];
 
     for statement in statements {

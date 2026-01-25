@@ -31,4 +31,5 @@ uuid = { version="1.19.0", features = ["v4", "serde"] }
 anyhow = "1.0.100"
 thiserror = "2.0.18"
 phf = { version = "0.11", features = ["macros"] }
+chrono = "0.4.43"
 
