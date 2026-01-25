@@ -132,9 +132,15 @@ async function handleOpenRacecard(id: number | null) {
     isProcessingRacecard.value = true;
     try {
         const rc = Racecard.fromObject(await invoke<any>('get_racecard_by_id', { racecardId: id }));
-        racecards.addRacecard(rc);
+        const analysis = CardAnalysis.fromObject(await invoke<any>('get_card_analysis_by_racecard_id', { racecardId: id }));
+            console.log(analysis);
+
+        racecards.addRacecard(rc, analysis);
+
         currentRacecardIndex.value = racecards.racecardEntries.length - 1;
         racecard.value = rc;
+        cardAnalysis.value = analysis;
+
         isProcessingRacecard.value = false;
     } catch (error) {
         isProcessingRacecard.value = false;
@@ -243,11 +249,8 @@ onMounted(async () => {
 
                 const openedRacecard = Racecard.fromObject(racecardValue);
                 const openedAnalysis = CardAnalysis.fromObject(analysisValue);
-                
-                console.log(openedAnalysis);
 
-
-                racecards.addRacecard(openedRacecard);
+                racecards.addRacecard(openedRacecard, openedAnalysis);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
                 cardAnalysis.value = openedAnalysis;
@@ -320,7 +323,9 @@ onUnmounted(() => {
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
+            <div>{{ cardAnalysis!.track }}</div>
         </div>
+        
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" messageColor="--accent-green" title="Error" titleColor="--accent-red" />
