@@ -19,6 +19,7 @@ import { computePrimePowerComparisons } from "../utils/computePrimePowerComparis
 import Horse from "../components/racecard/Horse.vue";
 import "../scss/_main.scss";
 import SelectRacecardDialog from "../components/ui/SelectRacecardDialog.vue";
+import Analysis from "../components/racecard/Analysis.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -323,7 +324,7 @@ onUnmounted(() => {
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
-            <div>{{ cardAnalysis!.track }}</div>
+            <Analysis v-if="cardAnalysis" :analysis="cardAnalysis" :print="false" />
         </div>
         
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
