@@ -7,7 +7,6 @@ import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
 import { Racecards } from "../models/racecards";
-import { CardAnalysis } from "../models/analysis";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
@@ -17,9 +16,9 @@ import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 import Horse from "../components/racecard/Horse.vue";
-import "../scss/_main.scss";
 import SelectRacecardDialog from "../components/ui/SelectRacecardDialog.vue";
 import Analysis from "../components/racecard/Analysis.vue";
+import "../scss/_main.scss";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -34,7 +33,6 @@ const isProcessingRacecard = ref(false);
 
 const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
-const cardAnalysis = ref<CardAnalysis | null>(null);
 const lastNoteUpdateAt = ref(0);
 
 const raceNumber = ref(1);
@@ -100,9 +98,6 @@ function handleDeleteRacecard(index: number) {
 }
 
 function updateNote([note, horseId]: [string, number]) {
-
-    console.log(`Updating note for horse ID ${horseId}: ${note}`);
-
     const entry = racecards.racecardEntries[currentRacecardIndex.value];
     if (!entry) {
         return;
@@ -133,14 +128,11 @@ async function handleOpenRacecard(id: number | null) {
     isProcessingRacecard.value = true;
     try {
         const rc = Racecard.fromObject(await invoke<any>('get_racecard_by_id', { racecardId: id }));
-        const analysis = CardAnalysis.fromObject(await invoke<any>('get_card_analysis_by_racecard_id', { racecardId: id }));
-            console.log(analysis);
 
-        racecards.addRacecard(rc, analysis);
+        racecards.addRacecard(rc);
 
         currentRacecardIndex.value = racecards.racecardEntries.length - 1;
         racecard.value = rc;
-        cardAnalysis.value = analysis;
 
         isProcessingRacecard.value = false;
     } catch (error) {
@@ -243,18 +235,16 @@ onMounted(async () => {
 
                 isProcessingRacecard.value = true;
 
-                const [racecardValue, analysisValue] = await invoke<[any, any]>(
+                const racecardValue = await invoke<Racecard>(
                     'process_racecard_file',
                     { path: processedPath, zipFileName: path }
                 );
 
                 const openedRacecard = Racecard.fromObject(racecardValue);
-                const openedAnalysis = CardAnalysis.fromObject(analysisValue);
 
-                racecards.addRacecard(openedRacecard, openedAnalysis);
+                racecards.addRacecard(openedRacecard);
                 currentRacecardIndex.value = racecards.racecardEntries.length - 1;
                 racecard.value = openedRacecard;
-                cardAnalysis.value = openedAnalysis;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;
@@ -306,6 +296,8 @@ onUnmounted(() => {
 });
 </script>
 
+
+
 <template>
     <main class="container">
         <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards"
@@ -321,7 +313,7 @@ onUnmounted(() => {
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <RacecardHeader :racecard="racecard" :race="raceNumber" />
             <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
-            <Analysis v-if="cardAnalysis" :analysis="cardAnalysis" :raceNumber="raceNumber" :print="false" />
+            <Analysis :raceNumber="raceNumber" :race="racecard.races[raceNumber - 1]" :racecardDate="racecard.date" :track="racecard.track" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
                 :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>

@@ -40,8 +40,6 @@ pub struct WorkoutSig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HorseRank {
-    pub race_id: i64,
-    pub horse_id: i64,
     pub program_number: String,
     pub horse_name: String,
     pub post_position: Option<u32>,
@@ -55,8 +53,6 @@ pub struct HorseRank {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RaceRankResult {
-    pub racecard_id: i64,
-    pub race_id: i64,
     pub race_number: Option<u32>,
     pub surface_mode: SurfaceMode,
     pub distance_f: f64,
@@ -193,11 +189,21 @@ fn get_pars_for_race(race: &Race, dist_f: f64) -> Option<Pars> {
     }
 }
 
-pub fn race_shape_dirt(race: &Race) -> (Shape, u32, f64) {
+fn is_scratched(horse_index: usize, scratched_horses: &[u32]) -> bool {
+    scratched_horses.contains(&(horse_index as u32))
+}
+
+pub fn race_shape_dirt(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f64) {
     let dist_f = yards_to_furlongs(race.distance);
     let pars = get_pars_for_race(race, dist_f);
 
-    let horses = &race.horses;
+    let horses: Vec<&Horse> = race
+        .horses
+        .iter()
+        .enumerate()
+        .filter(|(idx, _)| !is_scratched(*idx, scratched_horses))
+        .map(|(_, h)| h)
+        .collect();
     let field_size = horses.len().max(1) as f64;
 
     let pace_heat = horses
@@ -236,11 +242,17 @@ pub fn race_shape_dirt(race: &Race) -> (Shape, u32, f64) {
     (shape, pace_heat, epi)
 }
 
-pub fn race_shape_turf(race: &Race) -> (Shape, u32, f64) {
+pub fn race_shape_turf(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f64) {
     let dist_f = yards_to_furlongs(race.distance);
     let pars = get_pars_for_race(race, dist_f);
 
-    let horses = &race.horses;
+    let horses: Vec<&Horse> = race
+        .horses
+        .iter()
+        .enumerate()
+        .filter(|(idx, _)| !is_scratched(*idx, scratched_horses))
+        .map(|(_, h)| h)
+        .collect();
     let field_size = horses.len().max(1) as f64;
 
     let pace_heat = horses
@@ -398,9 +410,9 @@ pub fn workout_signal(h: &Horse, race_date_mmddyyyy: Option<&str>, days_window: 
     WorkoutSig { recent_works, top_rank_works, score }
 }
 
-pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
+pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
     let dist_f = yards_to_furlongs(race.distance);
-    let (shape, pace_heat, epi) = race_shape_dirt(race);
+    let (shape, pace_heat, epi) = race_shape_dirt(race, scratched_horses);
 
     let mut horses: Vec<HorseRank> = race
         .horses
@@ -411,8 +423,6 @@ pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
             let workout = workout_signal(h, racecard_date, 21);
 
             HorseRank {
-                race_id: race.id,
-                horse_id: h.id,
                 program_number: h.program_number.clone(),
                 horse_name: h.horse_name.clone(),
                 post_position: h.post_position,
@@ -429,8 +439,6 @@ pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
     horses.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
 
     RaceRankResult {
-        racecard_id: race.racecard_id,
-        race_id: race.id,
         race_number: race.race_number,
         surface_mode: SurfaceMode::Dirt,
         distance_f: dist_f,
@@ -441,9 +449,9 @@ pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
     }
 }
 
-pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
+pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
     let dist_f = yards_to_furlongs(race.distance);
-    let (shape, pace_heat, epi) = race_shape_turf(race);
+    let (shape, pace_heat, epi) = race_shape_turf(race, scratched_horses);
 
     let mut horses: Vec<HorseRank> = race
         .horses
@@ -454,8 +462,6 @@ pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
             let workout = workout_signal(h, racecard_date, 21);
 
             HorseRank {
-                race_id: race.id,
-                horse_id: h.id,
                 program_number: h.program_number.clone(),
                 horse_name: h.horse_name.clone(),
                 post_position: h.post_position,
@@ -472,8 +478,6 @@ pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
     horses.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
 
     RaceRankResult {
-        racecard_id: race.racecard_id,
-        race_id: race.id,
         race_number: race.race_number,
         surface_mode: SurfaceMode::Turf,
         distance_f: dist_f,
@@ -484,34 +488,11 @@ pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>) -> RaceRankResul
     }
 }
 
-pub fn rank_race_auto(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
+pub fn rank_race_auto(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
     let surf = race.surface.trim().to_uppercase();
     if surf == "T" {
-        rank_race_turf(race, racecard_date)
+        rank_race_turf(race, racecard_date, scratched_horses)
     } else {
-        rank_race_dirt(race, racecard_date)
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CardAnalysis {
-    pub racecard_id: i64,
-    pub track: String,
-    pub date: String,
-    pub races: Vec<RaceRankResult>,
-}
-
-pub fn analyze_racecard(card: &Racecard) -> CardAnalysis {
-    let races = card
-        .races
-        .iter()
-        .map(|r| rank_race_auto(r, Some(&card.date)))
-        .collect();
-
-    CardAnalysis {
-        racecard_id: card.id,
-        track: card.track.clone(),
-        date: card.date.clone(),
-        races,
+        rank_race_dirt(race, racecard_date, scratched_horses)
     }
 }

@@ -14,11 +14,11 @@ use commands::config_file_commands::{load_config_file, save_config_file, get_con
 use commands::process_zip_file_commands::process_zip_file;
 use commands::print_racecard::{close_print_window, hide_print_window_menu, print_racecard, set_print_racecard_enabled};
 use commands::process_racecard_file_commands::process_racecard_file;
+use commands::analysis_commands::rank_race;
 use commands::exit_app_command::exit_app;
 use sqlite::racecards::{
     add_racecard, get_all_racecards, get_racecard_by_id, racecard_exists_by_zip_name, update_note,
 };
-use sqlite::analysis::{add_card_analysis, get_card_analysis_by_racecard_id};
 use states::config_state::ConfigState;
 use states::global_state::global_state;
 
@@ -64,6 +64,7 @@ pub fn run() {
             load_global_state,
             process_zip_file,
             process_racecard_file,
+            rank_race,
             set_print_racecard_enabled,
             close_print_window,
             hide_print_window_menu,
@@ -72,8 +73,6 @@ pub fn run() {
             get_all_racecards,
             get_racecard_by_id,
             racecard_exists_by_zip_name,
-            add_card_analysis,
-            get_card_analysis_by_racecard_id,
             update_note,
         ])
         .run(context)

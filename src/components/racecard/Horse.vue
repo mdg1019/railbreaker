@@ -26,7 +26,6 @@ const emit = defineEmits<{
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function updateNote([note, horseId]: [string, number]) {
-    console.log("Updating note for horse ID:", horseId, "with note:", note);
     if (props.print) {
         return;
     }

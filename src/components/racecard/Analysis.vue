@@ -1,52 +1,114 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { CardAnalysis, RaceRankResult } from "../../models/analysis";
-import { deriveRaceMeta, topNHorsesByScore } from "../../utils/cspm";
+import { invoke } from "@tauri-apps/api/core";
+import { RaceRankResult } from "../../models/analysis";
+import { Race } from "../../models/racecard";
+import { deriveRaceMeta } from "../../utils/cspm";
 import Panel from "../ui/Panel.vue";
 
 const props = withDefaults(defineProps<{
     raceNumber: number;
-    analysis: CardAnalysis,
+    race: Race;
+    racecardDate?: string;
+    track?: string;
     print: boolean;
 }>(), {
     print: false,
+    racecardDate: undefined,
+    track: "",
 });
 
-const scratchedByRace = ref(new Map<number, Set<string>>());
+const raceResult = ref<RaceRankResult | null>(null);
+const scratchedIndices = ref(new Set<number>());
 
-const currentScratched = computed(() => {
-    return scratchedByRace.value.get(props.raceNumber) ?? new Set<string>();
+const raceIndexByProgram = computed(() => {
+    const map = new Map<string, number>();
+    props.race?.horses?.forEach((horse, idx) => {
+        map.set(horse.programNumber, idx);
+    });
+    return map;
 });
+
+const scratchedList = computed(() => {
+    return Array.from(scratchedIndices.value).sort((a, b) => a - b);
+});
+
+const displayHeader = computed(() => {
+    const parts = [];
+    if (props.track) parts.push(props.track);
+    if (props.racecardDate) parts.push(props.racecardDate);
+    return parts.join(" - ");
+});
+
+const isHorseScratched = (programNumber: string) => {
+    const idx = raceIndexByProgram.value.get(programNumber);
+    return idx !== undefined && scratchedIndices.value.has(idx);
+};
 
 const metadata = computed(() => {
-    const race = props.analysis.races[props.raceNumber - 1];
-    const scratched = currentScratched.value;
+    const race = raceResult.value;
+    if (!race) {
+        return deriveRaceMeta(new RaceRankResult());
+    }
     return deriveRaceMeta(new RaceRankResult({
         ...race,
-        horses: race.horses.filter(horse => !scratched.has(horse.programNumber)),
+        horses: race.horses.filter(horse => !isHorseScratched(horse.programNumber)),
     }));
 });
 
 const toggleScratch = (programNumber: string, checked: boolean) => {
-    const raceKey = props.raceNumber;
-    const current = scratchedByRace.value.get(raceKey) ?? new Set<string>();
-    const next = new Set(current);
+    const idx = raceIndexByProgram.value.get(programNumber);
+    if (idx === undefined) return;
+    const next = new Set(scratchedIndices.value);
     if (checked) {
-        next.add(programNumber);
+        next.add(idx);
     } else {
-        next.delete(programNumber);
+        next.delete(idx);
     }
-    const updated = new Map(scratchedByRace.value);
-    updated.set(raceKey, next);
-    scratchedByRace.value = updated;
+    scratchedIndices.value = next;
 };
 
 const horsesForRace = computed(() => {
-    const horses = props.analysis?.races?.[props.raceNumber - 1]?.horses ?? [];
+    const horses = raceResult.value?.horses ?? [];
     return [...horses]
         .filter(horse => horse.score !== undefined && horse.score !== null)
         .sort((a, b) => (b.score ?? Number.POSITIVE_INFINITY) - (a.score ?? Number.POSITIVE_INFINITY));
 });
+
+const fetchRaceRank = async () => {
+    if (!props.race) {
+        raceResult.value = null;
+        return;
+    }
+    const racePayload = Race.fromObject(props.race).toObject();
+    try {
+        const result = await invoke<any>("rank_race", {
+            race: racePayload,
+            racecardDate: props.racecardDate ?? null,
+            scratchedHorses: scratchedList.value,
+        });
+        raceResult.value = RaceRankResult.fromObject(result);
+    } catch (err) {
+        console.error("Failed to rank race", err);
+        raceResult.value = null;
+    }
+};
+
+watch(
+    () => props.race,
+    () => {
+        scratchedIndices.value = new Set();
+    },
+    { immediate: true }
+);
+
+watch(
+    [() => props.race, () => props.racecardDate, scratchedList],
+    () => {
+        fetchRaceRank();
+    },
+    { immediate: true }
+);
 
 </script>
 
@@ -54,14 +116,14 @@ const horsesForRace = computed(() => {
     <Panel :print="props.print">
         <div class="contents">
             <div class="color-accent-yellow">Contextual Speed and Pace Model</div>
-            <div class="color-accent-yellow">{{ props.analysis.track }} - {{ props.analysis.date }}</div>
+            <div class="color-accent-yellow">{{ displayHeader }}</div>
             <div class="caution color-accent-yellow">(CAUTION: This is a mathematical model and should be used as one of many tools in your analysis. Scratches can affect the results.)</div>
             <div class="race-info">
                 <div class="color-accent-yellow">Race <span class="color-accent-green">{{ raceNumber }}</span></div>
                 <div class="color-accent-yellow">Shape: <span class="color-accent-green">{{
-                    props.analysis.races[props.raceNumber - 1].shape }}</span></div>
+                    raceResult?.shape }}</span></div>
                 <div class="color-accent-yellow">EPI: <span class="color-accent-green">{{
-                    props.analysis.races[props.raceNumber - 1].epi.toFixed(2) }}</span></div>
+                    raceResult?.epi?.toFixed(2) }}</span></div>
                 <div class="color-accent-yellow">Confidence: <span class="color-accent-green">{{ metadata.confidence
                         }}</span></div>
                 <div class="color-accent-yellow">Winner: <span class="color-accent-green">{{
@@ -82,7 +144,7 @@ const horsesForRace = computed(() => {
                 </div>
                 <div
                     class="horse-row"
-                    :class="{ scratched: currentScratched.has(horse.programNumber) }"
+                    :class="{ scratched: isHorseScratched(horse.programNumber) }"
                     v-for="(horse, idx) in horsesForRace"
                     :key="idx"
                 >
@@ -90,7 +152,7 @@ const horsesForRace = computed(() => {
                         <input
                             class="horse-checkbox-input"
                             type="checkbox"
-                            :checked="currentScratched.has(horse.programNumber)"
+                            :checked="isHorseScratched(horse.programNumber)"
                             @change="toggleScratch(horse.programNumber, ($event.target as HTMLInputElement).checked)"
                         />
                     </div>

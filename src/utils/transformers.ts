@@ -595,8 +595,6 @@ export default class Transformers {
             case 0.75: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00CB");
         }
  
-        console.log(`Lengths Behind: ${lengthsBehind}, Int: ${lengthsBehindInt}, Fraction: ${lengthsBehindFraction}`);
-
         return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
     }
 

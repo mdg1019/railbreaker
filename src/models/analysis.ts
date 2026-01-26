@@ -59,8 +59,6 @@ export class WorkoutSig {
 }
 
 export class HorseRank {
-  raceId: number | null;
-  horseId: number | null;
   programNumber: string;
   horseName: string;
   postPosition: number | null;
@@ -72,8 +70,6 @@ export class HorseRank {
   workout: WorkoutSig;
 
   constructor(data: any = {}) {
-    this.raceId = data.raceId ?? null;
-    this.horseId = data.horseId ?? null;
     this.programNumber = data.programNumber ?? '';
     this.horseName = data.horseName ?? '';
     this.postPosition = data.postPosition ?? null;
@@ -99,8 +95,6 @@ export class HorseRank {
     };
 
     return new HorseRank({
-      raceId: obj.race_id ?? obj.raceId ?? null,
-      horseId: obj.horse_id ?? obj.horseId ?? null,
       programNumber: obj.program_number ?? obj.programNumber ?? '',
       horseName: obj.horse_name ?? obj.horseName ?? '',
       postPosition: obj.post_position ?? obj.postPosition ?? null,
@@ -115,8 +109,6 @@ export class HorseRank {
 
   toObject(): any {
     return {
-      race_id: this.raceId,
-      horse_id: this.horseId,
       program_number: this.programNumber,
       horse_name: this.horseName,
       post_position: this.postPosition,
@@ -131,8 +123,6 @@ export class HorseRank {
 }
 
 export class RaceRankResult {
-  racecardId: number | null;
-  raceId: number | null;
   raceNumber: number | null;
   surfaceMode: SurfaceMode;
   distanceF: number;
@@ -142,8 +132,6 @@ export class RaceRankResult {
   horses: HorseRank[];
 
   constructor(data: any = {}) {
-    this.racecardId = data.racecardId ?? null;
-    this.raceId = data.raceId ?? null;
     this.raceNumber = data.raceNumber ?? null;
     this.surfaceMode = data.surfaceMode ?? 'Dirt';
     this.distanceF = data.distanceF ?? 0;
@@ -155,8 +143,6 @@ export class RaceRankResult {
 
   static fromObject(obj: any): RaceRankResult {
     return new RaceRankResult({
-      racecardId: obj.racecard_id ?? obj.racecardId ?? null,
-      raceId: obj.race_id ?? obj.raceId ?? null,
       raceNumber: obj.race_number ?? obj.raceNumber ?? null,
       surfaceMode: obj.surface_mode ?? obj.surfaceMode ?? 'Dirt',
       distanceF: obj.distance_f ?? obj.distanceF ?? 0,
@@ -169,8 +155,6 @@ export class RaceRankResult {
 
   toObject(): any {
     return {
-      racecard_id: this.racecardId,
-      race_id: this.raceId,
       race_number: this.raceNumber,
       surface_mode: this.surfaceMode,
       distance_f: this.distanceF,
@@ -182,34 +166,3 @@ export class RaceRankResult {
   }
 }
 
-export class CardAnalysis {
-  racecardId: number | null;
-  track: string;
-  date: string;
-  races: RaceRankResult[];
-
-  constructor(data: any = {}) {
-    this.racecardId = data.racecardId ?? null;
-    this.track = data.track ?? '';
-    this.date = data.date ?? '';
-    this.races = data.races ?? [];
-  }
-
-  static fromObject(obj: any): CardAnalysis {
-    return new CardAnalysis({
-      racecardId: obj.racecard_id ?? obj.racecardId ?? null,
-      track: obj.track ?? '',
-      date: obj.date ?? '',
-      races: obj.races?.map((r: any) => RaceRankResult.fromObject(r)) ?? [],
-    });
-  }
-
-  toObject(): any {
-    return {
-      racecard_id: this.racecardId,
-      track: this.track,
-      date: this.date,
-      races: this.races.map(r => r.toObject()),
-    };
-  }
-}
