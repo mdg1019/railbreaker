@@ -136,7 +136,6 @@ async function handleOpenRacecard(id: number | null) {
 
         isProcessingRacecard.value = false;
     } catch (error) {
-        console.error("Failed to open racecard", error);
         isProcessingRacecard.value = false;
         errorMessage.value = String(error);
         showErrorDialog.value = true;
@@ -218,9 +217,8 @@ onMounted(async () => {
 
         if (path) {
             const filename = path.split(/[\\/]/).pop() ?? "";
-            console.log(filename);
             const exists = await invoke("racecard_exists_by_zip_name", { zipFileName: filename });
-            console.log('here');
+            
             if (exists) {
                 errorMessage.value = `Racecard with ${filename} already exists in the database.`;
                 showErrorDialog.value = true;

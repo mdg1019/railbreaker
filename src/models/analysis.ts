@@ -1,6 +1,7 @@
 export type SurfaceMode = 'Dirt' | 'Turf';
 export type Shape = 'Slow' | 'Honest' | 'Fast' | 'Meltdown';
 export type RunStyle = 'E' | 'EP' | 'P' | 'S' | 'Unk';
+export type Confidence = 'StrongSingle' | 'Playable' | 'Competitive' | 'WideOpen' | 'Unscorable';
 
 export class RepFigs {
   rep_speed: number | null;
@@ -160,36 +161,101 @@ export class RaceRankResult {
   }
 }
 
-export class CardAnalysis {
-  racecard_id: number | null;
-  track: string;
-  date: string;
-  races: RaceRankResult[];
+export class WinBetSuggestion {
+  program_number: string;
+  horse_name: string;
+  min_odds: number | null;
+  reason: string;
 
   constructor(data: any = {}) {
-    this.racecard_id = data.racecard_id ?? null;
-    this.track = data.track ?? '';
-    this.date = data.date ?? '';
-    this.races = (data.races ?? []).map((r: any) =>
-      r instanceof RaceRankResult ? r : RaceRankResult.fromObject(r)
-    );
+    this.program_number = data.program_number ?? '';
+    this.horse_name = data.horse_name ?? '';
+    this.min_odds = data.min_odds ?? null;
+    this.reason = data.reason ?? '';
   }
 
-  static fromObject(obj: any): CardAnalysis {
-    return new CardAnalysis({
-      racecard_id: obj.racecard_id ?? null,
-      track: obj.track ?? '',
-      date: obj.date ?? '',
-      races: obj.races?.map((r: any) => RaceRankResult.fromObject(r)) ?? [],
+  static fromObject(obj: any): WinBetSuggestion {
+    return new WinBetSuggestion({
+      program_number: obj.program_number ?? '',
+      horse_name: obj.horse_name ?? '',
+      min_odds: obj.min_odds ?? null,
+      reason: obj.reason ?? '',
     });
   }
 
   toObject(): any {
     return {
-      racecard_id: this.racecard_id,
-      track: this.track,
-      date: this.date,
-      races: this.races.map(r => r.toObject()),
+      program_number: this.program_number,
+      horse_name: this.horse_name,
+      min_odds: this.min_odds,
+      reason: this.reason,
+    };
+  }
+}
+
+export class RaceMeta {
+  race_number: number | null;
+  shape: Shape;
+  epi: number;
+  top_score: number | null;
+  second_score: number | null;
+  gap_1_2: number | null;
+  spread_top_to_4: number | null;
+  confidence: Confidence;
+  win_bet: WinBetSuggestion | null;
+  race_rank_result: RaceRankResult | null;
+
+  constructor(data: any = {}) {
+    this.race_number = data.race_number ?? null;
+    this.shape = data.shape ?? 'Honest';
+    this.epi = data.epi ?? 0;
+    this.top_score = data.top_score ?? null;
+    this.second_score = data.second_score ?? null;
+    this.gap_1_2 = data.gap_1_2 ?? null;
+    this.spread_top_to_4 = data.spread_top_to_4 ?? null;
+    this.confidence = data.confidence ?? 'Unscorable';
+    this.win_bet =
+      data.win_bet instanceof WinBetSuggestion
+        ? data.win_bet
+        : data.win_bet
+          ? WinBetSuggestion.fromObject(data.win_bet)
+          : null;
+    this.race_rank_result =
+      data.race_rank_result instanceof RaceRankResult
+        ? data.race_rank_result
+        : data.race_rank_result
+          ? RaceRankResult.fromObject(data.race_rank_result)
+          : null;
+  }
+
+  static fromObject(obj: any): RaceMeta {
+    return new RaceMeta({
+      race_number: obj.race_number ?? null,
+      shape: obj.shape ?? 'Honest',
+      epi: obj.epi ?? 0,
+      top_score: obj.top_score ?? null,
+      second_score: obj.second_score ?? null,
+      gap_1_2: obj.gap_1_2 ?? null,
+      spread_top_to_4: obj.spread_top_to_4 ?? null,
+      confidence: obj.confidence ?? 'Unscorable',
+      win_bet: obj.win_bet ? WinBetSuggestion.fromObject(obj.win_bet) : null,
+      race_rank_result: obj.race_rank_result ? RaceRankResult.fromObject(obj.race_rank_result) : null,
+    });
+  }
+
+  toObject(): any {
+    return {
+      race_number: this.race_number,
+      shape: this.shape,
+      epi: this.epi,
+      top_score: this.top_score,
+      second_score: this.second_score,
+      gap_1_2: this.gap_1_2,
+      spread_top_to_4: this.spread_top_to_4,
+      confidence: this.confidence,
+       win_bet: this.win_bet ? this.win_bet.toObject() : null,     
+       race_rank_result: this.race_rank_result ? this.race_rank_result.toObject() : null,
+
     };
   }
 }

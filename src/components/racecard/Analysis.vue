@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import { RaceRankResult } from "../../models/analysis";
+import { RaceMeta } from "../../models/analysis";
 import { Race } from "../../models/racecard";
-import { deriveRaceMeta } from "../../utils/cspm";
 import Panel from "../ui/Panel.vue";
 
 const props = withDefaults(defineProps<{
@@ -18,7 +17,7 @@ const props = withDefaults(defineProps<{
     track: "",
 });
 
-const raceResult = ref<RaceRankResult | null>(null);
+const raceMeta = ref<RaceMeta | null>(null);
 const scratchedIndices = ref(new Set<number>());
 
 const raceIndexByProgram = computed(() => {
@@ -46,14 +45,7 @@ const isHorseScratched = (program_number: string) => {
 };
 
 const metadata = computed(() => {
-    const race = raceResult.value;
-    if (!race) {
-        return deriveRaceMeta(new RaceRankResult());
-    }
-    return deriveRaceMeta(new RaceRankResult({
-        ...race,
-        horses: race.horses.filter(horse => !isHorseScratched(horse.program_number)),
-    }));
+    return raceMeta.value ?? new RaceMeta();
 });
 
 const toggleScratch = (program_number: string, checked: boolean) => {
@@ -69,7 +61,7 @@ const toggleScratch = (program_number: string, checked: boolean) => {
 };
 
 const horsesForRace = computed(() => {
-    const horses = raceResult.value?.horses ?? [];
+    const horses = metadata.value.race_rank_result?.horses ?? [];
     return [...horses]
         .filter(horse => horse.score !== undefined && horse.score !== null)
         .sort((a, b) => (b.score ?? Number.POSITIVE_INFINITY) - (a.score ?? Number.POSITIVE_INFINITY));
@@ -77,7 +69,7 @@ const horsesForRace = computed(() => {
 
 const fetchRaceRank = async () => {
     if (!props.race) {
-        raceResult.value = null;
+        raceMeta.value = null;
         return;
     }
     const racePayload = Race.fromObject(props.race).toObject();
@@ -87,10 +79,10 @@ const fetchRaceRank = async () => {
             racecardDate: props.racecard_date ?? null,
             scratchedHorses: scratchedList.value,
         });
-        raceResult.value = RaceRankResult.fromObject(result);
+        raceMeta.value = RaceMeta.fromObject(result);
     } catch (err) {
         console.error("Failed to rank race", err);
-        raceResult.value = null;
+        raceMeta.value = null;
     }
 };
 
@@ -103,7 +95,7 @@ watch(
 );
 
 watch(
-    [() => props.race, () => props.racecard_date, scratchedList],
+    [() => props.race, () => props.racecard_date, () => scratchedList.value],
     () => {
         fetchRaceRank();
     },
@@ -117,15 +109,16 @@ watch(
         <div class="contents">
             <div class="color-accent-yellow">Contextual Speed and Pace Model</div>
             <div class="color-accent-yellow">{{ displayHeader }}</div>
-            <div class="caution color-accent-yellow">(CAUTION: This is a mathematical model and should be used as one of many tools in your analysis. Scratches can affect the results.)</div>
+            <div class="caution color-accent-yellow">(CAUTION: This is a mathematical model and should be used as one of
+                many tools in your analysis. Scratches can affect the results.)</div>
             <div class="race-info">
                 <div class="color-accent-yellow">Race <span class="color-accent-green">{{ race_number }}</span></div>
                 <div class="color-accent-yellow">Shape: <span class="color-accent-green">{{
-                    raceResult?.shape }}</span></div>
+                    metadata.shape }}</span></div>
                 <div class="color-accent-yellow">EPI: <span class="color-accent-green">{{
-                    raceResult?.epi?.toFixed(2) }}</span></div>
+                    metadata.epi?.toFixed(2) }}</span></div>
                 <div class="color-accent-yellow">Confidence: <span class="color-accent-green">{{ metadata.confidence
-                        }}</span></div>
+                }}</span></div>
                 <div class="color-accent-yellow">Winner: <span class="color-accent-green">{{
                     metadata.win_bet?.horse_name != null ? metadata.win_bet.horse_name : "None Selected" }}</span>
                 </div>
@@ -134,7 +127,7 @@ watch(
                 <div class="horse-row">
                     <div class="color-accent-yellow">Scratch</div>
                     <div class="color-accent-yellow">#</div>
-                    <div class="color-accent-yellow">Horse Name</div>
+                    <div class="color-accent-yellow">Horse Name</div>               
                     <div class="color-accent-yellow numeric-right">Score</div>
                     <div class="color-accent-yellow numeric-right">RepS</div>
                     <div class="color-accent-yellow numeric-right">RepE</div>
@@ -142,19 +135,12 @@ watch(
                     <div class="color-accent-yellow text-center">Style</div>
                     <div class="color-accent-yellow text-center">Quirin</div>
                 </div>
-                <div
-                    class="horse-row"
-                    :class="{ scratched: isHorseScratched(horse.program_number) }"
-                    v-for="(horse, idx) in horsesForRace"
-                    :key="idx"
-                >
+                <div class="horse-row" :class="{ scratched: isHorseScratched(horse.program_number) }"
+                    v-for="(horse, idx) in horsesForRace" :key="idx">
                     <div class="horse-checkbox">
-                        <input
-                            class="horse-checkbox-input"
-                            type="checkbox"
+                        <input class="horse-checkbox-input" type="checkbox"
                             :checked="isHorseScratched(horse.program_number)"
-                            @change="toggleScratch(horse.program_number, ($event.target as HTMLInputElement).checked)"
-                        />
+                            @change="toggleScratch(horse.program_number, ($event.target as HTMLInputElement).checked)" />
                     </div>
                     <div>{{ horse.program_number }}</div>
                     <div>{{ horse.horse_name }}</div>
@@ -164,7 +150,7 @@ watch(
                     <div class="numeric-right">{{ horse.rep.rep_late?.toFixed(2) }}</div>
                     <div class="text-center">{{ horse.run_style !== "Unk" ? horse.run_style : "" }}</div>
                     <div class="text-center">{{ horse.quirin }}</div>
-                </div>  
+                </div>
             </div>
         </div>
     </Panel>
@@ -194,8 +180,8 @@ watch(
 
 .horse-row {
     display: grid;
-    grid-template-columns: 6rem 5rem 20rem 5rem 5rem 5rem 5rem 5rem 5rem;
-    column-gap: 1rem;
+   grid-template-columns: 6rem 5rem 20rem 5rem 5rem 5rem 5rem 5rem 5rem;
+     column-gap: 1rem;
     align-items: baseline;
     position: relative;
 }
@@ -221,8 +207,8 @@ watch(
 .horse-row.scratched::after {
     content: "";
     position: absolute;
-    left: 7rem;
-    right: calc(100% - 69rem);
+    left: calc(6rem + 1rem);
+    width: calc(5rem + 20rem + 5rem + 5rem + 5rem + 5rem + 5rem + 5rem + 7rem);
     top: 50%;
     height: 2px;
     background: currentColor;

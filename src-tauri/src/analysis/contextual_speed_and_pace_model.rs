@@ -1,6 +1,7 @@
 use crate::models::racecard::{Horse, PastPerformance, Race};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum SurfaceMode {
@@ -60,6 +61,53 @@ pub struct RaceRankResult {
     pub pace_heat: u32,
     pub epi: f64,
     pub horses: Vec<HorseRank>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub enum Confidence {
+    StrongSingle,
+    Playable,
+    Competitive,
+    WideOpen,
+    Unscorable,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WinBetSuggestion {
+    pub program_number: String,
+    pub horse_name: String,
+    pub min_odds: Option<f64>,
+    pub reason: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RaceMeta {
+    pub race_number: Option<u32>,
+    pub shape: Shape,
+    pub epi: f64,
+    pub top_score: Option<f64>,
+    pub second_score: Option<f64>,
+    pub gap_1_2: Option<f64>,
+    pub spread_top_to_4: Option<f64>,
+    pub confidence: Confidence,
+    pub win_bet: Option<WinBetSuggestion>,
+    pub race_rank_result: RaceRankResult,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct WinBetOptions {
+    pub min_top_score: f64,
+    pub min_gap: f64,
+}
+
+impl Default for WinBetOptions {
+    fn default() -> Self {
+        Self {
+            min_top_score: 2.0,
+            min_gap: 1.5,
+        }
+    }
 }
 
 fn clamp(v: f64, lo: f64, hi: f64) -> f64 {
@@ -494,5 +542,135 @@ pub fn rank_race_auto(race: &Race, racecard_date: Option<&str>, scratched_horses
         rank_race_turf(race, racecard_date, scratched_horses)
     } else {
         rank_race_dirt(race, racecard_date, scratched_horses)
+    }
+}
+
+fn sorted_scores(race: &RaceRankResult) -> Vec<f64> {
+    let mut scores: Vec<f64> = race
+        .horses
+        .iter()
+        .filter_map(|h| h.score)
+        .filter(|s| s.is_finite())
+        .collect();
+    scores.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+    scores
+}
+
+fn top_two_scores(race: &RaceRankResult) -> (Option<f64>, Option<f64>) {
+    let scores = sorted_scores(race);
+    let top = scores.get(0).copied();
+    let second = scores.get(1).copied();
+    (top, second)
+}
+
+pub fn top_n_horses_by_score(race: &RaceRankResult, n: usize) -> Vec<HorseRank> {
+    let mut horses: Vec<HorseRank> = race
+        .horses
+        .iter()
+        .filter(|h| h.score.map(|s| s.is_finite()).unwrap_or(false))
+        .cloned()
+        .collect();
+    horses.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    horses.truncate(n);
+    horses
+}
+
+pub fn classify_race(race: &RaceRankResult) -> Confidence {
+    let (top, second) = top_two_scores(race);
+    if top.is_none() || second.is_none() {
+        return Confidence::Unscorable;
+    }
+
+    let top4 = sorted_scores(race).into_iter().take(4).collect::<Vec<f64>>();
+    let gap = top.unwrap() - second.unwrap();
+    let spread = if top4.len() >= 4 {
+        Some(top4[0] - top4[3])
+    } else {
+        None
+    };
+
+    if gap >= 2.0 && spread.unwrap_or(0.0) >= 3.0 {
+        Confidence::StrongSingle
+    } else if gap >= 1.5 {
+        Confidence::Playable
+    } else if gap >= 0.5 || spread.map(|s| s >= 1.5).unwrap_or(false) {
+        Confidence::Competitive
+    } else {
+        Confidence::WideOpen
+    }
+}
+
+pub fn win_bet_suggestion(
+    race: &RaceRankResult,
+    opts: Option<WinBetOptions>,
+) -> Option<WinBetSuggestion> {
+    let opts = opts.unwrap_or_default();
+
+    let top2 = top_n_horses_by_score(race, 2);
+    if top2.len() < 2 {
+        return None;
+    }
+
+    let top = &top2[0];
+    let second = &top2[1];
+
+    let top_score = top.score?;
+    let gap = top.score? - second.score?;
+
+    if top_score >= opts.min_top_score && gap >= opts.min_gap {
+        Some(WinBetSuggestion {
+            program_number: top.program_number.clone(),
+            horse_name: top.horse_name.clone(),
+            min_odds: None,
+            reason: format!(
+                "Top score {:.2} with strong separation (gap {:.2}).",
+                top_score, gap
+            ),
+        })
+    } else {
+        None
+    }
+}
+
+pub fn derive_race_meta(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceMeta {
+    let race_rank_result = rank_race_auto(race, racecard_date, scratched_horses);
+    let mut calc_rank_result = race_rank_result.clone();
+    let scratched_programs: HashSet<String> = scratched_horses
+        .iter()
+        .filter_map(|idx| race.horses.get(*idx as usize).map(|h| h.program_number.clone()))
+        .collect();
+    if !scratched_programs.is_empty() {
+        calc_rank_result
+            .horses
+            .retain(|h| !scratched_programs.contains(&h.program_number));
+    }
+
+    let (top, second) = top_two_scores(&calc_rank_result);
+    let top4 = sorted_scores(&calc_rank_result).into_iter().take(4).collect::<Vec<f64>>();
+
+    let gap_1_2 = match (top, second) {
+        (Some(a), Some(b)) => Some(a - b),
+        _ => None,
+    };
+    let spread_top_to_4 = if top4.len() >= 4 {
+        Some(top4[0] - top4[3])
+    } else {
+        None
+    };
+
+    let confidence = classify_race(&calc_rank_result);
+    let win_bet = win_bet_suggestion(&calc_rank_result, None);
+
+    RaceMeta {
+        race_number: race_rank_result.race_number,
+        shape: race_rank_result.shape,
+        epi: race_rank_result.epi,
+        top_score: top,
+        second_score: second,
+        gap_1_2,
+        spread_top_to_4,
+        confidence,
+        win_bet,
+        race_rank_result
     }
 }
