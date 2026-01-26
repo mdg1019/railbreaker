@@ -35,7 +35,7 @@ const racecards = new Racecards();
 const racecard = ref<Racecard | null>(null);
 const lastNoteUpdateAt = ref(0);
 
-const raceNumber = ref(1);
+const race_number = ref(1);
 
 const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
 
@@ -76,7 +76,7 @@ function handlePrintDialogPrint(value: number[]) {
 }
 
 function handleSelectedRace(value: number) {
-    raceNumber.value = value;
+    race_number.value = value;
     const entry = racecards.racecardEntries[currentRacecardIndex.value];
     if (entry) {
         entry.last_opened_race = value;
@@ -89,7 +89,7 @@ function handleDeleteRacecard(index: number) {
     if (racecards.racecardEntries.length === 0) {
         currentRacecardIndex.value = 0;
         racecard.value = null;
-        raceNumber.value = 1;
+        race_number.value = 1;
         return;
     }
 
@@ -97,7 +97,7 @@ function handleDeleteRacecard(index: number) {
     currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
 }
 
-function updateNote([note, horseId]: [string, number]) {
+function updateNote([note, horse_id]: [string, number]) {
     const entry = racecards.racecardEntries[currentRacecardIndex.value];
     if (!entry) {
         return;
@@ -105,7 +105,7 @@ function updateNote([note, horseId]: [string, number]) {
 
     const updateHorseNote = (rc: Racecard) => {
         for (const race of rc.races ?? []) {
-            const horse = race.horses?.find(h => h.id === horseId);
+            const horse = race.horses?.find(h => h.id === horse_id);
             if (horse) {
                 horse.note = note;
                 return true;
@@ -136,6 +136,7 @@ async function handleOpenRacecard(id: number | null) {
 
         isProcessingRacecard.value = false;
     } catch (error) {
+        console.error("Failed to open racecard", error);
         isProcessingRacecard.value = false;
         errorMessage.value = String(error);
         showErrorDialog.value = true;
@@ -148,26 +149,26 @@ watch(racecard, async (rc) => {
     await invoke('set_print_racecard_enabled', { enabled: !!rc }).catch(() => { });
 });
 
-watch([racecard, raceNumber], () => {
-    primePowerComparisons.value = computePrimePowerComparisons(racecard.value, raceNumber.value);
+watch([racecard, race_number], () => {
+    primePowerComparisons.value = computePrimePowerComparisons(racecard.value, race_number.value);
 });
 
 watch(currentRacecardIndex, (idx, oldIdx) => {
     if (typeof oldIdx === 'number' && oldIdx >= 0) {
         const prev = racecards.racecardEntries[oldIdx];
-        if (prev) prev.last_opened_race = raceNumber.value;
+        if (prev) prev.last_opened_race = race_number.value;
     }
 
     const entry = racecards.racecardEntries[idx];
     racecard.value = entry?.racecard ?? null;
     if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
-        raceNumber.value = entry.last_opened_race;
+        race_number.value = entry.last_opened_race;
     } else {
-        raceNumber.value = 1;
+        race_number.value = 1;
     }
 });
 
-watch(raceNumber, async (_newVal, _oldVal) => {
+watch(race_number, async (_newVal, _oldVal) => {
     await nextTick();
     raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -189,7 +190,7 @@ onMounted(async () => {
                 if (entry.racecard.id != null && rc.id != null) {
                     return entry.racecard.id === rc.id;
                 }
-                return entry.racecard.zipFileName === rc.zipFileName;
+                return entry.racecard.zip_file_name === rc.zip_file_name;
             });
         });
 
@@ -217,8 +218,9 @@ onMounted(async () => {
 
         if (path) {
             const filename = path.split(/[\\/]/).pop() ?? "";
+            console.log(filename);
             const exists = await invoke("racecard_exists_by_zip_name", { zipFileName: filename });
-
+            console.log('here');
             if (exists) {
                 errorMessage.value = `Racecard with ${filename} already exists in the database.`;
                 showErrorDialog.value = true;
@@ -302,7 +304,7 @@ onUnmounted(() => {
     <main class="container">
         <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards"
             v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen"
-            :currentRace="raceNumber" @update:selectedRace="handleSelectedRace"
+            :currentRace="race_number" @update:selectedRace="handleSelectedRace"
             @delete:racecard="handleDeleteRacecard" />
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing ZIP File'" />
@@ -311,11 +313,11 @@ onUnmounted(() => {
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing Racecard File'" />
         </div>
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
-            <RacecardHeader :racecard="racecard" :race="raceNumber" />
-            <RaceDetails :racecard="racecard" :race="raceNumber" :print="false" />
-            <Analysis :raceNumber="raceNumber" :race="racecard.races[raceNumber - 1]" :racecardDate="racecard.date" :track="racecard.track" :print="false" />
-            <Horse v-for="(horse, idx) in (racecard.races[raceNumber - 1]?.horses || [])"
-                :key="horse.programNumber || horse.postPosition || idx" :horse="horse"
+            <RacecardHeader :racecard="racecard" :race="race_number" />
+            <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
+            <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
+            <Horse v-for="(horse, idx) in (racecard.races[race_number - 1]?.horses || [])"
+                :key="horse.program_number || horse.post_position || idx" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
         </div>
         

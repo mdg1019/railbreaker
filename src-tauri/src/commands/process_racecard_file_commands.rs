@@ -1,6 +1,5 @@
 use crate::constants::single_file_indexes::*;
 // use crate::files::write_json_file;
-use crate::json::to_camel_case_value;
 use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use crate::sqlite::racecards::add_racecard;
 use crate::models::tracks::TRACKS;
@@ -545,7 +544,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
 
     let racecard_value = serde_json::to_value(&racecard)
         .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
-    let racecard_value = to_camel_case_value(racecard_value);
+    let racecard_value = racecard_value;
 
     Ok(racecard_value)
 }

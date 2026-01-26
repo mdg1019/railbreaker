@@ -1,7 +1,6 @@
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 use std::collections::HashMap;
 use tauri::State;
-use crate::json::to_camel_case_value;
 use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use serde_json::Value;
 
@@ -53,7 +52,7 @@ pub async fn get_racecard_by_id(
         .map_err(|e| format!("Failed to load racecard: {}", e))?;
     let value = serde_json::to_value(&racecard)
         .map_err(|e| format!("Failed to serialize racecard: {}", e))?;
-    Ok(to_camel_case_value(value))
+    Ok(value)
 }
 
 #[tauri::command]
@@ -79,7 +78,7 @@ pub async fn get_all_racecards(
 
     let value = serde_json::to_value(&racecards)
         .map_err(|e| format!("Failed to serialize racecards: {}", e))?;
-    Ok(to_camel_case_value(value))
+    Ok(value)
 }
 
 #[tauri::command]

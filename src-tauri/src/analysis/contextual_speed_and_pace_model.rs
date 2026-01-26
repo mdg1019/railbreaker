@@ -1,4 +1,4 @@
-use crate::models::racecard::{Horse, PastPerformance, Race, Racecard};
+use crate::models::racecard::{Horse, PastPerformance, Race};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 

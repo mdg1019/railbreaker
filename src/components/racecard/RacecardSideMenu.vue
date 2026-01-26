@@ -40,9 +40,9 @@ function toggle() {
     emit('update:open', !props.open)
 }
 
-function selectRace(raceNumber: number) {
-    props.racecards.racecardEntries[props.currentRacecardIndex].last_opened_race = raceNumber;
-    emit('update:selectedRace', raceNumber)
+function selectRace(race_number: number) {
+    props.racecards.racecardEntries[props.currentRacecardIndex].last_opened_race = race_number;
+    emit('update:selectedRace', race_number)
 }
 </script>
 
@@ -77,11 +77,11 @@ function selectRace(raceNumber: number) {
 
             <nav class="races" aria-label="Race list">
                 <button class="race" type="button" v-for="(race, idx) in racecardEntry?.racecard.races"
-                    :key="idx" :class="{ selected: (race.raceNumber ?? idx + 1) === currentRace }"
-                    @click="selectRace(race.raceNumber ?? idx + 1)">
+                    :key="idx" :class="{ selected: (race.race_number ?? idx + 1) === currentRace }"
+                    @click="selectRace(race.race_number ?? idx + 1)">
                     <div class="race-row">
                         <div class="race-left">
-                            🐎 <span class="race-number">Race {{ race.raceNumber ?? idx + 1 }}:</span>
+                            🐎 <span class="race-number">Race {{ race.race_number ?? idx + 1 }}:</span>
                         </div>
                         <div class="race-right">
                             <RaceClassification :race="race" />

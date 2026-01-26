@@ -10,14 +10,14 @@ function ordinal(n: number): string {
 
 export function computePrimePowerComparisons(
     racecard: Racecard | null,
-    raceNumber: number
+    race_number: number
 ): PrimePowerComparison[] {
     const result: PrimePowerComparison[] = [];
     if (!racecard) {
         return result;
     }
 
-    const raceIdx = raceNumber - 1;
+    const raceIdx = race_number - 1;
     const race = racecard.races?.[raceIdx];
     if (!race || !Array.isArray(race.horses)) {
         return result;
@@ -25,10 +25,10 @@ export function computePrimePowerComparisons(
 
     const entries: { post: number | string; rating: number }[] = [];
     race.horses.forEach((h: any, idx: number) => {
-        const r = h.brisPrimePowerRating;
+        const r = h.bris_prime_power_rating;
         if (r === null || r === undefined) return;
         if (Number(r) === 0) return;
-        const post = h.postPosition ?? h.programNumber ?? idx + 1;
+        const post = h.post_position ?? h.program_number ?? idx + 1;
         entries.push({ post, rating: Number(r) });
     });
 

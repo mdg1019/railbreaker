@@ -78,8 +78,8 @@ export function winBetSuggestion(
 
   if (topScore >= minTopScore && gap >= minGap) {
     return {
-      program_number: top.programNumber,
-      horse_name: top.horseName,
+      program_number: top.program_number,
+      horse_name: top.horse_name,
       min_odds: null,
       reason: `Top score ${topScore.toFixed(2)} with strong separation (gap ${gap.toFixed(2)}).`,
     };
@@ -99,7 +99,7 @@ export function deriveRaceMeta(race: RaceRankResult): RaceMeta {
   const win_bet = winBetSuggestion(race);
 
   return {
-    race_number: race.raceNumber ?? null,
+    race_number: race.race_number ?? null,
     shape: race.shape,
     epi: race.epi,
     top_score: top,

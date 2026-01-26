@@ -21,10 +21,10 @@ const currentRace = computed(() => props.racecard.races[raceIndex.value]);
     <Panel :print="props.print">
         <div class="race-container-header">
             <div class="track-name color-accent-green font-large">{{ props.racecard.track }}</div>
-            <RaceClassification class="raceType color-accent-yellow" :race="currentRace" :prefix-color="'var(--accent-green)'" />
+            <RaceClassification class="race_type color-accent-yellow" :race="currentRace" :prefix-color="'var(--accent-green)'" />
             <div class=" color-accent-yellow">{{ Transformers.getDistanceLength(currentRace?.distance ?? 0) }}</div>
-            <div class=" color-accent-yellow">{{ Transformers.getAgeSexRestrictionString(currentRace?.ageSexRestrictions) }}</div>
-            <div class="color-accent-yellow">{{ props.racecard.longDate }}</div>
+            <div class=" color-accent-yellow">{{ Transformers.getAgeSexRestrictionString(currentRace?.age_sex_restrictions) }}</div>
+            <div class="color-accent-yellow">{{ props.racecard.long_date }}</div>
             <div class="race-number color-accent-green font-large">Race {{ props.race }}</div>
         </div>
     </Panel>

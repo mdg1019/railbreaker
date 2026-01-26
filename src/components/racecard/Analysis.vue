@@ -7,14 +7,14 @@ import { deriveRaceMeta } from "../../utils/cspm";
 import Panel from "../ui/Panel.vue";
 
 const props = withDefaults(defineProps<{
-    raceNumber: number;
+    race_number: number;
     race: Race;
-    racecardDate?: string;
+    racecard_date?: string;
     track?: string;
     print: boolean;
 }>(), {
     print: false,
-    racecardDate: undefined,
+    racecard_date: undefined,
     track: "",
 });
 
@@ -24,7 +24,7 @@ const scratchedIndices = ref(new Set<number>());
 const raceIndexByProgram = computed(() => {
     const map = new Map<string, number>();
     props.race?.horses?.forEach((horse, idx) => {
-        map.set(horse.programNumber, idx);
+        map.set(horse.program_number, idx);
     });
     return map;
 });
@@ -36,12 +36,12 @@ const scratchedList = computed(() => {
 const displayHeader = computed(() => {
     const parts = [];
     if (props.track) parts.push(props.track);
-    if (props.racecardDate) parts.push(props.racecardDate);
+    if (props.racecard_date) parts.push(props.racecard_date);
     return parts.join(" - ");
 });
 
-const isHorseScratched = (programNumber: string) => {
-    const idx = raceIndexByProgram.value.get(programNumber);
+const isHorseScratched = (program_number: string) => {
+    const idx = raceIndexByProgram.value.get(program_number);
     return idx !== undefined && scratchedIndices.value.has(idx);
 };
 
@@ -52,12 +52,12 @@ const metadata = computed(() => {
     }
     return deriveRaceMeta(new RaceRankResult({
         ...race,
-        horses: race.horses.filter(horse => !isHorseScratched(horse.programNumber)),
+        horses: race.horses.filter(horse => !isHorseScratched(horse.program_number)),
     }));
 });
 
-const toggleScratch = (programNumber: string, checked: boolean) => {
-    const idx = raceIndexByProgram.value.get(programNumber);
+const toggleScratch = (program_number: string, checked: boolean) => {
+    const idx = raceIndexByProgram.value.get(program_number);
     if (idx === undefined) return;
     const next = new Set(scratchedIndices.value);
     if (checked) {
@@ -84,7 +84,7 @@ const fetchRaceRank = async () => {
     try {
         const result = await invoke<any>("rank_race", {
             race: racePayload,
-            racecardDate: props.racecardDate ?? null,
+            racecardDate: props.racecard_date ?? null,
             scratchedHorses: scratchedList.value,
         });
         raceResult.value = RaceRankResult.fromObject(result);
@@ -103,7 +103,7 @@ watch(
 );
 
 watch(
-    [() => props.race, () => props.racecardDate, scratchedList],
+    [() => props.race, () => props.racecard_date, scratchedList],
     () => {
         fetchRaceRank();
     },
@@ -119,7 +119,7 @@ watch(
             <div class="color-accent-yellow">{{ displayHeader }}</div>
             <div class="caution color-accent-yellow">(CAUTION: This is a mathematical model and should be used as one of many tools in your analysis. Scratches can affect the results.)</div>
             <div class="race-info">
-                <div class="color-accent-yellow">Race <span class="color-accent-green">{{ raceNumber }}</span></div>
+                <div class="color-accent-yellow">Race <span class="color-accent-green">{{ race_number }}</span></div>
                 <div class="color-accent-yellow">Shape: <span class="color-accent-green">{{
                     raceResult?.shape }}</span></div>
                 <div class="color-accent-yellow">EPI: <span class="color-accent-green">{{
@@ -144,7 +144,7 @@ watch(
                 </div>
                 <div
                     class="horse-row"
-                    :class="{ scratched: isHorseScratched(horse.programNumber) }"
+                    :class="{ scratched: isHorseScratched(horse.program_number) }"
                     v-for="(horse, idx) in horsesForRace"
                     :key="idx"
                 >
@@ -152,17 +152,17 @@ watch(
                         <input
                             class="horse-checkbox-input"
                             type="checkbox"
-                            :checked="isHorseScratched(horse.programNumber)"
-                            @change="toggleScratch(horse.programNumber, ($event.target as HTMLInputElement).checked)"
+                            :checked="isHorseScratched(horse.program_number)"
+                            @change="toggleScratch(horse.program_number, ($event.target as HTMLInputElement).checked)"
                         />
                     </div>
-                    <div>{{ horse.programNumber }}</div>
-                    <div>{{ horse.horseName }}</div>
+                    <div>{{ horse.program_number }}</div>
+                    <div>{{ horse.horse_name }}</div>
                     <div class="numeric-right">{{ horse.score?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.repSpeed?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.repEarly?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.repLate?.toFixed(2) }}</div>
-                    <div class="text-center">{{ horse.runStyle !== "Unk" ? horse.runStyle : "" }}</div>
+                    <div class="numeric-right">{{ horse.rep.rep_speed?.toFixed(2) }}</div>
+                    <div class="numeric-right">{{ horse.rep.rep_early?.toFixed(2) }}</div>
+                    <div class="numeric-right">{{ horse.rep.rep_late?.toFixed(2) }}</div>
+                    <div class="text-center">{{ horse.run_style !== "Unk" ? horse.run_style : "" }}</div>
                     <div class="text-center">{{ horse.quirin }}</div>
                 </div>  
             </div>

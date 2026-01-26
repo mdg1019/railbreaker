@@ -23,7 +23,7 @@ const title = computed(() => {
 })
 
 function raceNumberFor(race: Race, idx: number) {
-    return race.raceNumber ?? idx + 1
+    return race.race_number ?? idx + 1
 }
 
 function close() {
@@ -38,14 +38,14 @@ function applyDefaults() {
     selectedRaces.value = races.value.map((race, idx) => raceNumberFor(race, idx))
 }
 
-function toggleRace(raceNumber: number, checked: boolean) {
+function toggleRace(race_number: number, checked: boolean) {
     if (checked) {
-        if (!selectedRaces.value.includes(raceNumber)) {
-            selectedRaces.value = [...selectedRaces.value, raceNumber].sort((a, b) => a - b)
+        if (!selectedRaces.value.includes(race_number)) {
+            selectedRaces.value = [...selectedRaces.value, race_number].sort((a, b) => a - b)
         }
         return
     }
-    selectedRaces.value = selectedRaces.value.filter((value) => value !== raceNumber)
+    selectedRaces.value = selectedRaces.value.filter((value) => value !== race_number)
 }
 
 function confirmPrint() {
@@ -65,7 +65,7 @@ watch(
 <template>
     <ModalDialog :model-value="modelValue" :title="title" :titleColor="'--accent-yellow'" @update:modelValue="close">
         <div class="race-list" role="list">
-            <label v-for="(race, idx) in races" :key="race.raceNumber ?? idx" class="race-row" role="listitem">
+            <label v-for="(race, idx) in races" :key="race.race_number ?? idx" class="race-row" role="listitem">
                 <input class="race-checkbox" type="checkbox" :checked="selectedRaces.includes(raceNumberFor(race, idx))"
                     @change="toggleRace(raceNumberFor(race, idx), ($event.target as HTMLInputElement).checked)" />
                 <div class="race-left">

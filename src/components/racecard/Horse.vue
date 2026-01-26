@@ -25,19 +25,21 @@ const emit = defineEmits<{
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
-function updateNote([note, horseId]: [string, number]) {
+function updateNote([note, horse_id]: [string, number]) {
     if (props.print) {
         return;
     }
 
-    emit("update:note", [note, horseId]);
+    emit("update:note", [note, horse_id]);
 
     if (saveTimeout) {
         clearTimeout(saveTimeout);
     }
 
     saveTimeout = setTimeout(async () => {
-        await invoke("update_note", { note: note, horseId: horseId }).catch(() => { });
+        await invoke("update_note", { note: note, horseId: horse_id }).catch((err) => {
+            console.error("Failed to update note", err);
+        });
     }, 500);
 }
 </script>

@@ -131,19 +131,19 @@ onBeforeUnmount(() => {
 
 <template>
     <div v-if="payload" class="container print-view">
-        <div v-for="raceNumber in (payload!.printRaces || [])" :key="raceNumber" class="page">
+        <div v-for="race_number in (payload!.printRaces || [])" :key="race_number" class="page">
             <div class="race">
                 <header class="header">
-                    <RacecardHeader v-if="racecard" :racecard="racecard" :race="raceNumber" :print="true" />
+                    <RacecardHeader v-if="racecard" :racecard="racecard" :race="race_number" :print="true" />
                 </header>
 
                 <main>
-                    <RaceDetails :racecard="payload!.raceCard" :race="raceNumber" :print="true" />
+                    <RaceDetails :racecard="payload!.raceCard" :race="race_number" :print="true" />
                     <div>
-                        <Horse v-for="(horse, idx) in (payload!.raceCard.races[raceNumber - 1]?.horses || [])"
-                            :key="horse.programNumber || horse.postPosition || idx" 
+                        <Horse v-for="(horse, idx) in (payload!.raceCard.races[race_number - 1]?.horses || [])"
+                            :key="horse.program_number || horse.post_position || idx" 
                             :horse="horse"
-                            :primePowerComparisons="primePowerComparisonsByRace[raceNumber] || []"
+                            :primePowerComparisons="primePowerComparisonsByRace[race_number] || []"
                             :print="true"></Horse>
                     </div>
                 </main>

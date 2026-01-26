@@ -10,30 +10,30 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const pps = props.horse?.pastPerformances ?? [];
+const pps = props.horse?.past_performances ?? [];
 
-const fraction1 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction1 ?? null));
-const fraction2 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction2 ?? null));
-const fraction3 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction3 ?? null));
-const finalTime = pps.map(pp => Transformers.getFractionalTimeString(pp?.finalTime ?? null));
+const fraction_1 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_1 ?? null));
+const fraction_2 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_2 ?? null));
+const fraction_3 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_3 ?? null));
+const final_time = pps.map(pp => Transformers.getFractionalTimeString(pp?.final_time ?? null));
 const race_classification = pps.map(pp => Transformers.getPPRaceClassification(pp));
 const e1_e2_lp = pps.map(pp => Transformers.getE1E2AndLatePaceString(pp));
 
 const firstCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
-    Transformers.parseNumberOrNull(pp.firstCallPosition),
-    Transformers.parseNumberOrNull(pp.firstCallBetweenLengths)
+    Transformers.parseNumberOrNull(pp.first_call_position),
+    Transformers.parseNumberOrNull(pp.first_call_between_lengths)
 ));
 const secondCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
-    Transformers.parseNumberOrNull(pp.secondCallPosition),
-    Transformers.parseNumberOrNull(pp.secondCallBetweenLengths)
+    Transformers.parseNumberOrNull(pp.second_call_position),
+    Transformers.parseNumberOrNull(pp.second_call_between_lengths)
 ));
 const stretchCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
-    Transformers.parseNumberOrNull(pp.stretchCallPosition),
-    Transformers.parseNumberOrNull(pp.stretchCallBetweenLengths)
+    Transformers.parseNumberOrNull(pp.stretch_call_position),
+    Transformers.parseNumberOrNull(pp.stretch_call_between_lengths)
 ));
 const finishPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
-    Transformers.parseNumberOrNull(pp.finishPosition),
-    Transformers.parseNumberOrNull(pp.finishBetweenLengths)
+    Transformers.parseNumberOrNull(pp.finish_position),
+    Transformers.parseNumberOrNull(pp.finish_between_lengths)
 ));
 
 const cols = !props.print ?
@@ -56,7 +56,7 @@ function positionClass(position: string) {
 
 <template>
     <div class="font-small">
-        <div v-if="pps && pps[0] && pps[0].raceDate !== ''"
+        <div v-if="pps && pps[0] && pps[0].race_date !== ''"
             class="pp-grid title-row color-accent-green" :style="{ gridTemplateColumns: cols }">
             <div>DATE TRK</div>
             <div></div>
@@ -90,53 +90,53 @@ function positionClass(position: string) {
 
         <template v-for="(_, i) in Array(10)" :key="i">
             <div class="claimed-row"
-                v-if="pps?.[i]?.alternateCommentLine?.startsWith('Claimed')">
+                v-if="pps?.[i]?.alternate_comment_line?.startsWith('Claimed')">
                 <div class="claimed-cell">
-                    <div class="color-accent-purple" :title="pps[i].alternateCommentLine">
-                        {{ pps[i].alternateCommentLine }} ( as of {{
-                            pps[i].claimedAndTrainerSwitches1 }} ): ( {{
-                            pps[i].claimedAndTrainerSwitches2 }} {{
-                            pps[i].claimedAndTrainerSwitches3 }}-{{
-                            pps[i].claimedAndTrainerSwitches4 }}-{{
-                            pps[i].claimedAndTrainerSwitches5 }}
+                    <div class="color-accent-purple" :title="pps[i].alternate_comment_line">
+                        {{ pps[i].alternate_comment_line }} ( as of {{
+                            pps[i].claimed_and_trainer_switches_1 }} ): ( {{
+                            pps[i].claimed_and_trainer_switches_2 }} {{
+                            pps[i].claimed_and_trainer_switches_3 }}-{{
+                            pps[i].claimed_and_trainer_switches_4 }}-{{
+                            pps[i].claimed_and_trainer_switches_5 }}
                         {{
-                            Transformers.createPercentageString(Transformers.parseNumberOrNull(pps[i].claimedAndTrainerSwitches3),
-                                Transformers.parseNumberOrNull(pps[i].claimedAndTrainerSwitches2))
+                            Transformers.createPercentageString(Transformers.parseNumberOrNull(pps[i].claimed_and_trainer_switches_3),
+                                Transformers.parseNumberOrNull(pps[i].claimed_and_trainer_switches_2))
                         }} )
                     </div>
                 </div>
             </div>
 
             <div class="pp-grid perf-row" :style="{ gridTemplateColumns: cols }"
-                v-if="pps && pps[i] && pps[i].raceDate !== ''">
+                v-if="pps && pps[i] && pps[i].race_date !== ''">
                 <div :style="{
-                    borderBottom: (i === 0 && pps?.[i]?.daysSinceLastRace && pps[i].daysSinceLastRace > 45)
+                    borderBottom: (i === 0 && pps?.[i]?.days_since_last_race && pps[i].days_since_last_race > 45)
                         ? '1px solid var(--accent-red)'
                         : undefined
                 }">
-                    {{ Transformers.formatDateShort(pps[i].raceDate) }}{{
-                        pps[i].trackCode }}<span class="use-superscript">{{
-                        pps[i].raceNumber }}</span>
+                    {{ Transformers.formatDateShort(pps[i].race_date) }}{{
+                        pps[i].track_code }}<span class="use-superscript">{{
+                        pps[i].race_number }}</span>
                 </div>
                 <div class="color-accent-yellow surface-indicator">{{
                     Transformers.getSurfaceString(pps[i]) }}</div>
                 <div>{{ Transformers.getShortLength(pps[i].distance) }} <span>{{
-                    pps[i].trackCondition.toLowerCase() }}</span><span
-                        v-if="pps[i].sealedTrackIndicator" class="use-superscript">s</span>
+                    pps[i].track_condition.toLowerCase() }}</span><span
+                        v-if="pps[i].sealed_track_indicator" class="use-superscript">s</span>
                 </div>
-                <div class="left-padding">{{ fraction1[i]?.int }}<span class="use-superscript">{{ fraction1[i]?.fraction
+                <div class="left-padding">{{ fraction_1[i]?.int }}<span class="use-superscript">{{ fraction_1[i]?.fraction
                         }}</span></div>
-                <div>{{ fraction2[i]?.int }}<span class="use-superscript">{{ fraction2[i]?.fraction }}</span></div>
-                <div>{{ fraction3[i]?.int }}<span class="use-superscript">{{ fraction3[i]?.fraction }}</span></div>
-                <div>{{ finalTime[i]?.int }}<span class="use-superscript">{{ finalTime[i]?.fraction }}</span></div>
+                <div>{{ fraction_2[i]?.int }}<span class="use-superscript">{{ fraction_2[i]?.fraction }}</span></div>
+                <div>{{ fraction_3[i]?.int }}<span class="use-superscript">{{ fraction_3[i]?.fraction }}</span></div>
+                <div>{{ final_time[i]?.int }}<span class="use-superscript">{{ final_time[i]?.fraction }}</span></div>
                 <div><span class="color-accent-yellow">{{ race_classification[i]?.prefix }}</span>{{
                     race_classification[i]?.classification }}</div>
                 <div class="align-right">{{ e1_e2_lp[i]?.e1 }}</div>
                 <div class="align-right">{{ e1_e2_lp[i]?.e2 }}</div>
                 <div class="align-right">{{ e1_e2_lp[i]?.latePace }}</div>
-                <div class="align-right">{{ pps[i].brisSpeedRating }}</div>
-                <div class="align-right">{{ pps[i].postPosition }}</div>
-                <div class="align-right" :class="positionClass(pps[i].startCallPosition.toString())">{{ pps[i].startCallPosition }}</div>
+                <div class="align-right">{{ pps[i].bris_speed_rating }}</div>
+                <div class="align-right">{{ pps[i].post_position }}</div>
+                <div class="align-right" :class="positionClass(pps[i].start_call_position.toString())">{{ pps[i].start_call_position }}</div>
 
                 <div class="align-right" :class="positionClass(firstCallPositions[i].position)">{{ firstCallPositions[i]?.position }}</div>
                 <div :class="positionClass(firstCallPositions[i].position)"><span class="use-superscript">{{ firstCallPositions[i]?.lengthsBehind }}</span>{{ firstCallPositions[i]?.fraction }}</div>
@@ -148,19 +148,19 @@ function positionClass(position: string) {
                 <div :class="positionClass(stretchCallPositions[i].position)"><span class="use-superscript">{{ stretchCallPositions[i]?.lengthsBehind }}</span>{{ stretchCallPositions[i]?.fraction }}</div>
 
                 <div class="align-right" :class="positionClass(finishPositions[i].position)">{{ finishPositions[i]?.position }}</div>
-                <div :class="positionClass(finishPositions[i].position)"><span class="use-superscript">{{ finishPositions[i]?.lengthsBehind }}</span>{{ finishPositions[i]?.fraction }}<span v-if="pps[i].finishPosition !== pps[i].moneyPosition">*</span></div>
+                <div :class="positionClass(finishPositions[i].position)"><span class="use-superscript">{{ finishPositions[i]?.lengthsBehind }}</span>{{ finishPositions[i]?.fraction }}<span v-if="pps[i].finish_position !== pps[i].money_position">*</span></div>
 
                 <div>{{ Transformers.getJockeyName(pps[i].jockey) }}<span class="use-superscript">{{ pps[i].weight }}</span></div>
 
-                <div><span v-if="pps[i].equipment === 'b'">b</span><span v-if="pps[i].frontBandagesIndicator === '1'">f</span></div>
+                <div><span v-if="pps[i].equipment === 'b'">b</span><span v-if="pps[i].front_bandages_indicator === '1'">f</span></div>
 
-                <div class="align-right">{{pps[i].favoriteIndicator === "1" ? "*" : "" }}{{ pps[i].odds?.toFixed(2) }}</div>
+                <div class="align-right">{{pps[i].favorite_indicator === "1" ? "*" : "" }}{{ pps[i].odds?.toFixed(2) }}</div>
 
                 <Finishers :pp="pps[i]" class="move-right-large"/>
 
                 <div class="comment">
-                    <Tooltip :text="Transformers.stripLeadingDate(pps[i].extendedStartComment)">
-                         {{ pps[i].tripComment }}
+                    <Tooltip :text="Transformers.stripLeadingDate(pps[i].extended_start_comment)">
+                         {{ pps[i].trip_comment }}
                     </Tooltip>
                 </div>
 
