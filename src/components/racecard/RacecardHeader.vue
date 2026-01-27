@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const raceIndex = computed(() => Math.max(0, props.race - 1));
+const raceIndex = computed(() => { console.log(props.race); return props.race - 1; });
 const currentRace = computed(() => props.racecard.races[raceIndex.value]);
 </script>
 

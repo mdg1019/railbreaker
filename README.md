@@ -13,12 +13,12 @@ Is a Rust/Tauri app for handicapping horse races. It uses the single-file data f
 - Added a Print Dialog box so that the user can select what races should be printed. See pic below.
 - Switched to a Sqlite database instead of the .json files.
 - Notes for each horse are working.
+- Contextual speed and pace model attempts to determine the outcome of each race.
 
 #### Things to do:
 
 - Add more bells and whistles over time to the UI.
-- Do analysis of the racecard data and see what's useful to know.
-
+- Research other handicapping models.
 
 #### Windows Users:
 I do not have a signing certificate. You will be asked about this during installation. Go ahead and install it. To run the app, you need to run it as an Administrator. Just right-click the app's icon and select ***Run as Administrator***.
@@ -38,3 +38,6 @@ I do not have a signing certificate. You will be asked about this during install
 #### Print Dialog Box
 
 ![print dialog box](images/print-dialog.png)
+
+#### Contextual Speed and Pace Model
+![contextual speed and pace model](images/cspm.png)

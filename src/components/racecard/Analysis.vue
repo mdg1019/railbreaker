@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { RaceMeta } from "../../models/analysis";
 import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
+import Transformers from "../../utils/transformers";
 
 const props = withDefaults(defineProps<{
     race_number: number;
@@ -108,19 +109,17 @@ watch(
     <Panel :print="props.print">
         <div class="contents">
             <div class="color-accent-yellow">Contextual Speed and Pace Model</div>
-            <div class="color-accent-yellow">{{ displayHeader }}</div>
-            <div class="caution color-accent-yellow">(CAUTION: This is a mathematical model and should be used as one of
-                many tools in your analysis. Scratches can affect the results.)</div>
+            <div class="track-date color-accent-yellow">{{ displayHeader }}</div>
             <div class="race-info">
-                <div class="color-accent-yellow">Race <span class="color-accent-green">{{ race_number }}</span></div>
-                <div class="color-accent-yellow">Shape: <span class="color-accent-green">{{
+                <div class="color-accent-yellow">Race<span class="left-margin color-accent-green">{{ race_number }}</span></div>
+                <div class="color-accent-yellow">Shape:<span class="left-margin color-accent-green">{{
                     metadata.shape }}</span></div>
-                <div class="color-accent-yellow">EPI: <span class="color-accent-green">{{
+                <div class="color-accent-yellow">EPI:<span class="left-margin color-accent-green">{{
                     metadata.epi?.toFixed(2) }}</span></div>
-                <div class="color-accent-yellow">Confidence: <span class="color-accent-green">{{ metadata.confidence
+                <div class="color-accent-yellow">Confidence:<span class="left-margin color-accent-green">{{ metadata.confidence?.replace(/([a-z])([A-Z])/g, '$1 $2')
                 }}</span></div>
-                <div class="color-accent-yellow">Winner: <span class="color-accent-green">{{
-                    metadata.win_bet?.horse_name != null ? metadata.win_bet.horse_name : "None Selected" }}</span>
+                <div class="color-accent-yellow">Winner:<span class="left-margin color-accent-green">{{
+                    metadata.win_bet?.horse_name != null ? Transformers.capitalize(metadata.win_bet.horse_name) : "None Selected" }}</span>
                 </div>
             </div>
             <div class="horses">
@@ -143,7 +142,7 @@ watch(
                             @change="toggleScratch(horse.program_number, ($event.target as HTMLInputElement).checked)" />
                     </div>
                     <div>{{ horse.program_number }}</div>
-                    <div>{{ horse.horse_name }}</div>
+                    <div>{{ Transformers.capitalize(horse.horse_name) }}</div>
                     <div class="numeric-right">{{ horse.score?.toFixed(2) }}</div>
                     <div class="numeric-right">{{ horse.rep.rep_speed?.toFixed(2) }}</div>
                     <div class="numeric-right">{{ horse.rep.rep_early?.toFixed(2) }}</div>
@@ -152,6 +151,7 @@ watch(
                     <div class="text-center">{{ horse.quirin }}</div>
                 </div>
             </div>
+            <div class="caution color-accent-yellow">(Caution: <span class="color-accent-green">This output is based on a mathematical model and is intended to be used as one of several analytical tools. Projected winners have an increased likelihood of success if the race unfolds in accordance with the model’s assumptions. However, horse racing is inherently unpredictable. Do not rely solely on computer projections, as late scratches and race-day variables can materially affect the outcome.</span>)</div>
         </div>
     </Panel>
 </template>
@@ -163,6 +163,10 @@ watch(
 }
 
 .caution {
+    margin-top: 1rem;
+}
+
+.track-date {
     margin-bottom: 1rem;
 }
 
@@ -211,8 +215,12 @@ watch(
     width: calc(5rem + 20rem + 5rem + 5rem + 5rem + 5rem + 5rem + 5rem + 7rem);
     top: 50%;
     height: 2px;
-    background: currentColor;
+    background: var(--accent-red);
     z-index: 2;
     pointer-events: none;
+}
+
+.left-margin {
+    margin-left: 1rem;
 }
 </style>

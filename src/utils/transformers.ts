@@ -1,19 +1,17 @@
 import type { Race, PastPerformance } from "../models/racecard";
 
 export class PositionLengthsBehind {
-    constructor(    
+    constructor(
         public position: string,
         public lengthsBehind: string,
-        public fraction: string
+        public fraction: string,
     ) {}
 }
 
-
-
 export class FractionalTime {
     constructor(
-        public int: string, 
-        public fraction: string
+        public int: string,
+        public fraction: string,
     ) {}
 }
 
@@ -21,14 +19,14 @@ export class E1E2LatePace {
     constructor(
         public e1: string,
         public e2: string,
-        public latePace: string
+        public latePace: string,
     ) {}
 }
 
 export class RaceClassification {
     constructor(
         public prefix: string,
-        public classification: string
+        public classification: string,
     ) {}
 }
 
@@ -93,7 +91,7 @@ export default class Transformers {
                 .split("/")
                 .map((part) => {
                     const m = part.match(
-                        /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
+                        /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/,
                     );
                     if (m) {
                         const prefix = m[1] || "";
@@ -165,7 +163,7 @@ export default class Transformers {
                     seg
                         .split("'")
                         .map((sub) => handleMcMac(sub))
-                        .join("'")
+                        .join("'"),
                 )
                 .join("-");
 
@@ -210,7 +208,7 @@ export default class Transformers {
                     .split("/")
                     .map((part) => {
                         const m = part.match(
-                            /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/
+                            /^([^a-zA-Z']*)([a-zA-Z']+)([^a-zA-Z']*)$/,
                         );
                         if (m) {
                             const prefix = m[1] || "";
@@ -241,7 +239,7 @@ export default class Transformers {
 
     static createAgeString(
         birthMonth: number | null | undefined,
-        birthYearTwoDigits: number | null | undefined
+        birthYearTwoDigits: number | null | undefined,
     ): string {
         if (birthMonth === null || birthMonth === undefined) return "";
         if (birthYearTwoDigits === null || birthYearTwoDigits === undefined)
@@ -283,7 +281,7 @@ export default class Transformers {
 
     static createPercentageString(
         num: number | null | undefined,
-        denom: number | null | undefined
+        denom: number | null | undefined,
     ): string {
         if (num === null || num === undefined) return "-";
         if (denom === null || denom === undefined) return "-";
@@ -418,9 +416,7 @@ export default class Transformers {
         return result;
     }
 
-    static getE1E2AndLatePaceString(
-        pp: PastPerformance
-    ): E1E2LatePace {
+    static getE1E2AndLatePaceString(pp: PastPerformance): E1E2LatePace {
         if (!pp.distance) return new E1E2LatePace("", "", "");
 
         let e1 = "";
@@ -504,7 +500,7 @@ export default class Transformers {
 
         let lowercasePrefixes = classification.match(/^([a-z]+)/);
         classification = classification.slice(
-            lowercasePrefixes ? lowercasePrefixes[0].length : 0
+            lowercasePrefixes ? lowercasePrefixes[0].length : 0,
         );
 
         if (lowercasePrefixes && lowercasePrefixes[0].indexOf("f") !== -1) {
@@ -555,7 +551,10 @@ export default class Transformers {
         return new RaceClassification(prefix, classification);
     }
 
-    static getPositionAndLengthsBehindStrings(position: number | null, lengthsBehind: number | null): PositionLengthsBehind {
+    static getPositionAndLengthsBehindStrings(
+        position: number | null,
+        lengthsBehind: number | null,
+    ): PositionLengthsBehind {
         if (position === null || position === undefined) {
             return new PositionLengthsBehind("", "", "");
         }
@@ -563,18 +562,21 @@ export default class Transformers {
         if (lengthsBehind === null || lengthsBehind === undefined) {
             return new PositionLengthsBehind(position.toString(), "", "");
         }
-        
+
         let positionStr = position.toString();
-        
+
         switch (lengthsBehind) {
-            case 0: return new PositionLengthsBehind(positionStr, "", "\u00F0");
-            case 0.05: return new PositionLengthsBehind(positionStr, "", "\u00EF");
+            case 0:
+                return new PositionLengthsBehind(positionStr, "", "\u00F0");
+            case 0.05:
+                return new PositionLengthsBehind(positionStr, "", "\u00EF");
 
             case 0.07:
-            case 0.1: return new PositionLengthsBehind(positionStr, "", "\u00ED");
-            case 0.25: return new PositionLengthsBehind(positionStr, "", "\u00EE");
+            case 0.1:
+                return new PositionLengthsBehind(positionStr, "", "\u00ED");
+            case 0.25:
+                return new PositionLengthsBehind(positionStr, "", "\u00EE");
         }
-
 
         let lengthsBehindInt = Math.floor(lengthsBehind);
         let lengthsBehindFraction = lengthsBehind - lengthsBehindInt;
@@ -586,15 +588,36 @@ export default class Transformers {
             lengthsBehindFraction = 0;
         }
 
-        let lengthsBehindStr = lengthsBehindInt === 0 ? "" : lengthsBehindInt.toString();
+        let lengthsBehindStr =
+            lengthsBehindInt === 0 ? "" : lengthsBehindInt.toString();
 
         switch (lengthsBehindFraction) {
-            case 0: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
-            case 0.25: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00C3");
-            case 0.5: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00C7");
-            case 0.75: return new PositionLengthsBehind(positionStr, lengthsBehindStr, "\u00CB");
+            case 0:
+                return new PositionLengthsBehind(
+                    positionStr,
+                    lengthsBehindStr,
+                    "",
+                );
+            case 0.25:
+                return new PositionLengthsBehind(
+                    positionStr,
+                    lengthsBehindStr,
+                    "\u00C3",
+                );
+            case 0.5:
+                return new PositionLengthsBehind(
+                    positionStr,
+                    lengthsBehindStr,
+                    "\u00C7",
+                );
+            case 0.75:
+                return new PositionLengthsBehind(
+                    positionStr,
+                    lengthsBehindStr,
+                    "\u00CB",
+                );
         }
- 
+
         return new PositionLengthsBehind(positionStr, lengthsBehindStr, "");
     }
 
@@ -602,14 +625,21 @@ export default class Transformers {
         if (!race) return new RaceClassification("", "");
 
         let raceClassification = race.todays_race_classification;
+        console.log("raceClassification:", raceClassification);
 
-        if (race.race_type == "M" && raceClassification.startsWith("Md ")) {
-            raceClassification = "MC " + raceClassification.slice(3);
+        console.log(race.race_type, raceClassification.startsWith("Md "));
+        if (race.race_type == "S" && raceClassification.startsWith("Md ")) {
+            raceClassification =
+                "Mdn " +
+                (race.purse ? Math.floor(race.purse / 1000) + "k" : "");
         }
 
         let prefix = "";
 
-        if (race.age_sex_restrictions?.length > 2 && race.age_sex_restrictions[2].toLowerCase() == "f") {
+        if (
+            race.age_sex_restrictions?.length > 2 &&
+            race.age_sex_restrictions[2].toLowerCase() == "f"
+        ) {
             prefix += "\u00EA";
         }
 

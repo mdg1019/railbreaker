@@ -27,7 +27,7 @@ const { horse } = defineProps<{
 }
 
 .stats {
-    margin-left: 3.5rem;
+    margin-left: 3rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

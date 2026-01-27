@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Race } from '../../models/racecard'
 import Transformers from '../../utils/transformers'
 
@@ -6,7 +7,7 @@ const props = withDefaults(defineProps<{ race: Race | null; prefixColor?: string
     prefixColor: 'var(--accent-yellow)'
 })
 
-const raceClassification = Transformers.getRaceClassification(props.race!);
+const raceClassification = computed(() => Transformers.getRaceClassification(props.race!));
 </script>
 
 <template>

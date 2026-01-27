@@ -1,3 +1,6 @@
+## 0.3.0
+- Added a Contextual Speed and Pace Model to try to project the outcome of a race. Use any results with caution. If a computer was really good at picking winning horse races, the tracks would be out of business a long time ago. It's a guide. Nothing more. Because the model is dependent upon scratches, it only appears in the display screen and not in printouts. There are many factors that can skew a race, track bias, jockey change, trainer change, bad weather, etc.
+
 ## 0.2.0
 - Added notes. You can create a note for each horse. Empty notes are ignored in printouts. 
 - Racecards are now saved in a Sqlite database in the Racecards directory with the filenames "railbreaker.db*"
