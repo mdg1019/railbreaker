@@ -13,11 +13,12 @@ Is a Rust/Tauri app for handicapping horse races. It uses the single-file data f
 - Added a Print Dialog box so that the user can select what races should be printed. See pic below.
 - Switched to a Sqlite database instead of the .json files.
 - Notes for each horse are working.
-- Contextual speed and pace model attempts to determine the outcome of each race.
+- Contextual Speed and Pace Model attempts to determine the outcome of each race.
 
 #### Things to do:
 
 - Add more bells and whistles over time to the UI.
+- Build a companion program that will take the Contextual Speed and Pace Model and compare that with data from the PP and a Brisnet comprehensive results file to see where the model did well and where it didn't do well. Hopefully, this can spot patterns to improve the analysis. This will take time to build the data to see if anything pops out.
 - Research other handicapping models.
 
 #### Windows Users:
