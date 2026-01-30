@@ -989,6 +989,7 @@ fn horse_from_row(row: &SqliteRow) -> Horse {
     Horse {
         id: row.get("id"),
         race_id: row.get("race_id"),
+        scratched: false,
         post_position: opt_i64_to_u32(row.get::<Option<i64>, _>("post_position")),
         entry: row.get("entry"),
         claiming_price_of_horse: opt_i64_to_u32(row.get::<Option<i64>, _>("claiming_price_of_horse")),

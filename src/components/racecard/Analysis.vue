@@ -73,12 +73,17 @@ const fetchRaceRank = async () => {
         raceMeta.value = null;
         return;
     }
+
+    for (const [idx, horse] of props.race.horses.entries()) {
+        horse.scratched = scratchedList.value.includes(idx);
+    }
+
     const racePayload = Race.fromObject(props.race).toObject();
+    
     try {
         const result = await invoke<any>("rank_race", {
             race: racePayload,
             racecardDate: props.racecard_date ?? null,
-            scratchedHorses: scratchedList.value,
         });
         raceMeta.value = RaceMeta.fromObject(result);
     } catch (err) {

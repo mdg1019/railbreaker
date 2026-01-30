@@ -104,6 +104,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         let mut horse = Horse {
             id: 0,
             race_id: 0,
+            scratched: false,
             post_position: line[SF_POST_POSITION].parse::<u32>().ok(),
             entry: line[SF_ENTRY].clone(),
             claiming_price_of_horse: line[SF_CLAIMING_PRICE_OF_HORSE].parse::<u32>().ok(),

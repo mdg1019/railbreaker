@@ -198,6 +198,7 @@ export class Race {
 export class Horse {
   id: number;
   race_id: number;
+  scratched: boolean;
   post_position: number | null;
   entry: string;
   claiming_price_of_horse: number | null;
@@ -347,6 +348,7 @@ export class Horse {
   constructor(data: any = {}) {
     this.id = data.id ?? 0;
     this.race_id = data.race_id ?? 0;
+    this.scratched = data.scratched ?? false;
     this.post_position = data.post_position ?? null;
     this.entry = data.entry ?? '';
     this.claiming_price_of_horse = data.claiming_price_of_horse ?? null;
@@ -513,6 +515,7 @@ export class Horse {
     return {
       id: this.id,
       race_id: this.race_id,
+      scratched: this.scratched,
       post_position: this.post_position,
       entry: this.entry,
       claiming_price_of_horse: this.claiming_price_of_horse,

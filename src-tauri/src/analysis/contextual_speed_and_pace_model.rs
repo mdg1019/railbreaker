@@ -241,7 +241,7 @@ fn is_scratched(horse_index: usize, scratched_horses: &[u32]) -> bool {
     scratched_horses.contains(&(horse_index as u32))
 }
 
-pub fn race_shape_dirt(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f64) {
+pub fn race_shape_dirt(race: &Race) -> (Shape, u32, f64) {
     let dist_f = yards_to_furlongs(race.distance);
     let pars = get_pars_for_race(race, dist_f);
 
@@ -249,7 +249,7 @@ pub fn race_shape_dirt(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f6
         .horses
         .iter()
         .enumerate()
-        .filter(|(idx, _)| !is_scratched(*idx, scratched_horses))
+        .filter(|(_, horse)| !horse.scratched)
         .map(|(_, h)| h)
         .collect();
     let field_size = horses.len().max(1) as f64;
@@ -290,7 +290,7 @@ pub fn race_shape_dirt(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f6
     (shape, pace_heat, epi)
 }
 
-pub fn race_shape_turf(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f64) {
+pub fn race_shape_turf(race: &Race) -> (Shape, u32, f64) {
     let dist_f = yards_to_furlongs(race.distance);
     let pars = get_pars_for_race(race, dist_f);
 
@@ -298,7 +298,7 @@ pub fn race_shape_turf(race: &Race, scratched_horses: &[u32]) -> (Shape, u32, f6
         .horses
         .iter()
         .enumerate()
-        .filter(|(idx, _)| !is_scratched(*idx, scratched_horses))
+        .filter(|(_, horse)| !horse.scratched)
         .map(|(_, h)| h)
         .collect();
     let field_size = horses.len().max(1) as f64;
@@ -458,9 +458,9 @@ pub fn workout_signal(h: &Horse, race_date_mmddyyyy: Option<&str>, days_window: 
     WorkoutSig { recent_works, top_rank_works, score }
 }
 
-pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
+pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
     let dist_f = yards_to_furlongs(race.distance);
-    let (shape, pace_heat, epi) = race_shape_dirt(race, scratched_horses);
+    let (shape, pace_heat, epi) = race_shape_dirt(race);
 
     let mut horses: Vec<HorseRank> = race
         .horses
@@ -497,9 +497,9 @@ pub fn rank_race_dirt(race: &Race, racecard_date: Option<&str>, scratched_horses
     }
 }
 
-pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
+pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
     let dist_f = yards_to_furlongs(race.distance);
-    let (shape, pace_heat, epi) = race_shape_turf(race, scratched_horses);
+    let (shape, pace_heat, epi) = race_shape_turf(race);
 
     let mut horses: Vec<HorseRank> = race
         .horses
@@ -536,12 +536,12 @@ pub fn rank_race_turf(race: &Race, racecard_date: Option<&str>, scratched_horses
     }
 }
 
-pub fn rank_race_auto(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceRankResult {
+pub fn rank_race_auto(race: &Race, racecard_date: Option<&str>) -> RaceRankResult {
     let surf = race.surface.trim().to_uppercase();
     if surf == "T" {
-        rank_race_turf(race, racecard_date, scratched_horses)
+        rank_race_turf(race, racecard_date)
     } else {
-        rank_race_dirt(race, racecard_date, scratched_horses)
+        rank_race_dirt(race, racecard_date)
     }
 }
 
@@ -632,17 +632,19 @@ pub fn win_bet_suggestion(
     }
 }
 
-pub fn derive_race_meta(race: &Race, racecard_date: Option<&str>, scratched_horses: &[u32]) -> RaceMeta {
-    let race_rank_result = rank_race_auto(race, racecard_date, scratched_horses);
+pub fn derive_race_meta(race: &Race, racecard_date: Option<&str>) -> RaceMeta {
+    let race_rank_result = rank_race_auto(race, racecard_date);
     let mut calc_rank_result = race_rank_result.clone();
-    let scratched_programs: HashSet<String> = scratched_horses
+    
+    let scratched_horses: HashSet<String> = race.horses
         .iter()
-        .filter_map(|idx| race.horses.get(*idx as usize).map(|h| h.program_number.clone()))
+        .filter_map(|h| if h.scratched { Some(h.program_number.clone()) } else { None })
         .collect();
-    if !scratched_programs.is_empty() {
+
+    if !scratched_horses.is_empty() {
         calc_rank_result
             .horses
-            .retain(|h| !scratched_programs.contains(&h.program_number));
+            .retain(|h| !scratched_horses.contains(&h.program_number));
     }
 
     let (top, second) = top_two_scores(&calc_rank_result);

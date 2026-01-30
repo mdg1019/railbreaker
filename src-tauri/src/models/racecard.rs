@@ -63,6 +63,7 @@ pub struct Race {
 pub struct Horse {
     pub id: i64,
     pub race_id: i64,
+    pub scratched: bool,
     pub post_position: Option<u32>,
     pub entry: String,
     pub claiming_price_of_horse: Option<u32>,
