@@ -237,10 +237,6 @@ fn get_pars_for_race(race: &Race, dist_f: f64) -> Option<Pars> {
     }
 }
 
-fn is_scratched(horse_index: usize, scratched_horses: &[u32]) -> bool {
-    scratched_horses.contains(&(horse_index as u32))
-}
-
 pub fn race_shape_dirt(race: &Race) -> (Shape, u32, f64) {
     let dist_f = yards_to_furlongs(race.distance);
     let pars = get_pars_for_race(race, dist_f);
