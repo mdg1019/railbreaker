@@ -20,6 +20,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         .lines()
         .map(|line| {
             line.split(',')
+                .take(1429)
                 .map(|field| field.trim().trim_matches('"').trim().to_string())
                 .collect()
         })
@@ -29,7 +30,8 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
 
     for (i, line) in lines.iter().enumerate() {
         if line.len() != number_of_columns {
-            return Err(format!("Inconsistent number of columns at line {}", i + 1));
+            println!("Line {} has {} columns, expected {}", i + 1, line.len(), number_of_columns);
+            return Err(format!(" number of columns at line {}", i + 1));
         }
     }
 

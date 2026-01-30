@@ -1,3 +1,6 @@
+## 0.3.1
+- Fixed a problem due to an incorrectly formatted Brisnet file. One line had an extra column, which was blowing up the parser. So I just chop off the ***Reserved*** fields at the end of the line.
+- Refactored how scratches are done. The old code worked, but it was kind of sloppy.
 ## 0.3.0
 - Added a Contextual Speed and Pace Model to try to project the outcome of a race. Use any results with caution. If a computer was really good at picking winning horse races, the tracks would be out of business a long time ago. It's a guide. Nothing more. Because the model is dependent upon scratches, it only appears in the display screen and not in printouts. There are many factors that can skew a race, track bias, jockey change, trainer change, bad weather, etc.
 

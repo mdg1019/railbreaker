@@ -24,7 +24,17 @@ const scratchedIndices = ref(new Set<number>());
 const raceIndexByProgram = computed(() => {
     const map = new Map<string, number>();
     props.race?.horses?.forEach((horse, idx) => {
-        map.set(horse.program_number, idx);
+        const program = horse.program_number?.trim();
+        if (program) map.set(program, idx);
+    });
+    return map;
+});
+
+const raceIndexByName = computed(() => {
+    const map = new Map<string, number>();
+    props.race?.horses?.forEach((horse, idx) => {
+        const name = horse.horse_name?.trim().toLowerCase();
+        if (name) map.set(name, idx);
     });
     return map;
 });
@@ -40,8 +50,22 @@ const displayHeader = computed(() => {
     return parts.join(" - ");
 });
 
-const isHorseScratched = (program_number: string) => {
-    const idx = raceIndexByProgram.value.get(program_number);
+const findRaceIndex = (program_number: string, horse_name: string) => {
+    const program = program_number?.trim();
+    if (program) {
+        const idx = raceIndexByProgram.value.get(program);
+        if (idx !== undefined) return idx;
+    }
+    const name = horse_name?.trim().toLowerCase();
+    if (name) {
+        const idx = raceIndexByName.value.get(name);
+        if (idx !== undefined) return idx;
+    }
+    return undefined;
+};
+
+const isHorseScratched = (program_number: string, horse_name: string) => {
+    const idx = findRaceIndex(program_number, horse_name);
     return idx !== undefined && scratchedIndices.value.has(idx);
 };
 
@@ -49,8 +73,8 @@ const metadata = computed(() => {
     return raceMeta.value ?? new RaceMeta();
 });
 
-const toggleScratch = (program_number: string, checked: boolean) => {
-    const idx = raceIndexByProgram.value.get(program_number);
+const toggleScratch = (program_number: string, horse_name: string, checked: boolean) => {
+    const idx = findRaceIndex(program_number, horse_name);
     if (idx === undefined) return;
     const next = new Set(scratchedIndices.value);
     if (checked) {
@@ -139,12 +163,12 @@ watch(
                     <div class="color-accent-yellow text-center">Style</div>
                     <div class="color-accent-yellow text-center">Quirin</div>
                 </div>
-                <div class="horse-row" :class="{ scratched: isHorseScratched(horse.program_number) }"
-                    v-for="(horse, idx) in horsesForRace" :key="idx">
+                <div class="horse-row" :class="{ scratched: isHorseScratched(horse.program_number, horse.horse_name) }"
+                    v-for="(horse, idx) in horsesForRace" :key="`${horse.program_number || ''}-${horse.horse_name || ''}-${idx}`">
                     <div class="horse-checkbox">
                         <input class="horse-checkbox-input" type="checkbox"
-                            :checked="isHorseScratched(horse.program_number)"
-                            @change="toggleScratch(horse.program_number, ($event.target as HTMLInputElement).checked)" />
+                            :checked="isHorseScratched(horse.program_number, horse.horse_name)"
+                            @change="toggleScratch(horse.program_number, horse.horse_name, ($event.target as HTMLInputElement).checked)" />
                     </div>
                     <div>{{ horse.program_number }}</div>
                     <div>{{ Transformers.capitalize(horse.horse_name) }}</div>
