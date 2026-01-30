@@ -20,7 +20,7 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         .lines()
         .map(|line| {
             line.split(',')
-                .take(1429)
+                .take(1435)
                 .map(|field| field.trim().trim_matches('"').trim().to_string())
                 .collect()
         })
