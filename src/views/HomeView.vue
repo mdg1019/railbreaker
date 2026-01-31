@@ -183,10 +183,10 @@ onMounted(async () => {
     try {
         const [name, version] = await Promise.all([getName(), getVersion()]);
         aboutTitle.value = `About RailBreaker`;
-        aboutMessage.value = `RailBreaker ${version}\nCopyright © 2026 By Mark Goodwin`;
+        aboutMessage.value = `RailBreaker ${version}\nCopyright © 2026 By Mark Goodwin\nMIT License`;
     } catch {
         aboutTitle.value = "About RailBreaker";
-        aboutMessage.value = "RailBreaker\nCopyright © 2026 By Mark Goodwin";
+        aboutMessage.value = "RailBreaker\nCopyright © 2026 By Mark Goodwin\nMIT License";
     }
 
     unlistenOpen = await listen("menu-open", async () => {
@@ -347,6 +347,14 @@ onUnmounted(() => {
             :title="aboutTitle"
             titleColor="--accent-yellow"
             messageColor="--accent-green"
+            linkLabel="Source code: "
+            linkText="https://github.com/mdg1019/railbreaker"
+            linkHref="https://github.com/mdg1019/railbreaker"
+            linkColor="--accent-yellow"
+            link2Label="Releases: "
+            link2Text="https://github.com/mdg1019/railbreaker/releases"
+            link2Href="https://github.com/mdg1019/railbreaker/releases"
+            link2Color="--accent-yellow"
         />
         <SelectRacecardDialog v-model="showSelectRacecardDialog" :racecards="filteredRacecards"
             :selectedRacecardId="racecard?.id"

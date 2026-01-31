@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, PropType, nextTick, ref, watch } from 'vue';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import ModalDialog from './ModalDialog.vue';
 
 export default defineComponent({
@@ -23,6 +24,38 @@ export default defineComponent({
       default: ''
     },
     messageColor: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    linkText: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    linkHref: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    linkColor: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    linkLabel: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    link2Text: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    link2Href: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    link2Color: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    link2Label: {
       type: String as PropType<string>,
       default: ''
     },
@@ -53,7 +86,13 @@ export default defineComponent({
       { immediate: true },
     )
 
-    return { close, updateModelValue, okButton };
+    const handleLinkClick = async (href: string, event: MouseEvent) => {
+      if (!href) return
+      event.preventDefault()
+      await openUrl(href)
+    }
+
+    return { close, updateModelValue, okButton, handleLinkClick };
   }
 });
 </script>
@@ -65,7 +104,36 @@ export default defineComponent({
     :title-color="titleColor"
     @update:modelValue="updateModelValue"
   >
-    <p class="message" :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">{{ message }}</p>
+    <p class="message" :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">
+      {{ message }}
+    </p>
+    <p
+      v-if="(linkText && linkHref) || (link2Text && link2Href)"
+      class="message"
+      :style="messageColor ? 'color: var(' + messageColor + ')' : undefined"
+    >
+      <span v-if="linkText && linkHref">{{ linkLabel }}</span>
+      <a
+        v-if="linkText && linkHref"
+        class="link"
+        :href="linkHref"
+        :style="linkColor ? 'color: var(' + linkColor + ')' : undefined"
+        @click="handleLinkClick(linkHref, $event)"
+      >
+        {{ linkText }}
+      </a>
+      <br v-if="linkText && linkHref && link2Text && link2Href" />
+      <span v-if="link2Text && link2Href">{{ link2Label }}</span>
+      <a
+        v-if="link2Text && link2Href"
+        class="link"
+        :href="link2Href"
+        :style="link2Color ? 'color: var(' + link2Color + ')' : undefined"
+        @click="handleLinkClick(link2Href, $event)"
+      >
+        {{ link2Text }}
+      </a>
+    </p>
 
     <template #actions>
       <button
@@ -83,5 +151,10 @@ export default defineComponent({
 <style scoped>
 .message {
   white-space: pre-line;
+}
+
+.link {
+  text-decoration: none;
+  word-break: break-word;
 }
 </style>
