@@ -10,6 +10,8 @@ use sqlx::SqlitePool;
 use std::path::PathBuf;
 use tokio::fs;
 
+const NUMBER_OF_COLUMNS: usize = 1435;
+
 #[tauri::command]
 pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: String) -> Result<Value, String> {
     let contents = fs::read_to_string(&path)
@@ -20,18 +22,15 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         .lines()
         .map(|line| {
             line.split(',')
-                .take(1435)
+                .take(NUMBER_OF_COLUMNS)
                 .map(|field| field.trim().trim_matches('"').trim().to_string())
                 .collect()
         })
         .collect();
 
-    let number_of_columns = lines.first().ok_or("Racecard file is empty")?.len();
-
     for (i, line) in lines.iter().enumerate() {
-        if line.len() != number_of_columns {
-            println!("Line {} has {} columns, expected {}", i + 1, line.len(), number_of_columns);
-            return Err(format!(" number of columns at line {}", i + 1));
+        if line.len() != NUMBER_OF_COLUMNS {
+            return Err(format!("Line {} has {} columns, expected {}", i + 1, line.len(), NUMBER_OF_COLUMNS));
         }
     }
 
