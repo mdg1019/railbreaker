@@ -8,6 +8,7 @@ pub fn setup_menus(app: &App) -> tauri::Result<()> {
     let _ = print_racecard.set_enabled(false);
     let separator1 = PredefinedMenuItem::separator(app)?;
     let quit = MenuItem::with_id(app, "exit", "Exit", true, Some("CmdOrCtrl+Q"))?;
+    let about = MenuItem::with_id(app, "about", "About RailBreaker", true, None::<&str>)?;
 
     let file_menu = Submenu::with_id_and_items(
         app,
@@ -16,8 +17,9 @@ pub fn setup_menus(app: &App) -> tauri::Result<()> {
         true,
         &[&open, &open_zip, &separator0, &print_racecard, &separator1, &quit],
     )?;
+    let help_menu = Submenu::with_id_and_items(app, "help", "Help", true, &[&about])?;
 
-    let menu = Menu::with_items(app, &[&file_menu])?;
+    let menu = Menu::with_items(app, &[&file_menu, &help_menu])?;
 
     if let Some(window) = app.get_webview_window("main") {
         window.set_menu(menu)?;

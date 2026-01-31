@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref, nextTick, watch } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import { getName, getVersion } from "@tauri-apps/api/app";
 import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
@@ -27,6 +28,7 @@ let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
 let unlistenPrintRacecard: (() => void);
 let unlistenExit: (() => void);
+let unlistenAbout: (() => void);
 
 const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false);
@@ -47,6 +49,9 @@ const raceContainerRef = ref<HTMLElement | null>(null);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
+const showAboutDialog = ref(false);
+const aboutTitle = ref("About");
+const aboutMessage = ref("RailBreaker");
 const showPrintDialog = ref(false);
 const showSelectRacecardDialog = ref(false);
 const filteredRacecards = ref<Racecard[]>([]);
@@ -175,6 +180,15 @@ watch(race_number, async (_newVal, _oldVal) => {
 document.documentElement.classList.add('dark');
 
 onMounted(async () => {
+    try {
+        const [name, version] = await Promise.all([getName(), getVersion()]);
+        aboutTitle.value = `About RailBreaker`;
+        aboutMessage.value = `RailBreaker ${version}\nCopyright © 2026 By Mark Goodwin`;
+    } catch {
+        aboutTitle.value = "About RailBreaker";
+        aboutMessage.value = "RailBreaker\nCopyright © 2026 By Mark Goodwin";
+    }
+
     unlistenOpen = await listen("menu-open", async () => {
         let racecardsInDatabase= await invoke<Array<Racecard>>('get_all_racecards').catch(() => null);
 
@@ -284,6 +298,10 @@ onMounted(async () => {
         await invoke('exit_app');
     });
 
+    unlistenAbout = await listen("menu-about", () => {
+        showAboutDialog.value = true;
+    });
+
     await globalStateStore.loadGlobalState();
     await configFileStore.loadConfigFile();
 });
@@ -293,6 +311,7 @@ onUnmounted(() => {
     unlistenOpenZip();
     unlistenPrintRacecard();
     unlistenExit();
+    unlistenAbout();
 });
 </script>
 
@@ -322,6 +341,13 @@ onUnmounted(() => {
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
             @print="handlePrintDialogPrint" />
         <MessageDialog v-model="showErrorDialog" :message="errorMessage" messageColor="--accent-green" title="Error" titleColor="--accent-red" />
+        <MessageDialog
+            v-model="showAboutDialog"
+            :message="aboutMessage"
+            :title="aboutTitle"
+            titleColor="--accent-yellow"
+            messageColor="--accent-green"
+        />
         <SelectRacecardDialog v-model="showSelectRacecardDialog" :racecards="filteredRacecards"
             :selectedRacecardId="racecard?.id"
             @update:modelValue="showSelectRacecardDialog = $event"

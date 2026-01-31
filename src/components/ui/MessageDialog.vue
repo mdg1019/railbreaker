@@ -65,7 +65,7 @@ export default defineComponent({
     :title-color="titleColor"
     @update:modelValue="updateModelValue"
   >
-    <p :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">{{ message }}</p>
+    <p class="message" :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">{{ message }}</p>
 
     <template #actions>
       <button
@@ -81,5 +81,7 @@ export default defineComponent({
 </template>
 
 <style scoped>
-
+.message {
+  white-space: pre-line;
+}
 </style>

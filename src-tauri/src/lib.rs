@@ -216,6 +216,9 @@ fn on_menu_event(app: &tauri::AppHandle, event: tauri::menu::MenuEvent) {
             print_racecard(app.clone());
             let _ = app.emit("menu-print", ()).unwrap();
         }
+        "about" => {
+            let _ = app.emit("menu-about", ()).unwrap();
+        }
         _ => {}
     }
 }
