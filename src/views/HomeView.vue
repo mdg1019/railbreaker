@@ -181,7 +181,7 @@ document.documentElement.classList.add('dark');
 
 onMounted(async () => {
     try {
-        const [name, version] = await Promise.all([getName(), getVersion()]);
+        const [_, version] = await Promise.all([getName(), getVersion()]);
         aboutTitle.value = `About RailBreaker`;
         aboutMessage.value = `RailBreaker ${version}\nCopyright © 2026 By Mark Goodwin\nMIT License`;
     } catch {

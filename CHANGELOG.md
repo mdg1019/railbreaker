@@ -1,3 +1,6 @@
+## 0.3.2
+- Improved the code that was allowing an incorrectly formatted Brisnet file load.
+- Added an About dialog box.
 ## 0.3.1
 - Fixed a problem due to an incorrectly formatted Brisnet file. One line had an extra column, which was blowing up the parser. So I just chop off the ***Reserved*** fields at the end of the line.
 - Refactored how scratches are done. The old code worked, but it was kind of sloppy.

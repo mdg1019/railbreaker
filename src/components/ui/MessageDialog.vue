@@ -157,4 +157,10 @@ export default defineComponent({
   text-decoration: none;
   word-break: break-word;
 }
+
+.link:focus,
+.link:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 </style>
