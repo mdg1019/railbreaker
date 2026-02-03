@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { type Horse } from "../../models/racecard";
 import Transformers from "../../utils/transformers";
 import Finishers from './Finishers.vue';
@@ -10,35 +11,35 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const pps = props.horse?.past_performances ?? [];
+const pps = computed(() => props.horse?.past_performances ?? []);
 
-const fraction_1 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_1 ?? null));
-const fraction_2 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_2 ?? null));
-const fraction_3 = pps.map(pp => Transformers.getFractionalTimeString(pp?.fraction_3 ?? null));
-const final_time = pps.map(pp => Transformers.getFractionalTimeString(pp?.final_time ?? null));
-const race_classification = pps.map(pp => Transformers.getPPRaceClassification(pp));
-const e1_e2_lp = pps.map(pp => Transformers.getE1E2AndLatePaceString(pp));
+const fraction_1 = computed(() => pps.value.map(pp => Transformers.getFractionalTimeString(pp?.fraction_1 ?? null)));
+const fraction_2 = computed(() => pps.value.map(pp => Transformers.getFractionalTimeString(pp?.fraction_2 ?? null)));
+const fraction_3 = computed(() => pps.value.map(pp => Transformers.getFractionalTimeString(pp?.fraction_3 ?? null)));
+const final_time = computed(() => pps.value.map(pp => Transformers.getFractionalTimeString(pp?.final_time ?? null)));
+const race_classification = computed(() => pps.value.map(pp => Transformers.getPPRaceClassification(pp)));
+const e1_e2_lp = computed(() => pps.value.map(pp => Transformers.getE1E2AndLatePaceString(pp)));
 
-const firstCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+const firstCallPositions = computed(() => pps.value.map(pp => Transformers.getPositionAndLengthsBehindStrings(
     Transformers.parseNumberOrNull(pp.first_call_position),
     Transformers.parseNumberOrNull(pp.first_call_between_lengths)
-));
-const secondCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+)));
+const secondCallPositions = computed(() => pps.value.map(pp => Transformers.getPositionAndLengthsBehindStrings(
     Transformers.parseNumberOrNull(pp.second_call_position),
     Transformers.parseNumberOrNull(pp.second_call_between_lengths)
-));
-const stretchCallPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+)));
+const stretchCallPositions = computed(() => pps.value.map(pp => Transformers.getPositionAndLengthsBehindStrings(
     Transformers.parseNumberOrNull(pp.stretch_call_position),
     Transformers.parseNumberOrNull(pp.stretch_call_between_lengths)
-));
-const finishPositions = pps.map(pp => Transformers.getPositionAndLengthsBehindStrings(
+)));
+const finishPositions = computed(() => pps.value.map(pp => Transformers.getPositionAndLengthsBehindStrings(
     Transformers.parseNumberOrNull(pp.finish_position),
     Transformers.parseNumberOrNull(pp.finish_between_lengths)
-));
+)));
 
-const cols = !props.print ?
+const cols = computed(() => !props.print ?
         '9rem 1rem 4rem 4rem 3rem 3rem 3rem 8rem 3rem 3rem 3rem 3rem 3rem 3rem 3rem 1rem 3rem 1rem 3rem 1rem 3rem 3rem 10rem 1rem 4rem 30rem 22rem 2rem' :
-        '7rem 1rem 3rem 3rem 2rem 2rem 3rem 6rem 2rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 2rem 1rem 2rem 1rem 2rem 2rem 8rem 1rem 3rem 25rem 16rem 1rem';
+        '7rem 1rem 3rem 3rem 2rem 2rem 3rem 6rem 2rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 2rem 1rem 2rem 1rem 2rem 2rem 8rem 1rem 3rem 25rem 16rem 1rem');
 
 function positionClass(position: string) {
     switch (position) {

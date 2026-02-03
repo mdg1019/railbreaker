@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
                     <RaceDetails :racecard="payload!.raceCard" :race="race_number" :print="true" />
                     <div>
                         <Horse v-for="(horse, idx) in (payload!.raceCard.races[race_number - 1]?.horses || [])"
-                            :key="horse.program_number || horse.post_position || idx" 
+                            :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`"
                             :horse="horse"
                             :primePowerComparisons="primePowerComparisonsByRace[race_number] || []"
                             :print="true"></Horse>

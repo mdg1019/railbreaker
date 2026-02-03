@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { Workout } from "../../models/racecard";
 import Transformers from "../../utils/transformers";
 
@@ -9,19 +10,19 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const visibleWorkouts = props.workouts.filter(w => w.date !== null && w.date !== '');
+const visibleWorkouts = computed(() => props.workouts.filter(w => w.date !== null && w.date !== ""));
 
-const bullets = props.workouts.map(w => w.rank === 1 ? "●" : "");
-const surface = props.workouts.map(w => w.main_inner_track_indicator === "MT" ? " " : w.main_inner_track_indicator === "TT" ? "tr.t" : "***" + w.main_inner_track_indicator);
+const bullets = computed(() => props.workouts.map(w => w.rank === 1 ? "●" : ""));
+const surface = computed(() => props.workouts.map(w => w.main_inner_track_indicator === "MT" ? " " : w.main_inner_track_indicator === "TT" ? "tr.t" : "***" + w.main_inner_track_indicator));
 
-const workoutTimes = props.workouts.map(w => {
+const workoutTimes = computed(() => props.workouts.map(w => {
     let time = Transformers.getFractionalTimeString(w.time);
     return { time: time.int, fraction: time.fraction };
-});
+}));
 
-const cols = !props.print ?
-        '2rem 4rem 2rem 2rem 2rem 2rem 2rem 1rem 4rem' :
-        '1rem 4rem 2rem 2rem 1rem 2rem 1rem 1rem 3rem';
+const cols = computed(() => !props.print ?
+        '2rem 4rem 2rem 2rem 2rem 2rem 2rem 2rem 1rem 4rem' :
+        '1rem 4rem 2rem 2rem 2rem 1rem 2rem 1rem 1rem 3rem');
 </script>
 
 <template>
@@ -29,6 +30,7 @@ const cols = !props.print ?
         <div v-for="(w, i) in visibleWorkouts" :key="i" class="workout" :style="{ gridTemplateColumns: cols }">
             <div class="bullet color-accent-red align-right">{{ bullets[i] }}</div>
             <div>{{ Transformers.formatDateShort(w.date) }}</div>
+            <div>{{ w.track }}</div>
             <div>{{ surface[i] }}</div>
             <div>{{ Transformers.getShortLength(w.distance) }}</div>
             <div>{{ w.condition }}</div>

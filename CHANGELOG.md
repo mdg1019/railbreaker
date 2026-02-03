@@ -1,3 +1,7 @@
+## 0.3.3
+- Fixed some issues about displaying the correct PPs, workouts, and key trainer stats after the first race.
+- Added the track code to the workouts.
+- Found the correct lengths behind using a SQL query for the following: 0.03 - nose, 0.13 - head, 0.25 - neck.
 ## 0.3.2
 - Improved the code that was allowing an incorrectly formatted Brisnet file load.
 - Added an About dialog box.

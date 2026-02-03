@@ -567,12 +567,14 @@ export default class Transformers {
 
         switch (lengthsBehind) {
             case 0:
-                return new PositionLengthsBehind(positionStr, "", "\u00F0");
-            case 0.05:
-                return new PositionLengthsBehind(positionStr, "", "\u00EF");
+                if (position === 1) {       
+                    return new PositionLengthsBehind(positionStr, "", "\u00F0");
+                }
 
-            case 0.07:
-            case 0.1:
+                return new PositionLengthsBehind(positionStr, "", "");
+            case 0.03:
+                return new PositionLengthsBehind(positionStr, "", "\u00EF");
+            case 0.13:
                 return new PositionLengthsBehind(positionStr, "", "\u00ED");
             case 0.25:
                 return new PositionLengthsBehind(positionStr, "", "\u00EE");

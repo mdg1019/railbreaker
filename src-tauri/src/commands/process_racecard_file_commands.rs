@@ -484,24 +484,24 @@ pub async fn process_racecard_file(app: AppHandle, path: String, zip_file_name: 
         }
 
         for j in 0..6 {
-            if &lines[0][SF_KEY_TRAINER_STAT + j * 5] == "" {
+            if &line[SF_KEY_TRAINER_STAT + j * 5] == "" {
                 continue;
             }
 
             let key_trainer_stat = KeyTrainerStat {
                 id: 0,
                 horse_id: 0,
-                category: lines[0][SF_KEY_TRAINER_STAT + j * 5].clone(),
-                starts: lines[0][SF_KEY_TRAINER_STAT + 1 + j * 5]
+                category: line[SF_KEY_TRAINER_STAT + j * 5].clone(),
+                starts: line[SF_KEY_TRAINER_STAT + 1 + j * 5]
                     .parse::<u32>()
                     .ok(),
-                win_pct: lines[0][SF_KEY_TRAINER_STAT + 2 + j * 5]
+                win_pct: line[SF_KEY_TRAINER_STAT + 2 + j * 5]
                     .parse::<f64>()
                     .ok(),
-                in_the_money_pct: lines[0][SF_KEY_TRAINER_STAT + 3 + j * 5]
+                in_the_money_pct: line[SF_KEY_TRAINER_STAT + 3 + j * 5]
                     .parse::<f64>()
                     .ok(),
-                roi: lines[0][SF_KEY_TRAINER_STAT + 4 + j * 5]
+                roi: line[SF_KEY_TRAINER_STAT + 4 + j * 5]
                     .parse::<f64>()
                     .ok(),
             };

@@ -334,7 +334,7 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
             <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[race_number - 1]?.horses || [])"
-                :key="horse.program_number || horse.post_position || idx" :horse="horse"
+                :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
         </div>
         
