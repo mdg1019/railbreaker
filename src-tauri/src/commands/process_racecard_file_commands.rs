@@ -1,6 +1,6 @@
 use crate::constants::single_file_indexes::*;
 // use crate::files::write_json_file;
-use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
+use railbreaker_lib::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use crate::sqlite::racecards::add_racecard;
 use crate::models::tracks::TRACKS;
 use serde_json::Value;

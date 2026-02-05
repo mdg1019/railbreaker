@@ -11,13 +11,14 @@ edition = "2021"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "railbreaker_lib"
+name = "railbreaker_core"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+railbreaker-lib = { path = "../../railbreaker-lib" }
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
@@ -32,4 +33,3 @@ anyhow = "1.0.100"
 thiserror = "2.0.18"
 phf = { version = "0.11", features = ["macros"] }
 chrono = "0.4.43"
-

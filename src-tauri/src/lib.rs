@@ -6,7 +6,6 @@ mod models;
 mod constants;
 mod states;
 mod sqlite;
-mod analysis;
 
 use tauri::{Emitter, Manager};
 use commands::global_state_commands::load_global_state;

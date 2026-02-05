@@ -1,5 +1,5 @@
-use crate::analysis::contextual_speed_and_pace_model::{RaceMeta, derive_race_meta};
-use crate::models::racecard::Race;
+use railbreaker_lib::contextual_speed_and_pace_model::{RaceMeta, derive_race_meta};
+use railbreaker_lib::models::racecard::Race;
 use serde_json::{Value};
 
 #[tauri::command]

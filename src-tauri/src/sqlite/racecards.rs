@@ -1,7 +1,7 @@
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 use std::collections::HashMap;
 use tauri::State;
-use crate::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
+use railbreaker_lib::models::racecard::{Horse, KeyTrainerStat, PastPerformance, Race, Racecard, Workout};
 use serde_json::Value;
 
 const RACE_COLUMNS: usize = 43;
