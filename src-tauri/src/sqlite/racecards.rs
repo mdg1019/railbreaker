@@ -58,6 +58,7 @@ pub async fn get_all_racecards(
         .map(|row| Racecard {
             id: row.get("id"),
             zip_file_name: row.get("zip_file_name"),
+            track_code: row.get("track_code"),
             track: row.get("track"),
             date: row.get("date"),
             long_date: row.get("long_date"),

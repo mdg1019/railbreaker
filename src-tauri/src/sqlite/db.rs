@@ -1,6 +1,7 @@
 use anyhow::Result;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions},
+    Row,
     SqlitePool,
 };
 use std::str::FromStr;
@@ -29,6 +30,7 @@ pub async fn create_tables(pool: &SqlitePool) -> Result<()> {
         CREATE TABLE IF NOT EXISTS racecards (
             id INTEGER PRIMARY KEY,
             zip_file_name TEXT NOT NULL,
+            track_code TEXT NOT NULL,
             track TEXT NOT NULL,
             date TEXT NOT NULL,
             long_date TEXT NOT NULL
@@ -87,6 +89,7 @@ pub async fn create_tables(pool: &SqlitePool) -> Result<()> {
         CREATE TABLE IF NOT EXISTS horses (
             id INTEGER PRIMARY KEY,
             race_id INTEGER NOT NULL,
+            trip_handicapping_info TEXT NOT NULL,
             post_position INTEGER,
             entry TEXT NOT NULL,
             claiming_price_of_horse INTEGER,
@@ -373,5 +376,39 @@ pub async fn create_tables(pool: &SqlitePool) -> Result<()> {
         sqlx::query(statement).execute(pool).await?;
     }
 
+    ensure_column(
+        pool,
+        "racecards",
+        "track_code",
+        "TEXT NOT NULL DEFAULT ''",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "horses",
+        "trip_handicapping_info",
+        "TEXT NOT NULL DEFAULT ''",
+    )
+    .await?;
+
+    Ok(())
+}
+
+async fn ensure_column(
+    pool: &SqlitePool,
+    table: &str,
+    column: &str,
+    column_def: &str,
+) -> Result<()> {
+    let pragma = format!("PRAGMA table_info({});", table);
+    let rows = sqlx::query(&pragma).fetch_all(pool).await?;
+    let has_column = rows.iter().any(|row| {
+        let name: String = row.get("name");
+        name == column
+    });
+    if !has_column {
+        let alter = format!("ALTER TABLE {} ADD COLUMN {} {};", table, column, column_def);
+        sqlx::query(&alter).execute(pool).await?;
+    }
     Ok(())
 }
