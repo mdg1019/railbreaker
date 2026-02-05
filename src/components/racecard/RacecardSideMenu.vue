@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { Racecards } from '../../models/racecards'
 import RaceClassification from './RaceClassification.vue';
+import Transformers from '../../utils/transformers';
 
 const props = defineProps<{
     racecards: Racecards
@@ -58,7 +59,7 @@ function selectRace(race_number: number) {
                         <div class="dropdown-selected">
                             <div class="selected-text">
                                 <div class="track">{{ racecardEntry?.racecard.track }}</div>
-                                <div class="date">{{ racecardEntry?.racecard.date }}</div>
+                                <div class="date">{{ Transformers.formatRacecardDate(racecardEntry?.racecard.date) }}</div>
                             </div>
                             <div v-if="racecards.racecardEntries.length > 1" class="chev">{{ showDropdown ? '▴' : '▾' }}</div>
                         </div>
@@ -67,7 +68,7 @@ function selectRace(race_number: number) {
                             <li v-for="(entry, idx) in racecards.racecardEntries" :key="idx"
                                 :class="{ active: idx === currentRacecardIndex }" @click.stop="selectRacecardIndex(idx)">
                                 <div class="entry-track">{{ entry.racecard.track }}</div>
-                                <div class="entry-date">{{ entry.racecard.date }}</div>
+                                <div class="entry-date">{{ Transformers.formatRacecardDate(entry.racecard.date) }}</div>
                             </li>
                         </ul>
                     </div>

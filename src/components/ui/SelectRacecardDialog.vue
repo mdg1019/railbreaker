@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import ModalDialog from "./ModalDialog.vue";
+import Transformers from "../../utils/transformers";
 
 type RacecardRow = {
   id?: number | null;
@@ -88,7 +89,7 @@ function handleOpen() {
         </label>
         <div class="racecard-text">
           <div class="track">{{ racecard.track }}</div>
-          <div class="date">{{ racecard.date }}</div>
+          <div class="date">{{ Transformers.formatRacecardDate(racecard.date) }}</div>
         </div>
       </div>
     </div>

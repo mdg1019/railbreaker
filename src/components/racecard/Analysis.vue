@@ -43,13 +43,6 @@ const scratchedList = computed(() => {
     return Array.from(scratchedIndices.value).sort((a, b) => a - b);
 });
 
-const displayHeader = computed(() => {
-    const parts = [];
-    if (props.track) parts.push(props.track);
-    if (props.racecard_date) parts.push(props.racecard_date);
-    return parts.join(" - ");
-});
-
 const findRaceIndex = (program_number: string, horse_name: string) => {
     const program = program_number?.trim();
     if (program) {
@@ -138,9 +131,8 @@ watch(
     <Panel :print="props.print">
         <div class="contents">
             <div class="color-accent-yellow">Contextual Speed and Pace Model</div>
-            <div class="track-date color-accent-yellow">{{ displayHeader }}</div>
             <div class="race-info">
-                <div class="color-accent-yellow">Race<span class="left-margin color-accent-green">{{ race_number }}</span></div>
+                <div class="color-accent-yellow race">Race<span class="left-margin color-accent-green">{{ race_number }}</span></div>
                 <div class="color-accent-yellow">Shape:<span class="left-margin color-accent-green">{{
                     metadata.shape }}</span></div>
                 <div class="color-accent-yellow">EPI:<span class="left-margin color-accent-green">{{
@@ -200,6 +192,7 @@ watch(
 }
 
 .race-info {
+    margin-top: 1rem;
     display: flex;
     gap: 4rem;
 }

@@ -48,7 +48,7 @@ pub async fn get_racecard_by_id(
 pub async fn get_all_racecards(
     pool: State<'_, SqlitePool>,
 ) -> Result<Value, String> {
-    let rows = sqlx::query("SELECT * FROM racecards ORDER BY track ASC, date DESC;")
+    let rows = sqlx::query("SELECT * FROM racecards ORDER BY date DESC, track ASC;")
         .fetch_all(&*pool)
         .await
         .map_err(|e| format!("Failed to load racecards: {}", e))?;

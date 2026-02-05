@@ -318,6 +318,18 @@ export default class Transformers {
         return `${String(day).padStart(2, "0")}${monthAbbr}${yy}`;
     }
 
+    static formatRacecardDate(value?: string): string {
+        if (!value) return "";
+        const trimmed = value.trim();
+        if (/^\d{8}$/.test(trimmed)) {
+            const month = trimmed.slice(4, 6);
+            const day = trimmed.slice(6, 8);
+            const year = trimmed.slice(0, 4);
+            return `${month}/${day}/${year}`;
+        }
+        return value;
+    }
+
     static formatOneDecimal(value: number | null | undefined): string {
         if (value === null || value === undefined) return "";
         if (Number.isNaN(value)) return "";
