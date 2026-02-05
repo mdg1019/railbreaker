@@ -1,6 +1,7 @@
 export class Racecard {
   id: number;
   zip_file_name: string;
+  track_code: string;
   track: string;
   date: string;
   long_date: string;
@@ -9,6 +10,7 @@ export class Racecard {
   constructor(data: any = {}) {
     this.id = data.id ?? 0;
     this.zip_file_name = data.zip_file_name ?? '';
+    this.track_code = data.track_code ?? '';
     this.track = data.track ?? '';
     this.date = data.date ?? '';
     this.long_date = data.long_date ?? '';
@@ -21,6 +23,7 @@ export class Racecard {
     return new Racecard({
       id: obj.id ?? 0,
       zip_file_name: obj.zip_file_name,
+      track_code: obj.track_code,
       track: obj.track,
       date: obj.date,
       long_date: obj.long_date,
@@ -32,6 +35,7 @@ export class Racecard {
     return {
       id: this.id,
       zip_file_name: this.zip_file_name,
+      track_code: this.track_code,
       track: this.track,
       date: this.date,
       long_date: this.long_date,
@@ -199,6 +203,7 @@ export class Horse {
   id: number;
   race_id: number;
   scratched: boolean;
+  trip_handicapping_info: string;
   post_position: number | null;
   entry: string;
   claiming_price_of_horse: number | null;
@@ -349,6 +354,7 @@ export class Horse {
     this.id = data.id ?? 0;
     this.race_id = data.race_id ?? 0;
     this.scratched = data.scratched ?? false;
+    this.trip_handicapping_info = data.trip_handicapping_info ?? '';
     this.post_position = data.post_position ?? null;
     this.entry = data.entry ?? '';
     this.claiming_price_of_horse = data.claiming_price_of_horse ?? null;
@@ -516,6 +522,7 @@ export class Horse {
       id: this.id,
       race_id: this.race_id,
       scratched: this.scratched,
+      trip_handicapping_info: this.trip_handicapping_info,
       post_position: this.post_position,
       entry: this.entry,
       claiming_price_of_horse: this.claiming_price_of_horse,
