@@ -2,8 +2,6 @@ mod commands;
 mod files;
 mod json;
 mod menus;
-mod models;
-mod constants;
 mod states;
 mod sqlite;
 
