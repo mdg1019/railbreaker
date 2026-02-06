@@ -87,6 +87,22 @@ pub async fn update_note(
     Ok(())
 }
 
+#[tauri::command]
+pub async fn set_scratch(
+    pool: State<'_, SqlitePool>,
+    horse_id: i64,
+    scratched: bool,
+) -> Result<(), String> {
+    sqlx::query("UPDATE horses SET scratched = ? WHERE id = ?;")
+        .bind(scratched)
+        .bind(horse_id)
+        .execute(&*pool)
+        .await
+        .map_err(|e| format!("Failed to update scratch status: {}", e))?;
+
+    Ok(())
+}
+
 pub async fn read_racecard_by_id(pool: &SqlitePool, racecard_id: i64) -> Result<Racecard, sqlx::Error> {
     let racecard_row = sqlx::query("SELECT * FROM racecards WHERE id = ?;")
         .bind(racecard_id)

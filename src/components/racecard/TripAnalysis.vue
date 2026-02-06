@@ -123,27 +123,32 @@ const formatComment = (comment?: string) => {
 }
 
 .trip-info {
-    display: grid;
-    grid-template-columns: 2rem 18rem 5rem 8rem 5rem 2rem 10rem 5rem 5rem;
-    grid-row: inherit;
-    align-items: baseline;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     margin-top: 1rem;
     flex: 1 1 0;
 }
 
 .trip-info-header,
 .trip-info-row {
-    display: contents;
+    display: grid;
+    grid-template-columns: 2rem 18rem 5rem 8rem 5rem 2rem 10rem 5rem 5rem;
+    column-gap: 1rem;
+    align-items: baseline;
+    position: relative;
 }
 
-.trip-info-row.is-scratched > div {
-    background-image: linear-gradient(
-        to bottom,
-        transparent 48%,
-        #c62828 48%,
-        #c62828 52%,
-        transparent 52%
-    );
+.trip-info-row.is-scratched::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: calc(2rem + 18rem + 5rem + 8rem + 5rem + 2rem + 10rem + 5rem + 5rem + 8rem);
+    top: 50%;
+    height: 2px;
+    background: var(--accent-red);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(1),

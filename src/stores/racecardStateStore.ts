@@ -23,6 +23,17 @@ function updateHorseNote(racecard: Racecard, horseId: number, note: string): boo
     return false;
 }
 
+function updateHorseScratch(racecard: Racecard, horseId: number, scratched: boolean): boolean {
+    for (const race of racecard.races ?? []) {
+        const horse = race.horses?.find(h => h.id === horseId);
+        if (horse) {
+            horse.scratched = scratched;
+            return true;
+        }
+    }
+    return false;
+}
+
 export const useRacecardStateStore = defineStore("RacecardState", {
     state: () => ({
         racecardState: new RacecardState(),
@@ -105,6 +116,24 @@ export const useRacecardStateStore = defineStore("RacecardState", {
             }, 500);
 
             saveNoteTimeouts.set(horseId, timeout);
+        },
+
+        setScratch(horseId: number, scratched: boolean): void {
+            const entry = this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx];
+            if (!entry) {
+                return;
+            }
+
+            updateHorseScratch(entry.racecard, horseId, scratched);
+
+            const currentRacecard = this.getCurrentRacecard;
+            if (currentRacecard && currentRacecard !== entry.racecard) {
+                updateHorseScratch(currentRacecard, horseId, scratched);
+            }
+
+            invoke("set_scratch", { horseId: horseId, scratched: scratched }).catch((err) => {
+                console.error("Failed to update scratch status", err);
+            });
         },
 
         deleteRacecardAt(index: number): void {

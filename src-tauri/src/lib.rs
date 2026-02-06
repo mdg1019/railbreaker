@@ -14,10 +14,11 @@ use commands::process_racecard_file_commands::process_racecard_file;
 use commands::analysis_commands::rank_race;
 use commands::exit_app_command::exit_app;
 use sqlite::racecards::{
-    add_racecard, get_all_racecards, get_racecard_by_id, racecard_exists_by_zip_name, update_note,
+    add_racecard, get_all_racecards, get_racecard_by_id, racecard_exists_by_zip_name, set_scratch, update_note,
 };
 use states::config_state::ConfigState;
 use states::global_state::global_state;
+use railbreaker_lib::sqlite::racecards::create_tables;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -71,6 +72,7 @@ pub fn run() {
             get_racecard_by_id,
             racecard_exists_by_zip_name,
             update_note,
+            set_scratch,
         ])
         .run(context)
         .expect("error while running tauri application");
@@ -104,7 +106,7 @@ fn init_setup(app: &tauri::App) -> Result<(), String> {
     
     let pool = tauri::async_runtime::block_on(async {
         let pool = sqlite::db::make_pool(&database_url).await?;
-        sqlite::db::create_tables(&pool).await?;
+        create_tables(&pool).await?;
         Ok::<_, anyhow::Error>(pool)
     })
     .map_err(|e| format!("Failed to initialize database: {}", e))?;

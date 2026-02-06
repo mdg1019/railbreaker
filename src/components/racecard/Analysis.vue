@@ -5,6 +5,7 @@ import { RaceMeta } from "../../models/analysis";
 import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
 import Transformers from "../../utils/transformers";
+import { useRacecardStateStore } from "../../stores/racecardStateStore";
 
 const props = withDefaults(defineProps<{
     race_number: number;
@@ -19,63 +20,43 @@ const props = withDefaults(defineProps<{
 });
 
 const raceMeta = ref<RaceMeta | null>(null);
-const scratchedIndices = ref(new Set<number>());
+const racecardStateStore = useRacecardStateStore();
 
-const raceIndexByProgram = computed(() => {
-    const map = new Map<string, number>();
-    props.race?.horses?.forEach((horse, idx) => {
-        const program = horse.program_number?.trim();
-        if (program) map.set(program, idx);
-    });
-    return map;
-});
-
-const raceIndexByName = computed(() => {
-    const map = new Map<string, number>();
-    props.race?.horses?.forEach((horse, idx) => {
-        const name = horse.horse_name?.trim().toLowerCase();
-        if (name) map.set(name, idx);
-    });
-    return map;
-});
-
-const scratchedList = computed(() => {
-    return Array.from(scratchedIndices.value).sort((a, b) => a - b);
-});
-
-const findRaceIndex = (program_number: string, horse_name: string) => {
+const findHorse = (program_number: string, horse_name: string) => {
     const program = program_number?.trim();
     if (program) {
-        const idx = raceIndexByProgram.value.get(program);
-        if (idx !== undefined) return idx;
+        const horse = props.race?.horses?.find(h => h.program_number?.trim() === program);
+        if (horse) return horse;
     }
     const name = horse_name?.trim().toLowerCase();
     if (name) {
-        const idx = raceIndexByName.value.get(name);
-        if (idx !== undefined) return idx;
+        const horse = props.race?.horses?.find(h => h.horse_name?.trim().toLowerCase() === name);
+        if (horse) return horse;
     }
     return undefined;
 };
 
 const isHorseScratched = (program_number: string, horse_name: string) => {
-    const idx = findRaceIndex(program_number, horse_name);
-    return idx !== undefined && scratchedIndices.value.has(idx);
+    const horse = findHorse(program_number, horse_name);
+    return !!horse?.scratched;
 };
+
+const isRankHorseScratched = (horse: { program_number: string; horse_name: string }) =>
+    isHorseScratched(horse.program_number, horse.horse_name);
 
 const metadata = computed(() => {
     return raceMeta.value ?? new RaceMeta();
 });
 
 const toggleScratch = (program_number: string, horse_name: string, checked: boolean) => {
-    const idx = findRaceIndex(program_number, horse_name);
-    if (idx === undefined) return;
-    const next = new Set(scratchedIndices.value);
-    if (checked) {
-        next.add(idx);
-    } else {
-        next.delete(idx);
+    if (props.print) {
+        return;
     }
-    scratchedIndices.value = next;
+    const horse = findHorse(program_number, horse_name);
+    if (!horse?.id) {
+        return;
+    }
+    racecardStateStore.setScratch(horse.id, checked);
 };
 
 const horsesForRace = computed(() => {
@@ -85,14 +66,19 @@ const horsesForRace = computed(() => {
         .sort((a, b) => (b.score ?? Number.POSITIVE_INFINITY) - (a.score ?? Number.POSITIVE_INFINITY));
 });
 
+const horseColumns = computed(() => {
+    const horses = horsesForRace.value;
+    if (horses.length <= 6) {
+        return [horses];
+    }
+    const mid = Math.ceil(horses.length / 2);
+    return [horses.slice(0, mid), horses.slice(mid)];
+});
+
 const fetchRaceRank = async () => {
     if (!props.race) {
         raceMeta.value = null;
         return;
-    }
-
-    for (const [idx, horse] of props.race.horses.entries()) {
-        horse.scratched = scratchedList.value.includes(idx);
     }
 
     const racePayload = Race.fromObject(props.race).toObject();
@@ -109,16 +95,15 @@ const fetchRaceRank = async () => {
     }
 };
 
-watch(
-    () => props.race,
-    () => {
-        scratchedIndices.value = new Set();
-    },
-    { immediate: true }
-);
+const scratchedKey = computed(() => {
+    if (!props.race?.horses) {
+        return "";
+    }
+    return props.race.horses.map(h => (h.scratched ? "1" : "0")).join("");
+});
 
 watch(
-    [() => props.race, () => props.racecard_date, () => scratchedList.value],
+    [() => props.race, () => props.racecard_date, () => scratchedKey.value],
     () => {
         fetchRaceRank();
     },
@@ -143,33 +128,35 @@ watch(
                     metadata.win_bet?.horse_name != null ? Transformers.capitalize(metadata.win_bet.horse_name) : "None Selected" }}</span>
                 </div>
             </div>
-            <div class="horses">
-                <div class="horse-row">
-                    <div class="color-accent-yellow">Scratch</div>
-                    <div class="color-accent-yellow">#</div>
-                    <div class="color-accent-yellow">Horse Name</div>               
-                    <div class="color-accent-yellow numeric-right">Score</div>
-                    <div class="color-accent-yellow numeric-right">RepS</div>
-                    <div class="color-accent-yellow numeric-right">RepE</div>
-                    <div class="color-accent-yellow numeric-right">RepL</div>
-                    <div class="color-accent-yellow text-center">Style</div>
-                    <div class="color-accent-yellow text-center">Quirin</div>
-                </div>
-                <div class="horse-row" :class="{ scratched: isHorseScratched(horse.program_number, horse.horse_name) }"
-                    v-for="(horse, idx) in horsesForRace" :key="`${horse.program_number || ''}-${horse.horse_name || ''}-${idx}`">
-                    <div class="horse-checkbox">
-                        <input class="horse-checkbox-input" type="checkbox"
-                            :checked="isHorseScratched(horse.program_number, horse.horse_name)"
-                            @change="toggleScratch(horse.program_number, horse.horse_name, ($event.target as HTMLInputElement).checked)" />
+            <div class="horses-columns">
+                <div class="horses-column" v-for="(column, colIdx) in horseColumns" :key="colIdx">
+                    <div class="horse-row header">
+                        <div class="color-accent-yellow">Scratch</div>
+                        <div class="color-accent-yellow">#</div>
+                        <div class="color-accent-yellow">Horse Name</div>               
+                        <div class="color-accent-yellow numeric-right">Score</div>
+                        <div class="color-accent-yellow numeric-right">RepS</div>
+                        <div class="color-accent-yellow numeric-right">RepE</div>
+                        <div class="color-accent-yellow numeric-right">RepL</div>
+                        <div class="color-accent-yellow text-center">Style</div>
+                        <div class="color-accent-yellow text-center">Quirin</div>
                     </div>
-                    <div>{{ horse.program_number }}</div>
-                    <div>{{ Transformers.capitalize(horse.horse_name) }}</div>
-                    <div class="numeric-right">{{ horse.score?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.rep_speed?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.rep_early?.toFixed(2) }}</div>
-                    <div class="numeric-right">{{ horse.rep.rep_late?.toFixed(2) }}</div>
-                    <div class="text-center">{{ horse.run_style !== "Unk" ? horse.run_style : "" }}</div>
-                    <div class="text-center">{{ horse.quirin }}</div>
+                    <div class="horse-row" :class="{ scratched: isRankHorseScratched(horse) }"
+                        v-for="(horse, idx) in column" :key="`${horse.program_number || ''}-${horse.horse_name || ''}-${idx}`">
+                        <div class="horse-checkbox">
+                            <input class="horse-checkbox-input" type="checkbox"
+                                :checked="isRankHorseScratched(horse)"
+                                @change="toggleScratch(horse.program_number, horse.horse_name, ($event.target as HTMLInputElement).checked)" />
+                        </div>
+                        <div>{{ horse.program_number }}</div>
+                        <div>{{ Transformers.capitalize(horse.horse_name) }}</div>
+                        <div class="numeric-right">{{ horse.score?.toFixed(2) }}</div>
+                        <div class="numeric-right">{{ horse.rep.rep_speed?.toFixed(2) }}</div>
+                        <div class="numeric-right">{{ horse.rep.rep_early?.toFixed(2) }}</div>
+                        <div class="numeric-right">{{ horse.rep.rep_late?.toFixed(2) }}</div>
+                        <div class="text-center">{{ horse.run_style !== "Unk" ? horse.run_style : "" }}</div>
+                        <div class="text-center">{{ horse.quirin }}</div>
+                    </div>
                 </div>
             </div>
             <div class="caution color-accent-yellow">(Caution: <span class="color-accent-green">This output is based on a mathematical model and is intended to be used as one of several analytical tools. Projected winners have an increased likelihood of success if the race unfolds in accordance with the model’s assumptions. However, horse racing is inherently unpredictable. Do not rely solely on computer projections, as late scratches and race-day variables can materially affect the outcome.</span>)</div>
@@ -197,17 +184,23 @@ watch(
     gap: 4rem;
 }
 
-.horses {
+.horses-columns {
     margin-top: 1rem;
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    gap: 2rem;
+}
+
+.horses-column {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
+    flex: 1 1 0;
 }
 
 .horse-row {
     display: grid;
-   grid-template-columns: 6rem 5rem 20rem 5rem 5rem 5rem 5rem 5rem 5rem;
-     column-gap: 1rem;
+    grid-template-columns: 6rem 5rem 20rem 5rem 5rem 5rem 5rem 5rem 5rem;
+    column-gap: 1rem;
     align-items: baseline;
     position: relative;
 }
