@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Horse } from "../../models/racecard";
+import { useRacecardStateStore } from "../../stores/racecardStateStore";
 const props = withDefaults(defineProps<{
     horse: Horse,
     print: boolean;
@@ -7,12 +8,10 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const emit = defineEmits<{
-  (e: "update:note", value: [string, number]): void;
-}>();
+const racecardStateStore = useRacecardStateStore();
 
 function handleInput(event: Event) {
-  emit("update:note", [(event.target as HTMLTextAreaElement).value, props.horse.id!]);
+  racecardStateStore.setNote((event.target as HTMLTextAreaElement).value, props.horse.id!);
 }
 </script>
 

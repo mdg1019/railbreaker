@@ -10,6 +10,19 @@ function isRacecardIdxValid(idx: number, racecardState: RacecardState): boolean 
     );
 }
 
+let saveNoteTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
+
+function updateHorseNote(racecard: Racecard, horseId: number, note: string): boolean {
+    for (const race of racecard.races ?? []) {
+        const horse = race.horses?.find(h => h.id === horseId);
+        if (horse) {
+            horse.note = note;
+            return true;
+        }
+    }
+    return false;
+}
+
 export const useRacecardStateStore = defineStore("RacecardState", {
     state: () => ({
         racecardState: new RacecardState(),
@@ -64,6 +77,34 @@ export const useRacecardStateStore = defineStore("RacecardState", {
             this.racecardState.racecards.racecardEntries.push(
                 new RacecardEntry(racecard),
             );
+        },
+
+        setNote(note: string, horseId: number): void {
+            const entry = this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx];
+            if (!entry) {
+                return;
+            }
+
+            updateHorseNote(entry.racecard, horseId, note);
+
+            const currentRacecard = this.getCurrentRacecard;
+            if (currentRacecard && currentRacecard !== entry.racecard) {
+                updateHorseNote(currentRacecard, horseId, note);
+            }
+
+            const existingTimeout = saveNoteTimeouts.get(horseId);
+            if (existingTimeout) {
+                clearTimeout(existingTimeout);
+            }
+
+            const timeout = setTimeout(async () => {
+                await invoke("update_note", { note: note, horseId: horseId }).catch((err) => {
+                    console.error("Failed to update note", err);
+                });
+                saveNoteTimeouts.delete(horseId);
+            }, 500);
+
+            saveNoteTimeouts.set(horseId, timeout);
         },
 
         deleteRacecardAt(index: number): void {

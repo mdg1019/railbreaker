@@ -9,7 +9,6 @@ import Workouts from "../horse-body/Workouts.vue";
 import TrainerStats from "../horse-body/TrainerStats.vue";
 import TrainerJockey from "../horse-body/TrainerJockey.vue";
 import NoteEditor from "../horse-body/NoteEditor.vue";
-import { invoke } from "@tauri-apps/api/core";
 
 const props = withDefaults(defineProps<{
     horse: Horse,
@@ -19,29 +18,6 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-const emit = defineEmits<{
-    (e: "update:note", value: [string, number]): void;
-}>();
-
-let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-
-function updateNote([note, horse_id]: [string, number]) {
-    if (props.print) {
-        return;
-    }
-
-    emit("update:note", [note, horse_id]);
-
-    if (saveTimeout) {
-        clearTimeout(saveTimeout);
-    }
-
-    saveTimeout = setTimeout(async () => {
-        await invoke("update_note", { note: note, horseId: horse_id }).catch((err) => {
-            console.error("Failed to update note", err);
-        });
-    }, 500);
-}
 </script>
 
 <template>
@@ -68,7 +44,7 @@ function updateNote([note, horse_id]: [string, number]) {
 
                 <TrainerJockey :horse="props.horse" />
 
-                <NoteEditor :horse="props.horse" :print="props.print" @update:note="updateNote"/>
+                <NoteEditor :horse="props.horse" :print="props.print" />
             </div>
         </div>
     </Panel>

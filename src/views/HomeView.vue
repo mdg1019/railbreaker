@@ -107,29 +107,6 @@ function handleDeleteRacecard(index: number) {
     racecardStateStore.setCurrentRacecardIdx(Math.min(newIndex, racecards.value.racecardEntries.length - 1));
 }
 
-function updateNote([note, horse_id]: [string, number]) {
-    const entry = racecards.value.racecardEntries[currentRacecardIndex.value];
-    if (!entry) {
-        return;
-    }
-
-    const updateHorseNote = (rc: Racecard) => {
-        for (const race of rc.races ?? []) {
-            const horse = race.horses?.find(h => h.id === horse_id);
-            if (horse) {
-                horse.note = note;
-                return true;
-            }
-        }
-        return false;
-    };
-
-    updateHorseNote(entry.racecard);
-    if (racecard.value && racecard.value !== entry.racecard) {
-        updateHorseNote(racecard.value);
-    }
-}
-
 async function handleOpenRacecard(id: number | null) {
     if (id === null) {
         return;
@@ -324,7 +301,7 @@ onUnmounted(() => {
             <TripAnalysis :race="racecard.races[race_number - 1]" :print="false" />
             <Horse v-for="(horse, idx) in (racecard.races[race_number - 1]?.horses || [])"
                 :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`" :horse="horse"
-                :primePowerComparisons="primePowerComparisons" :print="false" @update:note="updateNote"></Horse>
+                :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
         </div>
         
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
