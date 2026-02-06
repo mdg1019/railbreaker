@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
+import Transformers from "../../utils/transformers";
 
 const props = withDefaults(defineProps<{
     race: Race;
@@ -57,25 +58,56 @@ const tripData = computed(() => {
         .map((item) => item);
 });
 
+const tripColumns = computed(() => {
+    const trips = tripData.value;
+    if (trips.length <= 6) return [trips];
+    const mid = Math.ceil(trips.length / 2);
+    return [trips.slice(0, mid), trips.slice(mid)];
+});
 
+const formatComment = (comment?: string) => {
+    if (!comment) return comment;
+    if (/^\d+w$/i.test(comment)) return comment;
+    return Transformers.capitalize(comment);
+};
 </script>
 
 <template>
     <Panel :print="props.print">
         <div class="contents">
             <div class="color-accent-yellow">Trip Handicapping Model</div>
-            <div class="trip-info" v-for="(trip, idx) in tripData">
-                <div>{{ trip.program_number }}</div>
-                <div>{{ trip.horse_name }}</div>
-                <div>{{ trip.score?.toFixed(2) }}</div>
-                <div>{{ trip.comment }}</div>
-                <div>{{ trip.surface }}</div>
-                <div>{{ trip.distance }}</div>
-                <div>{{ trip.date }}</div>
-                <div>{{ trip.track }}</div>
-                <div>{{ trip.adjPoints }}</div>
+            <div class="trip-info-columns">
+                <div class="trip-info" v-for="(column, colIdx) in tripColumns" :key="colIdx">
+                    <div class="trip-info-header">
+                        <div class="color-accent-yellow">#</div>
+                        <div class="color-accent-yellow">Horse</div>
+                        <div class="color-accent-yellow">Score</div>
+                        <div class="color-accent-yellow">Comment</div>
+                        <div class="color-accent-yellow">Surf</div>
+                        <div class="color-accent-yellow">Dist</div>
+                        <div class="color-accent-yellow">Date</div>
+                        <div class="color-accent-yellow">Track</div>
+                        <div class="color-accent-yellow">Adj</div>
+                    </div>
+                    <div
+                        class="trip-info-row"
+                        :class="{ 'is-scratched': trip.scratched }"
+                        v-for="(trip, idx) in column"
+                        :key="idx"
+                    >
+                        <div>{{ trip.program_number }}</div>
+                        <div>{{ Transformers.capitalize(trip.horse_name!) }}</div>
+                        <div>{{ trip.score?.toFixed(2) }}</div>
+                        <div>{{ formatComment(trip.comment) }}</div>
+                        <div>{{ trip.surface }}</div>
+                        <div>{{ trip.distance?.toFixed(1) }}</div>
+                        <div>{{ trip.date }}</div>
+                        <div>{{ trip.track }}</div>
+                        <div>{{ trip.adjPoints?.toFixed(2) }}</div>
+                    </div>
+                </div>
             </div>
-      </div>
+        </div>
     </Panel>
 </template>
 
@@ -85,10 +117,47 @@ const tripData = computed(() => {
     flex-direction: column;
 }
 
-.trip-info {
+.trip-info-columns {
     display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    margin-top: 0.5rem;
+    gap: 2rem;
+}
+
+.trip-info {
+    display: grid;
+    grid-template-columns: 2rem 18rem 5rem 8rem 5rem 2rem 10rem 5rem 5rem;
+    grid-row: inherit;
+    align-items: baseline;
+    margin-top: 1rem;
+    flex: 1 1 0;
+}
+
+.trip-info-header,
+.trip-info-row {
+    display: contents;
+}
+
+.trip-info-row.is-scratched > div {
+    background-image: linear-gradient(
+        to bottom,
+        transparent 48%,
+        #c62828 48%,
+        #c62828 52%,
+        transparent 52%
+    );
+}
+
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(1),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(3),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(4),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(6),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(9) {
+    text-align: right;
+}
+
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(2),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(5),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(7),
+.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(8) {
+    padding-left: 2rem;
 }
 </style>
