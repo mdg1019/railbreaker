@@ -70,6 +70,7 @@ const formatComment = (comment?: string) => {
     if (/^\d+w$/i.test(comment)) return comment;
     return Transformers.capitalize(comment);
 };
+
 </script>
 
 <template>
@@ -77,7 +78,7 @@ const formatComment = (comment?: string) => {
         <div class="contents">
             <div class="color-accent-yellow">Trip Handicapping Model</div>
             <div class="trip-info-columns">
-                <div class="trip-info" v-for="(column, colIdx) in tripColumns" :key="colIdx">
+                <div class="trip-info" :class="{ 'is-print': props.print }" v-for="(column, colIdx) in tripColumns" :key="colIdx">
                     <div class="trip-info-header">
                         <div class="color-accent-yellow">#</div>
                         <div class="color-accent-yellow">Horse</div>
@@ -128,12 +129,19 @@ const formatComment = (comment?: string) => {
     gap: 0.5rem;
     margin-top: 1rem;
     flex: 1 1 0;
+    --trip-grid-columns: 2rem 18rem 5rem 8rem 5rem 2rem 10rem 5rem 5rem;
+    --trip-grid-width: calc(2rem + 18rem + 5rem + 8rem + 5rem + 2rem + 10rem + 5rem + 5rem + 8rem);
+}
+
+.trip-info.is-print {
+    --trip-grid-columns: 2rem 8rem 4rem 6rem 4rem 2rem 8rem 4rem 4rem;
+    --trip-grid-width: calc(2rem + 8rem + 4rem + 6rem + 4rem + 2rem + 8rem + 4rem + 4rem + 8rem);
 }
 
 .trip-info-header,
 .trip-info-row {
     display: grid;
-    grid-template-columns: 2rem 18rem 5rem 8rem 5rem 2rem 10rem 5rem 5rem;
+    grid-template-columns: var(--trip-grid-columns);
     column-gap: 1rem;
     align-items: baseline;
     position: relative;
@@ -143,7 +151,7 @@ const formatComment = (comment?: string) => {
     content: "";
     position: absolute;
     left: 0;
-    width: calc(2rem + 18rem + 5rem + 8rem + 5rem + 2rem + 10rem + 5rem + 5rem + 8rem);
+    width: var(--trip-grid-width);
     top: 50%;
     height: 2px;
     background: var(--accent-red);
