@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, nextTick, watch } from "vue";
+import { onMounted, onUnmounted, ref, nextTick, watch, computed } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
@@ -7,7 +7,6 @@ import { getName, getVersion } from "@tauri-apps/api/app";
 import { useGlobalStateStore } from "../stores/globalStateStore";
 import { useConfigFileStore } from "../stores/configFileStore";
 import { Racecard } from "../models/racecard";
-import { Racecards } from "../models/racecards";
 import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
@@ -21,9 +20,13 @@ import SelectRacecardDialog from "../components/ui/SelectRacecardDialog.vue";
 import Analysis from "../components/racecard/Analysis.vue";
 import "../scss/_main.scss";
 import TripAnalysis from "../components/racecard/TripAnalysis.vue";
+import { storeToRefs } from "pinia";
+import { useRacecardStateStore } from "../stores/racecardStateStore";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
+const racecardStateStore = useRacecardStateStore();
+const { getCurrentRacecard, getCurrentRacecardIdx, getCurrentRaceNumber, getRacecards } = storeToRefs(racecardStateStore);
 
 let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
@@ -34,15 +37,22 @@ let unlistenAbout: (() => void);
 const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false);
 
-const racecards = new Racecards();
-const racecard = ref<Racecard | null>(null);
+const racecard = getCurrentRacecard;
 const lastNoteUpdateAt = ref(0);
 
-const race_number = ref(1);
+const race_number = computed({
+    get: () => getCurrentRaceNumber.value,
+    set: (value) => racecardStateStore.setLastOpenedRace(value),
+});
+
+const currentRacecardIndex = computed({
+    get: () => getCurrentRacecardIdx.value,
+    set: (value) => racecardStateStore.setCurrentRacecardIdx(value),
+});
+
+const racecards = getRacecards;
 
 const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
-
-const currentRacecardIndex = ref(0);
 
 const isRacecardMenuOpen = ref(false);
 
@@ -82,29 +92,23 @@ function handlePrintDialogPrint(value: number[]) {
 }
 
 function handleSelectedRace(value: number) {
-    race_number.value = value;
-    const entry = racecards.racecardEntries[currentRacecardIndex.value];
-    if (entry) {
-        entry.last_opened_race = value;
-    }
+    racecardStateStore.setLastOpenedRace(value);
     isRacecardMenuOpen.value = false;
 }
 
 function handleDeleteRacecard(index: number) {
-    racecards.deleteRacecardAt(index);
-    if (racecards.racecardEntries.length === 0) {
-        currentRacecardIndex.value = 0;
-        racecard.value = null;
-        race_number.value = 1;
+    racecardStateStore.deleteRacecardAt(index);
+    if (racecards.value.racecardEntries.length === 0) {
+        racecardStateStore.setCurrentRacecardIdx(0);
         return;
     }
 
     const newIndex = index - 1 >= 0 ? index - 1 : 0;
-    currentRacecardIndex.value = Math.min(newIndex, racecards.racecardEntries.length - 1);
+    racecardStateStore.setCurrentRacecardIdx(Math.min(newIndex, racecards.value.racecardEntries.length - 1));
 }
 
 function updateNote([note, horse_id]: [string, number]) {
-    const entry = racecards.racecardEntries[currentRacecardIndex.value];
+    const entry = racecards.value.racecardEntries[currentRacecardIndex.value];
     if (!entry) {
         return;
     }
@@ -135,10 +139,9 @@ async function handleOpenRacecard(id: number | null) {
     try {
         const rc = Racecard.fromObject(await invoke<any>('get_racecard_by_id', { racecardId: id }));
 
-        racecards.addRacecard(rc);
+        racecardStateStore.addRacecard(rc);
 
-        currentRacecardIndex.value = racecards.racecardEntries.length - 1;
-        racecard.value = rc;
+        racecardStateStore.setCurrentRacecardIdx(racecards.value.racecardEntries.length - 1);
 
         isProcessingRacecard.value = false;
     } catch (error) {
@@ -156,21 +159,6 @@ watch(racecard, async (rc) => {
 
 watch([racecard, race_number], () => {
     primePowerComparisons.value = computePrimePowerComparisons(racecard.value, race_number.value);
-});
-
-watch(currentRacecardIndex, (idx, oldIdx) => {
-    if (typeof oldIdx === 'number' && oldIdx >= 0) {
-        const prev = racecards.racecardEntries[oldIdx];
-        if (prev) prev.last_opened_race = race_number.value;
-    }
-
-    const entry = racecards.racecardEntries[idx];
-    racecard.value = entry?.racecard ?? null;
-    if (entry && entry.last_opened_race && entry.last_opened_race > 0) {
-        race_number.value = entry.last_opened_race;
-    } else {
-        race_number.value = 1;
-    }
 });
 
 watch(race_number, async (_newVal, _oldVal) => {
@@ -200,7 +188,7 @@ onMounted(async () => {
         }
 
         let filteredRacecardsList = racecardsInDatabase.filter(rc => {
-            return !racecards.racecardEntries.some(entry => {
+            return !racecards.value.racecardEntries.some(entry => {
                 if (entry.racecard.id != null && rc.id != null) {
                     return entry.racecard.id === rc.id;
                 }
@@ -257,9 +245,8 @@ onMounted(async () => {
 
                 const openedRacecard = Racecard.fromObject(racecardValue);
 
-                racecards.addRacecard(openedRacecard);
-                currentRacecardIndex.value = racecards.racecardEntries.length - 1;
-                racecard.value = openedRacecard;
+                racecardStateStore.addRacecard(openedRacecard);
+                currentRacecardIndex.value = racecards.value.racecardEntries.length - 1;
                 isProcessingRacecard.value = false;
             } catch (error) {
                 isProcessingZip.value = false;

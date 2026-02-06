@@ -4,21 +4,8 @@ import { Racecard } from './racecard';
 export class Racecards {
     racecardEntries: RacecardEntry[];
 
-
   constructor() {
     this.racecardEntries = [];
-  }
-
-  addRacecard(racecard: Racecard): void {
-   this.racecardEntries.push(new RacecardEntry(racecard));
-  }
-  
-  deleteRacecardAt(index: number): void {
-    if (index < 0 || index >= this.racecardEntries.length) {
-      return;
-    }
-
-    this.racecardEntries.splice(index, 1);
   }
 }
 export class RacecardEntry {

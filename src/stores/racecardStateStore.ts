@@ -1,0 +1,80 @@
+import { defineStore } from "pinia";
+import { invoke } from "@tauri-apps/api/core";
+import { RacecardState } from "../models/racecardState";
+import { Racecard } from "../models/racecard";
+import { RacecardEntry, Racecards } from "../models/racecards";
+
+function isRacecardIdxValid(idx: number, racecardState: RacecardState): boolean {
+    return (
+        idx >= 0 && idx < racecardState.racecards.racecardEntries.length
+    );
+}
+
+export const useRacecardStateStore = defineStore("RacecardState", {
+    state: () => ({
+        racecardState: new RacecardState(),
+        currentRaceNumber: 1,
+    }),
+    getters: {
+        getCurrentRacecardIdx(): number {
+            return this.racecardState.currentRacecardIdx;
+        },
+        getCurrentRacecard(): Racecard | null {
+            if (isRacecardIdxValid(this.racecardState.currentRacecardIdx, this.racecardState)) {
+                return this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx].racecard;
+            }
+            return null;
+        },
+        getRacecards(): Racecards {
+            return this.racecardState.racecards;
+        },
+        getCurrentRaceNumber(): number {
+            return this.currentRaceNumber;
+        },
+    },
+    actions: {
+        setLastOpenedRace(raceNumber: number): void {
+            this.currentRaceNumber = raceNumber;
+            if (!isRacecardIdxValid(this.racecardState.currentRacecardIdx, this.racecardState)) {
+                return;
+            }
+            this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx].last_opened_race = raceNumber;
+        },
+        setCurrentRacecardIdx(idx: number): void {
+            const entries = this.racecardState.racecards.racecardEntries;
+            if (entries.length === 0) {
+                this.racecardState.currentRacecardIdx = 0;
+                this.currentRaceNumber = 1;
+                return;
+            }
+
+            if (!isRacecardIdxValid(idx, this.racecardState)) {
+                return;
+            }
+
+            if (isRacecardIdxValid(this.racecardState.currentRacecardIdx, this.racecardState)) {
+                entries[this.racecardState.currentRacecardIdx].last_opened_race = this.currentRaceNumber;
+            }
+
+            this.racecardState.currentRacecardIdx = idx;
+            const entry = entries[idx];
+            this.currentRaceNumber = entry.last_opened_race > 0 ? entry.last_opened_race : 1;
+        },
+        addRacecard(racecard: Racecard): void {
+            this.racecardState.racecards.racecardEntries.push(
+                new RacecardEntry(racecard),
+            );
+        },
+
+        deleteRacecardAt(index: number): void {
+            if (
+                index < 0 ||
+                index >= this.racecardState.racecards.racecardEntries.length
+            ) {
+                return;
+            }
+
+            this.racecardState.racecards.racecardEntries.splice(index, 1);
+        },
+    },
+});
