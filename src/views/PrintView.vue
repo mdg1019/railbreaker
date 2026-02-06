@@ -11,6 +11,7 @@ import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import Horse from "../components/racecard/Horse.vue";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
+import TripAnalysis from "../components/racecard/TripAnalysis.vue";
 import "../scss/_main.scss";
 
 const payload = ref<RaceCardPrintPayload | null>(null);
@@ -139,6 +140,8 @@ onBeforeUnmount(() => {
 
                 <main>
                     <RaceDetails :racecard="payload!.raceCard" :race="race_number" :print="true" />
+                    <div class="print-divider" aria-hidden="true"></div>
+                    <TripAnalysis :race="payload!.raceCard.races[race_number - 1]" :print="true" />
                     <div>
                         <Horse v-for="(horse, idx) in (payload!.raceCard.races[race_number - 1]?.horses || [])"
                             :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`"
@@ -174,6 +177,20 @@ onBeforeUnmount(() => {
 .header {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+}
+
+.print-view :deep(.trip-info) {
+    font-size: 0.85rem;
+}
+
+.print-view :deep(.trip-info-header),
+.print-view :deep(.trip-info-row) {
+    font-size: 0.85rem;
+}
+
+.print-divider {
+    margin: 0.5rem 0 0.75rem;
+    border-top: 2px solid var(--ubuntu-blue);
 }
 
 @media print {
