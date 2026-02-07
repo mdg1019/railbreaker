@@ -323,13 +323,17 @@ onUnmounted(() => {
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing Racecard File'" />
         </div>
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
-            <RacecardHeader :racecard="racecard" :race="race_number" />
-            <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
-            <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
-            <TripAnalysis :race="racecard.races[race_number - 1]" :print="false" />
-            <Horse v-for="(horse, idx) in sortedHorses"
-                :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`" :horse="horse"
-                :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
+            <div class="race-header">
+                <RacecardHeader :racecard="racecard" :race="race_number" />
+            </div>
+            <div class="race-content">
+                <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
+                <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
+                <TripAnalysis :race="racecard.races[race_number - 1]" :print="false" />
+                <Horse v-for="(horse, idx) in sortedHorses"
+                    :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`" :horse="horse"
+                    :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
+            </div>
         </div>
         
         <PrintDialog v-model="showPrintDialog" :racecard="racecard" @update:modelValue="handlePrintDialogUpdate"
@@ -361,12 +365,30 @@ onUnmounted(() => {
 .container {
     padding: 1rem;
     font-family: "MGSans", sans-serif;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .race-container {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    height: 100vh;
+}
+
+.race-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg, #0b0b0b);
+}
+
+.race-content {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    padding-bottom: 1rem;
 }
 
 .processing {
