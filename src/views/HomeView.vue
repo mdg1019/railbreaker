@@ -205,6 +205,7 @@ watch(racecard, async (rc) => {
 
 watch([racecard, race_number], () => {
     primePowerComparisons.value = computePrimePowerComparisons(racecard.value, race_number.value);
+    racecardStateStore.updateTripData();
 });
 
 watch(race_number, async (_newVal, _oldVal) => {

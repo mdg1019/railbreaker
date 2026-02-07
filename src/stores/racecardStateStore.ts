@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 import { invoke } from "@tauri-apps/api/core";
 import { RacecardState } from "../models/racecardState";
-import { Racecard } from "../models/racecard";
+import { Racecard, Race } from "../models/racecard";
 import { RacecardEntry, Racecards } from "../models/racecards";
+import { RaceMeta } from "../models/analysis";
 
 function isRacecardIdxValid(idx: number, racecardState: RacecardState): boolean {
     return (
@@ -11,6 +12,20 @@ function isRacecardIdxValid(idx: number, racecardState: RacecardState): boolean 
 }
 
 let saveNoteTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
+let raceMetaRequestId = 0;
+
+type TripInfo = {
+    program_number?: string;
+    horse_name?: string;
+    score?: number;
+    comment?: string;
+    surface?: string;
+    distance?: number;
+    date?: string;
+    track?: string;
+    adjPoints?: number;
+    scratched?: boolean;
+};
 
 function updateHorseNote(racecard: Racecard, horseId: number, note: string): boolean {
     for (const race of racecard.races ?? []) {
@@ -38,6 +53,8 @@ export const useRacecardStateStore = defineStore("RacecardState", {
     state: () => ({
         racecardState: new RacecardState(),
         currentRaceNumber: 1,
+        raceMeta: null as RaceMeta | null,
+        tripData: [] as TripInfo[],
     }),
     getters: {
         getCurrentRacecardIdx(): number {
@@ -55,8 +72,90 @@ export const useRacecardStateStore = defineStore("RacecardState", {
         getCurrentRaceNumber(): number {
             return this.currentRaceNumber;
         },
+        getRaceMeta(): RaceMeta | null {
+            return this.raceMeta;
+        },
+        getTripData(): TripInfo[] {
+            return this.tripData;
+        },
     },
     actions: {
+        updateTripData(): void {
+            const currentRacecard = this.getCurrentRacecard;
+            if (!currentRacecard) {
+                this.tripData = [];
+                return;
+            }
+
+            const raceIdx = this.currentRaceNumber - 1;
+            const race = currentRacecard.races?.[raceIdx];
+            if (!race) {
+                this.tripData = [];
+                return;
+            }
+
+            const trips: Array<TripInfo> = [];
+            for (const horse of race.horses || []) {
+                if (!horse.trip_handicapping_info) continue;
+                const cols = horse.trip_handicapping_info.split(",");
+                const tripInfo: TripInfo = {
+                    scratched: horse.scratched,
+                    program_number: horse.program_number,
+                    horse_name: horse.horse_name,
+                    score: Number(cols[0]),
+                    comment: cols[1],
+                    surface: cols[2],
+                    distance: Number(cols[3]),
+                    date: cols[4],
+                    track: cols[5],
+                    adjPoints: Number(cols[6]),
+                };
+                trips.push(tripInfo);
+            }
+
+            this.tripData = trips
+                .sort((a, b) => {
+                    const scoreA = Number.isFinite(a.score) ? (a.score as number) : Number.NEGATIVE_INFINITY;
+                    const scoreB = Number.isFinite(b.score) ? (b.score as number) : Number.NEGATIVE_INFINITY;
+                    if (scoreA !== scoreB) {
+                        return scoreB - scoreA;
+                    }
+                    const adjA = Number.isFinite(a.adjPoints) ? (a.adjPoints as number) : Number.NEGATIVE_INFINITY;
+                    const adjB = Number.isFinite(b.adjPoints) ? (b.adjPoints as number) : Number.NEGATIVE_INFINITY;
+                    return adjB - adjA;
+                })
+                .map((item) => item);
+        },
+        async updateRaceMeta(): Promise<void> {
+            const currentRacecard = this.getCurrentRacecard;
+            if (!currentRacecard) {
+                this.raceMeta = null;
+                return;
+            }
+
+            const raceIdx = this.currentRaceNumber - 1;
+            const race = currentRacecard.races?.[raceIdx];
+            if (!race) {
+                this.raceMeta = null;
+                return;
+            }
+
+            const requestId = ++raceMetaRequestId;
+            try {
+                const result = await invoke<any>("rank_race", {
+                    race: Race.fromObject(race).toObject(),
+                    racecardDate: currentRacecard.date ?? null,
+                });
+                if (requestId === raceMetaRequestId) {
+                    this.raceMeta = RaceMeta.fromObject(result);
+                }
+            } catch (err) {
+                console.error("Failed to rank race", err);
+                if (requestId === raceMetaRequestId) {
+                    this.raceMeta = null;
+                }
+            }
+        },
         setNextRaceNumber(): void {
             const currentRacecard = this.getCurrentRacecard;
             if (!currentRacecard) {
@@ -92,12 +191,16 @@ export const useRacecardStateStore = defineStore("RacecardState", {
             }
             
             this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx].last_opened_race = raceNumber;
+            void this.updateRaceMeta();
+            this.updateTripData();
         },
         setCurrentRacecardIdx(idx: number): void {
             const entries = this.racecardState.racecards.racecardEntries;
             if (entries.length === 0) {
                 this.racecardState.currentRacecardIdx = 0;
                 this.currentRaceNumber = 1;
+                this.raceMeta = null;
+                this.tripData = [];
                 return;
             }
 
@@ -112,6 +215,8 @@ export const useRacecardStateStore = defineStore("RacecardState", {
             this.racecardState.currentRacecardIdx = idx;
             const entry = entries[idx];
             this.currentRaceNumber = entry.last_opened_race > 0 ? entry.last_opened_race : 1;
+            void this.updateRaceMeta();
+            this.updateTripData();
         },
         addRacecard(racecard: Racecard): void {
             this.racecardState.racecards.racecardEntries.push(
@@ -157,12 +262,15 @@ export const useRacecardStateStore = defineStore("RacecardState", {
 
             const currentRacecard = this.getCurrentRacecard;
             if (currentRacecard && currentRacecard !== entry.racecard) {
-                updateHorseScratch(currentRacecard, horseId, scratched);
+            updateHorseScratch(currentRacecard, horseId, scratched);
             }
 
             invoke("set_scratch", { horseId: horseId, scratched: scratched }).catch((err) => {
                 console.error("Failed to update scratch status", err);
             });
+
+            void this.updateRaceMeta();
+            this.updateTripData();
         },
 
         deleteRacecardAt(index: number): void {

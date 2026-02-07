@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { computed } from "vue";
 import { RaceMeta } from "../../models/analysis";
 import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
@@ -19,7 +18,6 @@ const props = withDefaults(defineProps<{
     track: "",
 });
 
-const raceMeta = ref<RaceMeta | null>(null);
 const racecardStateStore = useRacecardStateStore();
 
 const findHorse = (program_number: string, horse_name: string) => {
@@ -45,7 +43,7 @@ const isRankHorseScratched = (horse: { program_number: string; horse_name: strin
     isHorseScratched(horse.program_number, horse.horse_name);
 
 const metadata = computed(() => {
-    return raceMeta.value ?? new RaceMeta();
+    return racecardStateStore.raceMeta ?? new RaceMeta();
 });
 
 const toggleScratch = (program_number: string, horse_name: string, checked: boolean) => {
@@ -74,41 +72,6 @@ const horseColumns = computed(() => {
     const mid = Math.ceil(horses.length / 2);
     return [horses.slice(0, mid), horses.slice(mid)];
 });
-
-const fetchRaceRank = async () => {
-    if (!props.race) {
-        raceMeta.value = null;
-        return;
-    }
-
-    const racePayload = Race.fromObject(props.race).toObject();
-    
-    try {
-        const result = await invoke<any>("rank_race", {
-            race: racePayload,
-            racecardDate: props.racecard_date ?? null,
-        });
-        raceMeta.value = RaceMeta.fromObject(result);
-    } catch (err) {
-        console.error("Failed to rank race", err);
-        raceMeta.value = null;
-    }
-};
-
-const scratchedKey = computed(() => {
-    if (!props.race?.horses) {
-        return "";
-    }
-    return props.race.horses.map(h => (h.scratched ? "1" : "0")).join("");
-});
-
-watch(
-    [() => props.race, () => props.racecard_date, () => scratchedKey.value],
-    () => {
-        fetchRaceRank();
-    },
-    { immediate: true }
-);
 
 </script>
 

@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
 import Transformers from "../../utils/transformers";
+import { useRacecardStateStore } from "../../stores/racecardStateStore";
 
 const props = withDefaults(defineProps<{
     race: Race;
@@ -24,38 +25,10 @@ class TripInfo {
     scratched?: boolean;
 }
 
+const racecardStateStore = useRacecardStateStore();
+
 const tripData = computed(() => {
-    const trips: Array<TripInfo> = [];
-
-    for (const horse of props.race.horses || []) {
-        if (!horse.trip_handicapping_info) continue;
-        const cols = horse.trip_handicapping_info.split(",");
-        const tripInfo = new TripInfo();
-        tripInfo.scratched = horse.scratched;
-        tripInfo.program_number = horse.program_number;
-        tripInfo.horse_name = horse.horse_name;
-        tripInfo.score = Number(cols[0]);
-        tripInfo.comment = cols[1];
-        tripInfo.surface = cols[2];
-        tripInfo.distance = Number(cols[3]);
-        tripInfo.date = cols[4];
-        tripInfo.track = cols[5];
-        tripInfo.adjPoints = Number(cols[6]);
-        trips.push(tripInfo);
-    }
-
-    return trips
-        .sort((a, b) => {
-            const scoreA = Number.isFinite(a.score) ? (a.score as number) : Number.NEGATIVE_INFINITY;
-            const scoreB = Number.isFinite(b.score) ? (b.score as number) : Number.NEGATIVE_INFINITY;
-            if (scoreA !== scoreB) {
-                return scoreB - scoreA;
-            }
-            const adjA = Number.isFinite(a.adjPoints) ? (a.adjPoints as number) : Number.NEGATIVE_INFINITY;
-            const adjB = Number.isFinite(b.adjPoints) ? (b.adjPoints as number) : Number.NEGATIVE_INFINITY;
-            return adjB - adjA;
-        })
-        .map((item) => item);
+    return racecardStateStore.tripData;
 });
 
 const tripColumns = computed(() => {
