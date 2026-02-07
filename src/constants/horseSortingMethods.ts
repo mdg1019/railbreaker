@@ -1,0 +1,1 @@
+export const HORSE_SORTING_METHOD_PROGRAM_NUMBER = "program-number";

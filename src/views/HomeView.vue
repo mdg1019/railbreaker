@@ -22,6 +22,7 @@ import "../scss/_main.scss";
 import TripAnalysis from "../components/racecard/TripAnalysis.vue";
 import { storeToRefs } from "pinia";
 import { useRacecardStateStore } from "../stores/racecardStateStore";
+import { HORSE_SORTING_METHOD_PROGRAM_NUMBER } from "../constants/horseSortingMethods";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -67,6 +68,33 @@ const showPrintDialog = ref(false);
 const showSelectRacecardDialog = ref(false);
 const filteredRacecards = ref<Racecard[]>([]);
 let pendingPrintResolve: ((value: number[] | null) => void) | null = null;
+
+const sortedHorses = computed(() => {
+    const horses = racecard.value?.races?.[race_number.value - 1]?.horses ?? [];
+    const method = configFileStore.configState.horseSortingMethod;
+    const sorted = [...horses];
+
+    switch (method) {
+        case HORSE_SORTING_METHOD_PROGRAM_NUMBER:
+            sorted.sort((a, b) =>
+                (a.program_number ?? "").localeCompare(b.program_number ?? "", undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                })
+            );
+            break;
+        default:
+            sorted.sort((a, b) =>
+                (a.program_number ?? "").localeCompare(b.program_number ?? "", undefined, {
+                    numeric: true,
+                    sensitivity: "base",
+                })
+            );
+            break;
+    }
+
+    return sorted;
+});
 
 function requestPrintRaces(): Promise<number[] | null> {
     showPrintDialog.value = true;
@@ -299,7 +327,7 @@ onUnmounted(() => {
             <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
             <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
             <TripAnalysis :race="racecard.races[race_number - 1]" :print="false" />
-            <Horse v-for="(horse, idx) in (racecard.races[race_number - 1]?.horses || [])"
+            <Horse v-for="(horse, idx) in sortedHorses"
                 :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`" :horse="horse"
                 :primePowerComparisons="primePowerComparisons" :print="false"></Horse>
         </div>
