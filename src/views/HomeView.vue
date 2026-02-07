@@ -17,17 +17,24 @@ import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 import Horse from "../components/racecard/Horse.vue";
 import SelectRacecardDialog from "../components/ui/SelectRacecardDialog.vue";
+import SelectHorseSortDialog from "../components/ui/SelectHorseSortDialog.vue";
 import Analysis from "../components/racecard/Analysis.vue";
 import "../scss/_main.scss";
 import TripAnalysis from "../components/racecard/TripAnalysis.vue";
 import { storeToRefs } from "pinia";
 import { useRacecardStateStore } from "../stores/racecardStateStore";
-import { HORSE_SORTING_METHOD_PROGRAM_NUMBER } from "../constants/horseSortingMethods";
+import {
+    HORSE_SORTING_METHOD_PROGRAM_NUMBER,
+    HORSE_SORTING_METHOD_NAME,
+    HORSE_SORTING_METHOD_MORNING_LINE,
+    HORSE_SORTING_METHOD_CSPM,
+    HORSE_SORTING_METHOD_TRIP,
+} from "../constants/horseSortingMethods";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
 const racecardStateStore = useRacecardStateStore();
-const { getCurrentRacecard, getCurrentRacecardIdx, getRacecards, currentRaceNumber } = storeToRefs(racecardStateStore);
+const { getCurrentRacecard, getCurrentRacecardIdx, getRacecards, currentRaceNumber, getRaceMeta, getTripData } = storeToRefs(racecardStateStore);
 
 let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
@@ -72,11 +79,102 @@ const helpTitle = ref("Help");
 const helpMessage = ref("For usage details and shortcuts, see the RailBreaker README.");
 const showPrintDialog = ref(false);
 const showSelectRacecardDialog = ref(false);
+const showSortMethodDialog = ref(false);
 const filteredRacecards = ref<Racecard[]>([]);
 let pendingPrintResolve: ((value: number[] | null) => void) | null = null;
 let switchingRaceTimeout: ReturnType<typeof setTimeout> | null = null;
 let switchingRaceStartedAt = 0;
 let switchingRaceFrameId: number | null = null;
+
+const horseSortingOptions = [
+    { value: HORSE_SORTING_METHOD_PROGRAM_NUMBER, label: "Program Number" },
+    { value: HORSE_SORTING_METHOD_NAME, label: "Horse Name" },
+    { value: HORSE_SORTING_METHOD_MORNING_LINE, label: "Morning Line" },
+    { value: HORSE_SORTING_METHOD_CSPM, label: "CSPM Score" },
+    { value: HORSE_SORTING_METHOD_TRIP, label: "Trip Score" },
+];
+
+function normalizeSortKey(value?: string | null): string {
+    return (value ?? "").trim().toLowerCase();
+}
+
+const cspmScoreLookup = computed(() => {
+    const byProgram = new Map<string, number>();
+    const byName = new Map<string, number>();
+    const horses = getRaceMeta.value?.race_rank_result?.horses ?? [];
+
+    for (const horse of horses) {
+        if (!Number.isFinite(horse.score)) {
+            continue;
+        }
+        const score = horse.score as number;
+        const program = normalizeSortKey(horse.program_number);
+        const name = normalizeSortKey(horse.horse_name);
+        if (program) {
+            byProgram.set(program, score);
+        }
+        if (name) {
+            byName.set(name, score);
+        }
+    }
+
+    return { byProgram, byName };
+});
+
+const tripScoreLookup = computed(() => {
+    const byProgram = new Map<string, { score: number; adjPoints: number }>();
+    const byName = new Map<string, { score: number; adjPoints: number }>();
+    const trips = getTripData.value ?? [];
+
+    for (const trip of trips) {
+        if (!Number.isFinite(trip.score)) {
+            continue;
+        }
+        const score = trip.score as number;
+        const adjPoints = Number.isFinite(trip.adjPoints) ? (trip.adjPoints as number) : Number.NEGATIVE_INFINITY;
+        const program = normalizeSortKey(trip.program_number);
+        const name = normalizeSortKey(trip.horse_name);
+        if (program) {
+            byProgram.set(program, { score, adjPoints });
+        }
+        if (name) {
+            byName.set(name, { score, adjPoints });
+        }
+    }
+
+    return { byProgram, byName };
+});
+
+function getCspmScore(horse: { program_number?: string; horse_name?: string }): number {
+    const program = normalizeSortKey(horse.program_number);
+    if (program && cspmScoreLookup.value.byProgram.has(program)) {
+        return cspmScoreLookup.value.byProgram.get(program) as number;
+    }
+    const name = normalizeSortKey(horse.horse_name);
+    if (name && cspmScoreLookup.value.byName.has(name)) {
+        return cspmScoreLookup.value.byName.get(name) as number;
+    }
+    return Number.NEGATIVE_INFINITY;
+}
+
+function getTripScore(horse: { program_number?: string; horse_name?: string }): { score: number; adjPoints: number } {
+    const program = normalizeSortKey(horse.program_number);
+    if (program && tripScoreLookup.value.byProgram.has(program)) {
+        return tripScoreLookup.value.byProgram.get(program) as { score: number; adjPoints: number };
+    }
+    const name = normalizeSortKey(horse.horse_name);
+    if (name && tripScoreLookup.value.byName.has(name)) {
+        return tripScoreLookup.value.byName.get(name) as { score: number; adjPoints: number };
+    }
+    return { score: Number.NEGATIVE_INFINITY, adjPoints: Number.NEGATIVE_INFINITY };
+}
+
+function compareProgramNumber(a: { program_number?: string }, b: { program_number?: string }): number {
+    return (a.program_number ?? "").localeCompare(b.program_number ?? "", undefined, {
+        numeric: true,
+        sensitivity: "base",
+    });
+}
 
 const sortedHorses = computed(() => {
     const horses = racecard.value?.races?.[race_number.value - 1]?.horses ?? [];
@@ -85,20 +183,50 @@ const sortedHorses = computed(() => {
 
     switch (method) {
         case HORSE_SORTING_METHOD_PROGRAM_NUMBER:
+            sorted.sort(compareProgramNumber);
+            break;
+        case HORSE_SORTING_METHOD_NAME:
             sorted.sort((a, b) =>
-                (a.program_number ?? "").localeCompare(b.program_number ?? "", undefined, {
-                    numeric: true,
+                normalizeSortKey(a.horse_name).localeCompare(normalizeSortKey(b.horse_name), undefined, {
                     sensitivity: "base",
                 })
             );
             break;
+        case HORSE_SORTING_METHOD_MORNING_LINE:
+            sorted.sort((a, b) => {
+                const aOdds = Number.isFinite(a.morning_line_odds) ? (a.morning_line_odds as number) : Number.POSITIVE_INFINITY;
+                const bOdds = Number.isFinite(b.morning_line_odds) ? (b.morning_line_odds as number) : Number.POSITIVE_INFINITY;
+                if (aOdds !== bOdds) {
+                    return aOdds - bOdds;
+                }
+                return compareProgramNumber(a, b);
+            });
+            break;
+        case HORSE_SORTING_METHOD_CSPM:
+            sorted.sort((a, b) => {
+                const aScore = getCspmScore(a);
+                const bScore = getCspmScore(b);
+                if (aScore !== bScore) {
+                    return bScore - aScore;
+                }
+                return compareProgramNumber(a, b);
+            });
+            break;
+        case HORSE_SORTING_METHOD_TRIP:
+            sorted.sort((a, b) => {
+                const aTrip = getTripScore(a);
+                const bTrip = getTripScore(b);
+                if (aTrip.score !== bTrip.score) {
+                    return bTrip.score - aTrip.score;
+                }
+                if (aTrip.adjPoints !== bTrip.adjPoints) {
+                    return bTrip.adjPoints - aTrip.adjPoints;
+                }
+                return compareProgramNumber(a, b);
+            });
+            break;
         default:
-            sorted.sort((a, b) =>
-                (a.program_number ?? "").localeCompare(b.program_number ?? "", undefined, {
-                    numeric: true,
-                    sensitivity: "base",
-                })
-            );
+            sorted.sort(compareProgramNumber);
             break;
     }
 
@@ -128,6 +256,14 @@ function handlePrintDialogPrint(value: number[]) {
     }
 }
 
+function handleSortMethodSelect(value: string) {
+    if (!value) {
+        return;
+    }
+    configFileStore.configState.horseSortingMethod = value;
+    void configFileStore.saveConfigFile();
+}
+
 function closeAllDialogs() {
     if (showPrintDialog.value) {
         handlePrintDialogUpdate(false);
@@ -136,9 +272,10 @@ function closeAllDialogs() {
     showAboutDialog.value = false;
     showHelpDialog.value = false;
     showSelectRacecardDialog.value = false;
+    showSortMethodDialog.value = false;
 }
 
-function openDialog(target: "error" | "about" | "help" | "print" | "select") {
+function openDialog(target: "error" | "about" | "help" | "print" | "select" | "sort") {
     closeAllDialogs();
     switch (target) {
         case "error":
@@ -155,6 +292,9 @@ function openDialog(target: "error" | "about" | "help" | "print" | "select") {
             break;
         case "select":
             showSelectRacecardDialog.value = true;
+            break;
+        case "sort":
+            showSortMethodDialog.value = true;
             break;
     }
 }
@@ -357,7 +497,7 @@ onMounted(async () => {
     });
 
     unlistenSortHorses = await listen("menu-sort-horses", () => {
-        // Placeholder for future sorting behavior.
+        openDialog("sort");
     });
 
     unlistenExit = await listen("menu-exit", async () => {
@@ -459,6 +599,12 @@ onUnmounted(() => {
             :selectedRacecardId="racecard?.id"
             @update:modelValue="showSelectRacecardDialog = $event"
             @open="handleOpenRacecard" />
+        <SelectHorseSortDialog
+            v-model="showSortMethodDialog"
+            :options="horseSortingOptions"
+            :selected="configFileStore.configState.horseSortingMethod"
+            @select="handleSortMethodSelect"
+        />
     </main>
 </template>
 
