@@ -140,8 +140,6 @@ onBeforeUnmount(() => {
 
                 <main>
                     <RaceDetails :racecard="payload!.raceCard" :race="race_number" :print="true" />
-                    <div class="print-divider" aria-hidden="true"></div>
-                    <TripAnalysis :race="payload!.raceCard.races[race_number - 1]" :print="true" />
                     <div>
                         <Horse v-for="(horse, idx) in (payload!.raceCard.races[race_number - 1]?.horses || [])"
                             :key="`${race_number}-${horse.id || horse.program_number || horse.post_position || idx}`"
@@ -186,11 +184,6 @@ onBeforeUnmount(() => {
 .print-view :deep(.trip-info-header),
 .print-view :deep(.trip-info-row) {
     font-size: 0.85rem;
-}
-
-.print-divider {
-    margin: 0.5rem 1rem 0.75rem;
-    border-top: 2px solid var(--ubuntu-blue);
 }
 
 @media print {
