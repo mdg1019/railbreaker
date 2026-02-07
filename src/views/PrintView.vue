@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
 }
 
 .print-divider {
-    margin: 0.5rem 0 0.75rem;
+    margin: 0.5rem 1rem 0.75rem;
     border-top: 2px solid var(--ubuntu-blue);
 }
 

@@ -76,9 +76,9 @@ const formatComment = (comment?: string) => {
 <template>
     <Panel :print="props.print">
         <div class="contents">
-            <div class="color-accent-yellow">Trip Handicapping Model</div>
+            <div class="trip-title color-accent-yellow">Trip Handicapping Model</div>
             <div class="trip-info-columns">
-                <div class="trip-info" :class="{ 'is-print': props.print }" v-for="(column, colIdx) in tripColumns" :key="colIdx">
+                <div class="trip-info" :class="{ 'is-print': props.print, 'font-extra-large': props.print }" v-for="(column, colIdx) in tripColumns" :key="colIdx">
                     <div class="trip-info-header">
                         <div class="color-accent-yellow">#</div>
                         <div class="color-accent-yellow">Horse</div>
@@ -134,8 +134,8 @@ const formatComment = (comment?: string) => {
 }
 
 .trip-info.is-print {
-    --trip-grid-columns: 2rem 8rem 4rem 6rem 4rem 2rem 8rem 4rem 4rem;
-    --trip-grid-width: calc(2rem + 8rem + 4rem + 6rem + 4rem + 2rem + 8rem + 4rem + 4rem + 8rem);
+    --trip-grid-columns: 2rem 10rem 4rem 6rem 4rem 2rem 8rem 4rem 4rem;
+    --trip-grid-width: calc(2rem + 10rem + 4rem + 6rem + 4rem + 2rem + 8rem + 4rem + 4rem + 8rem);
 }
 
 .trip-info-header,
@@ -172,5 +172,16 @@ const formatComment = (comment?: string) => {
 .trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(7),
 .trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(8) {
     padding-left: 2rem;
+}
+
+.trip-info.is-print :is(.trip-info-header, .trip-info-row) > div:nth-child(2),
+.trip-info.is-print :is(.trip-info-header, .trip-info-row) > div:nth-child(5),
+.trip-info.is-print :is(.trip-info-header, .trip-info-row) > div:nth-child(7),
+.trip-info.is-print :is(.trip-info-header, .trip-info-row) > div:nth-child(8) {
+    padding-left: 0;
+}
+
+.panel.print .trip-title {
+    font-size: 1.2rem;
 }
 </style>
