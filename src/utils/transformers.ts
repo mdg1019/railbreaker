@@ -639,9 +639,7 @@ export default class Transformers {
         if (!race) return new RaceClassification("", "");
 
         let raceClassification = race.todays_race_classification;
-        console.log("raceClassification:", raceClassification);
 
-        console.log(race.race_type, raceClassification.startsWith("Md "));
         if (race.race_type == "S" && raceClassification.startsWith("Md ")) {
             raceClassification =
                 "Mdn " +

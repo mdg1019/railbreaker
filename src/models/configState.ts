@@ -4,6 +4,7 @@ export class ConfigState {
   public windowY: number | null;
   public windowWidth: number | null;
   public windowHeight: number | null;
+  public horseSortingMethod: string;
 
   constructor(lastDirectory: string = '') {
     this.lastDirectory = lastDirectory;
@@ -11,6 +12,7 @@ export class ConfigState {
     this.windowY = null;
     this.windowWidth = null;
     this.windowHeight = null;
+    this.horseSortingMethod = 'program-number';
   }
 
   static fromObject(obj: any): ConfigState {
@@ -19,6 +21,8 @@ export class ConfigState {
     cs.windowY = obj.window_y ?? obj.windowY ?? null;
     cs.windowWidth = obj.window_width ?? obj.windowWidth ?? null;
     cs.windowHeight = obj.window_height ?? obj.windowHeight ?? null;
+    cs.horseSortingMethod =
+      obj.horse_sorting_method ?? obj.horseSortingMethod ?? 'program-number';
     return cs;
   }
 
@@ -29,6 +33,7 @@ export class ConfigState {
       window_y: this.windowY,
       window_width: this.windowWidth,
       window_height: this.windowHeight,
+      horse_sorting_method: this.horseSortingMethod,
     };
   }
 }

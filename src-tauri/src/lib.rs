@@ -1,4 +1,5 @@
 mod commands;
+mod constants;
 mod files;
 mod json;
 mod menus;
@@ -6,6 +7,7 @@ mod states;
 mod sqlite;
 
 use tauri::{Emitter, Manager};
+use constants::HORSE_SORTING_METHOD_DEFAULT;
 use commands::global_state_commands::load_global_state;
 use commands::config_file_commands::{load_config_file, save_config_file, get_config_file_path};
 use commands::process_zip_file_commands::process_zip_file;
@@ -153,6 +155,7 @@ async fn load_or_init_config(app_handle: tauri::AppHandle) {
             window_y: Some(y),
             window_width: Some(width),
             window_height: Some(height),
+            horse_sorting_method: HORSE_SORTING_METHOD_DEFAULT.to_string(),
         };
 
         let _ = files::write_json_file(path, &cfg).await;

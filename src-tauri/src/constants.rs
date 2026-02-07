@@ -1,0 +1,1 @@
+pub const HORSE_SORTING_METHOD_DEFAULT: &str = "program-number";

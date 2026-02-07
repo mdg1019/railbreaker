@@ -1,6 +1,7 @@
 use crate::ConfigState;
 use crate::global_state;
 use crate::files;
+use crate::constants::HORSE_SORTING_METHOD_DEFAULT;
 use tokio::fs;
 
 pub fn get_config_file_path() -> Result<String, String> {
@@ -32,13 +33,16 @@ pub async fn load_config_file() -> Result<ConfigState, String> {
             window_y: None,
             window_width: None,
             window_height: None,
+            horse_sorting_method: HORSE_SORTING_METHOD_DEFAULT.to_string(),
         };
 
         files::write_json_file(&path, &cs).await?;
         return Ok(cs);
     }
 
-    files::read_json_file::<ConfigState>(path).await
+    let config_state = files::read_json_file::<ConfigState>(path).await.unwrap();
+
+    Ok(config_state)
 }
 
 #[tauri::command]
