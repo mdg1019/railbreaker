@@ -60,6 +60,7 @@ const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
 const isRacecardMenuOpen = ref(false);
 
 const raceContainerRef = ref<HTMLElement | null>(null);
+const raceContentRef = ref<HTMLElement | null>(null);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
@@ -220,6 +221,7 @@ watch(race_number, async (_newVal, _oldVal) => {
         switchingRaceFrameId = requestAnimationFrame(() => resolve());
     });
     raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+    raceContentRef.value?.scrollTo({ top: 0, behavior: "smooth" });
     if (switchingRaceTimeout) {
         clearTimeout(switchingRaceTimeout);
     }
@@ -413,7 +415,7 @@ onUnmounted(() => {
             <div class="race-header">
                 <RacecardHeader :racecard="racecard" :race="race_number" />
             </div>
-            <div class="race-content">
+        <div class="race-content" ref="raceContentRef">
                 <RaceDetails :racecard="racecard" :race="race_number" :print="false" />
                 <Analysis :race_number="race_number" :race="racecard.races[race_number - 1]" :racecard_date="racecard.date" :track="racecard.track" :print="false" />
                 <TripAnalysis :race="racecard.races[race_number - 1]" :print="false" />
