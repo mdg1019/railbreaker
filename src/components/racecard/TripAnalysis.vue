@@ -12,19 +12,6 @@ const props = withDefaults(defineProps<{
     print: false,
 });
 
-class TripInfo {
-    program_number?: string;
-    horse_name?: string;
-    score?: number;
-    comment?: string;
-    surface?: string;
-    distance?: number;
-    date?: string;
-    track?: string;
-    adjPoints?: number;
-    scratched?: boolean;
-}
-
 const racecardStateStore = useRacecardStateStore();
 
 const tripData = computed(() => {

@@ -11,7 +11,6 @@ import RacecardHeader from "../components/racecard/RacecardHeader.vue";
 import RaceDetails from "../components/racecard/RaceDetails.vue";
 import Horse from "../components/racecard/Horse.vue";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
-import TripAnalysis from "../components/racecard/TripAnalysis.vue";
 import "../scss/_main.scss";
 
 const payload = ref<RaceCardPrintPayload | null>(null);
