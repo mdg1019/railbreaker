@@ -105,7 +105,7 @@ const sortedHorses = computed(() => {
 });
 
 function requestPrintRaces(): Promise<number[] | null> {
-    showPrintDialog.value = true;
+    openDialog("print");
     return new Promise((resolve) => {
         pendingPrintResolve = resolve;
     });
@@ -124,6 +124,37 @@ function handlePrintDialogPrint(value: number[]) {
     if (pendingPrintResolve) {
         pendingPrintResolve(value);
         pendingPrintResolve = null;
+    }
+}
+
+function closeAllDialogs() {
+    if (showPrintDialog.value) {
+        handlePrintDialogUpdate(false);
+    }
+    showErrorDialog.value = false;
+    showAboutDialog.value = false;
+    showHelpDialog.value = false;
+    showSelectRacecardDialog.value = false;
+}
+
+function openDialog(target: "error" | "about" | "help" | "print" | "select") {
+    closeAllDialogs();
+    switch (target) {
+        case "error":
+            showErrorDialog.value = true;
+            break;
+        case "about":
+            showAboutDialog.value = true;
+            break;
+        case "help":
+            showHelpDialog.value = true;
+            break;
+        case "print":
+            showPrintDialog.value = true;
+            break;
+        case "select":
+            showSelectRacecardDialog.value = true;
+            break;
     }
 }
 
@@ -160,7 +191,7 @@ async function handleOpenRacecard(id: number | null) {
     } catch (error) {
         isProcessingRacecard.value = false;
         errorMessage.value = String(error);
-        showErrorDialog.value = true;
+        openDialog("error");
     }
 }
 
@@ -215,7 +246,7 @@ onMounted(async () => {
 
         if (!racecardsInDatabase || racecardsInDatabase.length === 0) {
             errorMessage.value = "No racecards found in the database. Please import a ZIP file.";
-            showErrorDialog.value = true;
+            openDialog("error");
             return;
         }
 
@@ -230,12 +261,12 @@ onMounted(async () => {
 
         if (filteredRacecardsList.length === 0) {
             errorMessage.value = "All racecards in the database are already opened.";
-            showErrorDialog.value = true;
+            openDialog("error");
             return;
         }
 
         filteredRacecards.value = filteredRacecardsList;
-        showSelectRacecardDialog.value = true;
+        openDialog("select");
     });
 
     unlistenOpenZip = await listen("menu-open-zip", async () => {
@@ -256,7 +287,7 @@ onMounted(async () => {
             
             if (exists) {
                 errorMessage.value = `Racecard with ${filename} already exists in the database.`;
-                showErrorDialog.value = true;
+                openDialog("error");
 
                 return;
             }
@@ -285,7 +316,7 @@ onMounted(async () => {
                 isProcessingRacecard.value = false;
 
                 errorMessage.value = String(error);
-                showErrorDialog.value = true;
+                openDialog("error");
             }
         }
     });
@@ -331,11 +362,11 @@ onMounted(async () => {
     });
 
     unlistenHelp = await listen("menu-help", () => {
-        showHelpDialog.value = true;
+        openDialog("help");
     });
 
     unlistenAbout = await listen("menu-about", () => {
-        showAboutDialog.value = true;
+        openDialog("about");
     });
 
     await globalStateStore.loadGlobalState();
