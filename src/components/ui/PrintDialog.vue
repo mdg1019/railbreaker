@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import ModalDialog from './ModalDialog.vue'
 import RaceClassification from '../racecard/RaceClassification.vue'
 import type { Race, Racecard } from '../../models/racecard'
+import Transformers from '../../utils/transformers'
 
 const props = defineProps<{
     modelValue: boolean
@@ -19,7 +20,7 @@ const selectedRaces = ref<number[]>([])
 const races = computed(() => props.racecard?.races ?? [])
 const title = computed(() => {
     if (!props.racecard) return 'Print'
-    return `Print - ${props.racecard.track} - ${props.racecard.date}`
+    return `Print - ${props.racecard.track} - ${Transformers.formatRacecardDate(props.racecard.date)}`
 })
 
 function raceNumberFor(race: Race, idx: number) {
