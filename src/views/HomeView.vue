@@ -27,24 +27,26 @@ import { HORSE_SORTING_METHOD_PROGRAM_NUMBER } from "../constants/horseSortingMe
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
 const racecardStateStore = useRacecardStateStore();
-const { getCurrentRacecard, getCurrentRacecardIdx, getCurrentRaceNumber, getRacecards } = storeToRefs(racecardStateStore);
+const { getCurrentRacecard, getCurrentRacecardIdx, getRacecards, currentRaceNumber } = storeToRefs(racecardStateStore);
 
 let unlistenOpen: (() => void);
 let unlistenOpenZip: (() => void);
 let unlistenPrintRacecard: (() => void);
+let unlistenNextPage: (() => void);
+let unlistenPrevPage: (() => void);
+let unlistenSortHorses: (() => void);
 let unlistenExit: (() => void);
+let unlistenHelp: (() => void);
 let unlistenAbout: (() => void);
 
 const isProcessingZip = ref(false);
 const isProcessingRacecard = ref(false);
+const isSwitchingRace = ref(false);
 
 const racecard = getCurrentRacecard;
 const lastNoteUpdateAt = ref(0);
 
-const race_number = computed({
-    get: () => getCurrentRaceNumber.value,
-    set: (value) => racecardStateStore.setLastOpenedRace(value),
-});
+const race_number = currentRaceNumber;
 
 const currentRacecardIndex = computed({
     get: () => getCurrentRacecardIdx.value,
@@ -64,10 +66,16 @@ const errorMessage = ref("");
 const showAboutDialog = ref(false);
 const aboutTitle = ref("About");
 const aboutMessage = ref("RailBreaker");
+const showHelpDialog = ref(false);
+const helpTitle = ref("Help");
+const helpMessage = ref("For usage details and shortcuts, see the RailBreaker README.");
 const showPrintDialog = ref(false);
 const showSelectRacecardDialog = ref(false);
 const filteredRacecards = ref<Racecard[]>([]);
 let pendingPrintResolve: ((value: number[] | null) => void) | null = null;
+let switchingRaceTimeout: ReturnType<typeof setTimeout> | null = null;
+let switchingRaceStartedAt = 0;
+let switchingRaceFrameId: number | null = null;
 
 const sortedHorses = computed(() => {
     const horses = racecard.value?.races?.[race_number.value - 1]?.horses ?? [];
@@ -160,6 +168,7 @@ watch(racecard, async (rc) => {
     isRacecardMenuOpen.value = false;
 
     await invoke('set_print_racecard_enabled', { enabled: !!rc }).catch(() => { });
+    await invoke('set_view_menu_enabled', { enabled: !!rc }).catch(() => { });
 });
 
 watch([racecard, race_number], () => {
@@ -167,8 +176,26 @@ watch([racecard, race_number], () => {
 });
 
 watch(race_number, async (_newVal, _oldVal) => {
+    if (racecard.value) {
+        isSwitchingRace.value = true;
+        switchingRaceStartedAt = Date.now();
+    }
     await nextTick();
+    await nextTick();
+    if (switchingRaceFrameId) {
+        cancelAnimationFrame(switchingRaceFrameId);
+    }
+    await new Promise<void>((resolve) => {
+        switchingRaceFrameId = requestAnimationFrame(() => resolve());
+    });
     raceContainerRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (switchingRaceTimeout) {
+        clearTimeout(switchingRaceTimeout);
+    }
+    switchingRaceTimeout = setTimeout(() => {
+        isSwitchingRace.value = false;
+        switchingRaceTimeout = null;
+    }, Math.max(0, 600 - (Date.now() - switchingRaceStartedAt)));
 });
 
 document.documentElement.classList.add('dark');
@@ -287,8 +314,24 @@ onMounted(async () => {
         await openPrintWindowAndSendPayload(raceCardPrintPayload, {});
     });
 
+    unlistenNextPage = await listen("menu-next-page", () => {
+        racecardStateStore.setNextRaceNumber();
+    });
+
+    unlistenPrevPage = await listen("menu-prev-page", () => {
+        racecardStateStore.setPrevRaceNumber();
+    });
+
+    unlistenSortHorses = await listen("menu-sort-horses", () => {
+        // Placeholder for future sorting behavior.
+    });
+
     unlistenExit = await listen("menu-exit", async () => {
         await invoke('exit_app');
+    });
+
+    unlistenHelp = await listen("menu-help", () => {
+        showHelpDialog.value = true;
     });
 
     unlistenAbout = await listen("menu-about", () => {
@@ -303,8 +346,18 @@ onUnmounted(() => {
     unlistenOpen();
     unlistenOpenZip();
     unlistenPrintRacecard();
+    unlistenNextPage();
+    unlistenPrevPage();
+    unlistenSortHorses();
     unlistenExit();
+    unlistenHelp();
     unlistenAbout();
+    if (switchingRaceTimeout) {
+        clearTimeout(switchingRaceTimeout);
+    }
+    if (switchingRaceFrameId) {
+        cancelAnimationFrame(switchingRaceFrameId);
+    }
 });
 </script>
 
@@ -321,6 +374,9 @@ onUnmounted(() => {
         </div>
         <div class="processing" v-if="isProcessingRacecard">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing Racecard File'" />
+        </div>
+        <div class="processing" v-if="isSwitchingRace">
+            <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Switching Race'" />
         </div>
         <div class="race-container" v-if="racecard" ref="raceContainerRef">
             <div class="race-header">
@@ -353,6 +409,17 @@ onUnmounted(() => {
             link2Text="https://github.com/mdg1019/railbreaker/releases"
             link2Href="https://github.com/mdg1019/railbreaker/releases"
             link2Color="--accent-yellow"
+        />
+        <MessageDialog
+            v-model="showHelpDialog"
+            :message="helpMessage"
+            :title="helpTitle"
+            titleColor="--accent-yellow"
+            messageColor="--accent-green"
+            linkLabel="Docs: "
+            linkText="https://github.com/mdg1019/railbreaker#readme"
+            linkHref="https://github.com/mdg1019/railbreaker#readme"
+            linkColor="--accent-yellow"
         />
         <SelectRacecardDialog v-model="showSelectRacecardDialog" :racecards="filteredRacecards"
             :selectedRacecardId="racecard?.id"

@@ -19,6 +19,23 @@ pub fn set_print_racecard_enabled(app: tauri::AppHandle, enabled: bool) {
 }
 
 #[tauri::command]
+pub fn set_view_menu_enabled(app: tauri::AppHandle, enabled: bool) {
+    if let Some(window) = app.get_webview_window("main") {
+        if let Some(menu) = window.menu() {
+            if let Some(MenuItemKind::Submenu(view_menu)) = menu.get("view") {
+                for item_id in ["next-page", "prev-page", "sort-horses"] {
+                    if let Some(item) = view_menu.get(item_id) {
+                        if let MenuItemKind::MenuItem(item) = item {
+                            let _ = item.set_enabled(enabled);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[tauri::command]
 pub fn close_print_window(app: tauri::AppHandle) -> bool {
     if let Some(window) = app.get_webview_window("print") {
         let _ = window.hide();

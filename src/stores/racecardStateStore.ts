@@ -57,11 +57,40 @@ export const useRacecardStateStore = defineStore("RacecardState", {
         },
     },
     actions: {
+        setNextRaceNumber(): void {
+            const currentRacecard = this.getCurrentRacecard;
+            if (!currentRacecard) {
+                return;
+            }
+
+            const raceCount = currentRacecard.races?.length ?? 0;
+            if (raceCount === 0) {
+                return;
+            }
+
+            const nextRace = this.currentRaceNumber < raceCount ? this.currentRaceNumber + 1 : 1;
+            this.setLastOpenedRace(nextRace);
+        },   
+        setPrevRaceNumber(): void {
+            const currentRacecard = this.getCurrentRacecard;
+            if (!currentRacecard) {
+                return;
+            }
+
+            const raceCount = currentRacecard.races?.length ?? 0;
+            if (raceCount === 0) {
+                return;
+            }
+
+            const prevRace = this.currentRaceNumber > 1 ? this.currentRaceNumber - 1 : raceCount;
+            this.setLastOpenedRace(prevRace);
+        }, 
         setLastOpenedRace(raceNumber: number): void {
             this.currentRaceNumber = raceNumber;
             if (!isRacecardIdxValid(this.racecardState.currentRacecardIdx, this.racecardState)) {
                 return;
             }
+            
             this.racecardState.racecards.racecardEntries[this.racecardState.currentRacecardIdx].last_opened_race = raceNumber;
         },
         setCurrentRacecardIdx(idx: number): void {

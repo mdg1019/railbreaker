@@ -11,7 +11,13 @@ use constants::HORSE_SORTING_METHOD_DEFAULT;
 use commands::global_state_commands::load_global_state;
 use commands::config_file_commands::{load_config_file, save_config_file, get_config_file_path};
 use commands::process_zip_file_commands::process_zip_file;
-use commands::print_racecard::{close_print_window, hide_print_window_menu, print_racecard, set_print_racecard_enabled};
+use commands::print_racecard::{
+    close_print_window,
+    hide_print_window_menu,
+    print_racecard,
+    set_print_racecard_enabled,
+    set_view_menu_enabled,
+};
 use commands::process_racecard_file_commands::process_racecard_file;
 use commands::analysis_commands::rank_race;
 use commands::exit_app_command::exit_app;
@@ -66,6 +72,7 @@ pub fn run() {
             process_racecard_file,
             rank_race,
             set_print_racecard_enabled,
+            set_view_menu_enabled,
             close_print_window,
             hide_print_window_menu,
             exit_app,
@@ -217,6 +224,18 @@ fn on_menu_event(app: &tauri::AppHandle, event: tauri::menu::MenuEvent) {
         "print-racecard" => {
             print_racecard(app.clone());
             let _ = app.emit("menu-print", ()).unwrap();
+        }
+        "next-page" => {
+            let _ = app.emit("menu-next-page", ()).unwrap();
+        }
+        "prev-page" => {
+            let _ = app.emit("menu-prev-page", ()).unwrap();
+        }
+        "sort-horses" => {
+            let _ = app.emit("menu-sort-horses", ()).unwrap();
+        }
+        "help-item" => {
+            let _ = app.emit("menu-help", ()).unwrap();
         }
         "about" => {
             let _ = app.emit("menu-about", ()).unwrap();
