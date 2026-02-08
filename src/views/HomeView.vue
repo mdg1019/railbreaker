@@ -22,7 +22,7 @@ import Analysis from "../components/racecard/Analysis.vue";
 import "../scss/_main.scss";
 import TripAnalysis from "../components/racecard/TripAnalysis.vue";
 import { storeToRefs } from "pinia";
-import { useRacecardStateStore } from "../stores/racecardStateStore";
+import { TripInfo, useRacecardStateStore } from "../stores/racecardStateStore";
 import {
     HORSE_SORTING_METHOD_PROGRAM_NUMBER,
     HORSE_SORTING_METHOD_NAME,
@@ -122,23 +122,21 @@ const cspmScoreLookup = computed(() => {
 });
 
 const tripScoreLookup = computed(() => {
-    const byProgram = new Map<string, { score: number; adjPoints: number }>();
-    const byName = new Map<string, { score: number; adjPoints: number }>();
-    const trips = getTripData.value ?? [];
+    const byProgram = new Map<string, number>();
+    const byName = new Map<string, number>();
+    const trips: TripInfo[] = getTripData.value ?? [];
 
     for (const trip of trips) {
-        if (!Number.isFinite(trip.score)) {
-            continue;
-        }
-        const score = trip.score as number;
-        const adjPoints = Number.isFinite(trip.adjPoints) ? (trip.adjPoints as number) : Number.NEGATIVE_INFINITY;
+        const score = trip.score;
+        if (typeof score !== "number" || !Number.isFinite(score)) continue;
+
         const program = normalizeSortKey(trip.program_number);
         const name = normalizeSortKey(trip.horse_name);
         if (program) {
-            byProgram.set(program, { score, adjPoints });
+            byProgram.set(program, score);
         }
         if (name) {
-            byName.set(name, { score, adjPoints });
+            byName.set(name, score);
         }
     }
 
@@ -147,26 +145,30 @@ const tripScoreLookup = computed(() => {
 
 function getCspmScore(horse: { program_number?: string; horse_name?: string }): number {
     const program = normalizeSortKey(horse.program_number);
-    if (program && cspmScoreLookup.value.byProgram.has(program)) {
-        return cspmScoreLookup.value.byProgram.get(program) as number;
+    if (program) {
+        const byProgram = cspmScoreLookup.value.byProgram.get(program);
+        if (byProgram != null) return byProgram;
     }
     const name = normalizeSortKey(horse.horse_name);
-    if (name && cspmScoreLookup.value.byName.has(name)) {
-        return cspmScoreLookup.value.byName.get(name) as number;
+    if (name) {
+        const byName = cspmScoreLookup.value.byName.get(name);
+        if (byName != null) return byName;
     }
     return Number.NEGATIVE_INFINITY;
 }
 
-function getTripScore(horse: { program_number?: string; horse_name?: string }): { score: number; adjPoints: number } {
+function getTripScore(horse: { program_number?: string; horse_name?: string }): number {
     const program = normalizeSortKey(horse.program_number);
-    if (program && tripScoreLookup.value.byProgram.has(program)) {
-        return tripScoreLookup.value.byProgram.get(program) as { score: number; adjPoints: number };
+    if (program) {
+        const byProgram = tripScoreLookup.value.byProgram.get(program);
+        if (byProgram != null) return byProgram;
     }
     const name = normalizeSortKey(horse.horse_name);
-    if (name && tripScoreLookup.value.byName.has(name)) {
-        return tripScoreLookup.value.byName.get(name) as { score: number; adjPoints: number };
+    if (name) {
+        const byName = tripScoreLookup.value.byName.get(name);
+        if (byName != null) return byName;
     }
-    return { score: Number.NEGATIVE_INFINITY, adjPoints: Number.NEGATIVE_INFINITY };
+    return Number.NEGATIVE_INFINITY;
 }
 
 function compareProgramNumber(a: { program_number?: string }, b: { program_number?: string }): number {
@@ -216,11 +218,8 @@ const sortedHorses = computed(() => {
             sorted.sort((a, b) => {
                 const aTrip = getTripScore(a);
                 const bTrip = getTripScore(b);
-                if (aTrip.score !== bTrip.score) {
-                    return bTrip.score - aTrip.score;
-                }
-                if (aTrip.adjPoints !== bTrip.adjPoints) {
-                    return bTrip.adjPoints - aTrip.adjPoints;
+                if (aTrip !== bTrip) {
+                    return bTrip - aTrip;
                 }
                 return compareProgramNumber(a, b);
             });

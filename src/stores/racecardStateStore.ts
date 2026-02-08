@@ -14,17 +14,17 @@ function isRacecardIdxValid(idx: number, racecardState: RacecardState): boolean 
 let saveNoteTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
 let raceMetaRequestId = 0;
 
-type TripInfo = {
+export type TripInfo = {
+    scratched: boolean;
     program_number?: string;
     horse_name?: string;
     score?: number;
-    comment?: string;
-    surface?: string;
-    distance?: number;
-    date?: string;
-    track?: string;
-    adjPoints?: number;
-    scratched?: boolean;
+    days_back_1?: number;
+    comment_1?: string;
+    days_back_2?: number;
+    comment_2?: string;
+    days_back_3?: number;
+    comment_3?: string;
 };
 
 function updateHorseNote(racecard: Racecard, horseId: number, note: string): boolean {
@@ -103,13 +103,15 @@ export const useRacecardStateStore = defineStore("RacecardState", {
                     program_number: horse.program_number,
                     horse_name: horse.horse_name,
                     score: Number(cols[0]),
-                    comment: cols[1],
-                    surface: cols[2],
-                    distance: Number(cols[3]),
-                    date: cols[4],
-                    track: cols[5],
-                    adjPoints: Number(cols[6]),
+                    days_back_1: Number(cols[1]),
+                    comment_1: cols[2],
+                    days_back_2: Number(cols[3]),
+                    comment_2: cols[4],
+                    days_back_3: Number(cols[5]),
+                    comment_3: cols[6],
                 };
+
+                console.log(`Parsed trip info for horse ${horse.horse_name}:`, tripInfo);
                 trips.push(tripInfo);
             }
 
@@ -117,12 +119,7 @@ export const useRacecardStateStore = defineStore("RacecardState", {
                 .sort((a, b) => {
                     const scoreA = Number.isFinite(a.score) ? (a.score as number) : Number.NEGATIVE_INFINITY;
                     const scoreB = Number.isFinite(b.score) ? (b.score as number) : Number.NEGATIVE_INFINITY;
-                    if (scoreA !== scoreB) {
-                        return scoreB - scoreA;
-                    }
-                    const adjA = Number.isFinite(a.adjPoints) ? (a.adjPoints as number) : Number.NEGATIVE_INFINITY;
-                    const adjB = Number.isFinite(b.adjPoints) ? (b.adjPoints as number) : Number.NEGATIVE_INFINITY;
-                    return adjB - adjA;
+                    return scoreB - scoreA;
                 })
                 .map((item) => item);
         },
