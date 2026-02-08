@@ -4,6 +4,7 @@ import { Race } from "../../models/racecard";
 import Panel from "../ui/Panel.vue";
 import Transformers from "../../utils/transformers";
 import { useRacecardStateStore } from "../../stores/racecardStateStore";
+import Tooltip from "../ui/Tooltip.vue";
 
 const props = withDefaults(defineProps<{
     race: Race;
@@ -25,6 +26,23 @@ function formatTripComment(comment?: string | null): string {
     const withSpaces = comment.replace(/_/g, " ");
     return withSpaces.replace(/:\s*([a-z])/g, (_match, letter: string) => `: ${letter.toUpperCase()}`);
 }
+
+function tripCommentClass(comment?: string | null): string {
+    if (!comment) return "";
+    const normalized = comment.trim().toLowerCase();
+    const tag = normalized.split(":")[0]?.replace(/_/g, " ").trim() ?? "";
+    if (tag.startsWith("good")) return "color-accent-green";
+    if (tag.startsWith("bad")) return "color-accent-red";
+    if (tag.startsWith("excusable")) return "color-accent-yellow";
+    return "";
+}
+
+function tripScoreClass(score?: number | null): string {
+    if (score === null || score === undefined || Number.isNaN(score)) return "";
+    if (score > 0) return "color-accent-green";
+    if (score < 0) return "color-accent-red";
+    return "color-accent-yellow";
+}
 </script>
 
 <template>
@@ -32,7 +50,10 @@ function formatTripComment(comment?: string | null): string {
         <div class="contents">
             <div class="trip-title color-accent-yellow">Trip Handicapping Model</div>
             <div class="color-accent-yellow">Looks back 3 races not over 60 days old.</div>
-            <div class="color-accent-yellow">Scoring: <span class="color-accent-green">1st Trip</span> Good: 50, Bad: -50, <span class="color-accent-green">2nd Trip</span> Good: 30, Bad: -30, <span class="color-accent-green">3rd Trip</span> Good: 10, Bad: -10. <span class="color-accent-green">Excusables</span> always count as 0.</div>
+            <div class="color-accent-yellow">Scoring: <span class="color-accent-green">1st Trip</span> Good: 50, Bad:
+                -50, <span class="color-accent-green">2nd Trip</span> Good: 30, Bad: -30, <span
+                    class="color-accent-green">3rd Trip</span> Good: 10, Bad: -10. <span
+                    class="color-accent-green">Excusables</span> always count as 0.</div>
             <div class="trip-info" :class="{ 'is-print': props.print, 'font-extra-large': props.print }">
                 <div class="trip-info-header">
                     <div class="color-accent-yellow">#</div>
@@ -45,21 +66,31 @@ function formatTripComment(comment?: string | null): string {
                     <div class="color-accent-yellow">Days</div>
                     <div class="color-accent-yellow">Trip # 3</div>
                 </div>
-                <div
-                    class="trip-info-row"
-                    :class="{ 'is-scratched': trip.scratched }"
-                    v-for="(trip, idx) in trips"
-                    :key="idx"
-                >
-                    <div>{{ trip.program_number }}</div>
-                    <div>{{ Transformers.capitalize(trip.horse_name!) }}</div>
-                    <div>{{ trip.score }}</div>
-                    <div>{{ trip.days_back_1 }}</div>
-                    <div>{{ formatTripComment(trip.comment_1) }}</div>
-                    <div>{{ trip.days_back_2 ? trip.days_back_2 : "" }}</div>
-                    <div>{{ trip.days_back_2 ? formatTripComment(trip.comment_2) : "" }}</div>
-                    <div>{{ trip.days_back_3 ? trip.days_back_3 : "" }}</div>
-                    <div>{{ trip.days_back_3 ? formatTripComment(trip.comment_3) : "" }}</div>
+                <div class="trip-info-row" :class="{ 'is-scratched': trip.scratched }" v-for="(trip, idx) in trips"
+                    :key="idx">
+                    <div :class="tripScoreClass(trip.score)">{{ trip.program_number ? Number(trip.program_number) : "" }}</div>
+                    <div :class="tripScoreClass(trip.score)">{{ Transformers.capitalize(trip.horse_name!) }}</div>
+                    <div :class="tripScoreClass(trip.score)">{{ trip.score }}</div>
+                    <div :class="tripCommentClass(trip.comment_1)">{{ trip.days_back_1 }}</div>
+
+                    <Tooltip
+                        :text="race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[0]?.extended_start_comment || ''">
+                        <div :class="tripCommentClass(trip.comment_1)">{{ formatTripComment(trip.comment_1) }}</div>
+                    </Tooltip>
+
+                    <div :class="tripCommentClass(trip.comment_2)">{{ trip.days_back_2 ? trip.days_back_2 : "" }}</div>
+
+                    <Tooltip
+                        :text="race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[1]?.extended_start_comment || ''">
+                        <div :class="tripCommentClass(trip.comment_2)">{{ formatTripComment(trip.comment_2) }}</div>
+                    </Tooltip>
+
+                    <div :class="tripCommentClass(trip.comment_3)">{{ trip.days_back_3 ? trip.days_back_3 : "" }}</div>
+
+                    <Tooltip
+                        :text="race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[2]?.extended_start_comment || ''">
+                        <div :class="tripCommentClass(trip.comment_3)">{{ formatTripComment(trip.comment_3) }}</div>
+                    </Tooltip>
                 </div>
             </div>
         </div>
@@ -103,7 +134,7 @@ function formatTripComment(comment?: string | null): string {
     pointer-events: none;
 }
 
-.trip-info :is(.trip-info-header, .trip-info-row) > div:nth-child(1) {
+.trip-info :is(.trip-info-header, .trip-info-row)>div:nth-child(1) {
     text-align: right;
 }
 </style>
