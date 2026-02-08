@@ -33,16 +33,16 @@ function formatTripComment(comment?: string | null): string {
             <div class="trip-title color-accent-yellow">Trip Handicapping Model</div>
             <div class="color-accent-yellow">Looks back 3 races not over 60 days old.</div>
             <div class="color-accent-yellow">Scoring: <span class="color-accent-green">1st Trip</span> Good: 50, Bad: -50, <span class="color-accent-green">2nd Trip</span> Good: 30, Bad: -30, <span class="color-accent-green">3rd Trip</span> Good: 10, Bad: -10. <span class="color-accent-green">Excusables</span> always count as 0.</div>
-            <div class="trip-info font-small" :class="{ 'is-print': props.print, 'font-extra-large': props.print }">
+            <div class="trip-info" :class="{ 'is-print': props.print, 'font-extra-large': props.print }">
                 <div class="trip-info-header">
                     <div class="color-accent-yellow">#</div>
                     <div class="color-accent-yellow">Horse</div>
                     <div class="color-accent-yellow">Score</div>
-                    <div class="color-accent-yellow">Days Back</div>
+                    <div class="color-accent-yellow">Days</div>
                     <div class="color-accent-yellow">Trip # 1</div>
-                    <div class="color-accent-yellow">Days Back</div>
+                    <div class="color-accent-yellow">Days</div>
                     <div class="color-accent-yellow">Trip # 2</div>
-                    <div class="color-accent-yellow">Days Back</div>
+                    <div class="color-accent-yellow">Days</div>
                     <div class="color-accent-yellow">Trip # 3</div>
                 </div>
                 <div
@@ -78,8 +78,8 @@ function formatTripComment(comment?: string | null): string {
     gap: 0.5rem;
     margin-top: 1rem;
     flex: 1 1 0;
-    --trip-grid-columns: 1rem 10rem 3rem 5em 15rem 6rem 15rem 6rem 15rem;
-    --trip-grid-width: calc(1rem + 10rem + 3rem + 5em + 15rem + 6rem + 15rem + 6rem + 15rem);
+    --trip-grid-columns: 2rem 15rem 4rem 2em 20rem 4rem 20rem 4rem 20rem;
+    --trip-grid-width: calc(2rem + 15rem + 4rem + 2em + 20rem + 4rem + 20rem + 4rem + 20rem);
 }
 
 .trip-info-header,
