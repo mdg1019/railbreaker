@@ -43,11 +43,11 @@ export function computePrimePowerComparisons(
 
     entries.forEach((e, i) => {
         const position = i + 1;
-        let color = "var(--accent-yellow)";
+        let color = "var(--accent-green)";
         if (position <= tier) {
-            color = "var(--accent-green)";
-        } else if (position > 2 * tier) {
             color = "var(--accent-red)";
+        } else if (position > 2 * tier) {
+            color = "var(--accent-yellow)";
         }
 
         const tuple: PrimePowerComparison = [e.post, ordinal(position), color];

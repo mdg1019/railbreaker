@@ -1,7 +1,7 @@
 <template>
   <span class="tooltip">
     <slot />
-    <span v-if="props.text" class="tooltip-text">{{ props.text }}</span>
+    <span v-if="props.text" class="tooltip-text" v-html="props.text"></span>
   </span>
 </template>
 
