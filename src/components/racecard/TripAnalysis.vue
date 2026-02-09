@@ -57,24 +57,42 @@ function tripScoreClass(score?: number | null): string {
 function createTripCommentTooltip(comment: string | null | undefined, pp: PastPerformance | null | undefined): string {
     if (!comment || !pp) return "";
 
+    let raceClassification = Transformers.getPPRaceClassification(pp);
+    let firstCall = Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.first_call_position),
+        Transformers.parseNumberOrNull(pp.first_call_between_lengths)
+    );
+    let secondCall = Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.second_call_position),
+        Transformers.parseNumberOrNull(pp.second_call_between_lengths_leader)
+    );
+    let stretchCall = Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.stretch_call_position),
+        Transformers.parseNumberOrNull(pp.stretch_call_between_lengths_leader)
+    );
+    let finish = Transformers.getPositionAndLengthsBehindStrings(
+        Transformers.parseNumberOrNull(pp.finish_position),
+        Transformers.parseNumberOrNull(pp.finish_between_lengths_leader)
+    );
+
     let result = `
     <div class="tooltip-title">
-        <span>${pp.race_date}</span>
-        <span>${pp.race_classication}</span>
-        <span>${pp.distance! / 220.0}f</span>
-        <span>${pp.surface}</span>
-        <span>${pp.track_condition}</span>
+        <span>${Transformers.formatDateShort(pp.race_date)}${pp.track_code}</span><span class="use-superscript">${pp.race_number}</span>
+        <span class="color-accent-yellow surface-string">${Transformers.getSurfaceString(pp)}</span>
+        <span>${Transformers.getShortLength(pp.distance)}</span>
+        <span>${pp.track_condition.toLowerCase()}</span>${pp.sealed_track_indicator ? '<span class="use-superscript">s</span>' : ""}
+        <span class="color-accent-yellow">${raceClassification.prefix}</span><span>${raceClassification.classification}</span>
     </div>
     <div>
         <span>PP: ${pp.post_position}</span>
         <span>ST: ${pp.start_call_position}</span>
-        <span>1C: ${pp.first_call_position}(${pp.first_call_between_lengths_leader})</span>
-        <span>2C: ${pp.second_call_position}(${pp.second_call_between_lengths_leader})</span>
-        <span>STR: ${pp.stretch_call_position}(${pp.stretch_call_between_lengths_leader})</span>
-        <span>FIN: ${pp.finish_position}(${pp.finish_between_lengths_leader})</span>
+        <span>1C: ${firstCall.position}</span><span class="use-superscript">${firstCall.lengthsBehind}</span>
+        <span>2C: ${secondCall.position}</span><span class="use-superscript">${secondCall.lengthsBehind}</span>
+        <span>STR: ${stretchCall.position}</span><span class="use-superscript">${stretchCall.lengthsBehind}</span>
+        <span>FIN: ${finish.position}</span><span class="use-superscript">${finish.lengthsBehind}</span>
     </div>
     <div>
-        <span class="${tripCommentClass(comment)}">${normalizeExtendedStartComment(pp.extended_start_comment)}</span>
+        <span class="${tripCommentClass(comment)}">${normalizeExtendedStartComment(pp.extended_start_comment).replace(/;/g, ",")}</span>
     </div>
     `;
 
@@ -106,27 +124,27 @@ function createTripCommentTooltip(comment: string | null | undefined, pp: PastPe
                 <div class="trip-info-row" :class="{ 'is-scratched': trip.scratched }" v-for="(trip, idx) in trips"
                     :key="idx">
                     <div :class="tripScoreClass(trip.score)">{{ trip.program_number ? Number(trip.program_number) : ""
-                        }}</div>
+                    }}</div>
                     <div :class="tripScoreClass(trip.score)">{{ Transformers.capitalize(trip.horse_name!) }}</div>
                     <div :class="tripScoreClass(trip.score)">{{ trip.score }}</div>
                     <div :class="tripCommentClass(trip.comment_1)">{{ trip.days_back_1 }}</div>
 
                     <Tooltip class="trip-tooltip"
-                        :text="`<div class='tooltip-title color-accent-green'>${createTripCommentTooltip(trip.comment_1, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[0] || null)}</div>`">
+                        :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_1, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[0] || null)}</div>`">
                         <div :class="tripCommentClass(trip.comment_1)">{{ formatTripComment(trip.comment_1) }}</div>
                     </Tooltip>
 
                     <div :class="tripCommentClass(trip.comment_2)">{{ trip.days_back_2 ? trip.days_back_2 : "" }}</div>
 
                     <Tooltip class="trip-tooltip"
-                        :text="`<div class='color-accent-green'>${createTripCommentTooltip(trip.comment_2, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[1] || null)}</div>`">
+                        :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_2, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[1] || null)}</div>`">
                         <div :class="tripCommentClass(trip.comment_2)">{{ formatTripComment(trip.comment_2) }}</div>
                     </Tooltip>
 
                     <div :class="tripCommentClass(trip.comment_3)">{{ trip.days_back_3 ? trip.days_back_3 : "" }}</div>
 
                     <Tooltip class="trip-tooltip"
-                        :text="`<div class='color-accent-green'>${createTripCommentTooltip(trip.comment_3, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[2] || null)}</div>`">
+                        :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_3, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[2] || null)}</div>`">
                         <div :class="tripCommentClass(trip.comment_3)">{{ formatTripComment(trip.comment_3) }}</div>
                     </Tooltip>
                 </div>
@@ -188,4 +206,9 @@ function createTripCommentTooltip(comment: string | null | undefined, pp: PastPe
     width: 40rem;
 }
 
+:deep(.trip-tooltip .tooltip-text .surface-string) {
+    position: relative;
+    left: 0.45rem;
+    display: inline-block;
+}
 </style>
