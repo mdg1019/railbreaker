@@ -122,7 +122,6 @@ const horseColumns = computed(() => {
                     </div>
                 </div>
             </div>
-            <div class="caution color-accent-yellow">(Caution: <span class="color-accent-green">This output is based on a mathematical model and is intended to be used as one of several analytical tools. Projected winners have an increased likelihood of success if the race unfolds in accordance with the model’s assumptions. However, horse racing is inherently unpredictable. Do not rely solely on computer projections, as late scratches and race-day variables can materially affect the outcome.</span>)</div>
         </div>
     </Panel>
 </template>

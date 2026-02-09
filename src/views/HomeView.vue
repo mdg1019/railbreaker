@@ -76,7 +76,17 @@ const aboutTitle = ref("About");
 const aboutMessage = ref("RailBreaker");
 const showHelpDialog = ref(false);
 const helpTitle = ref("Help");
-const helpMessage = ref("For usage details and shortcuts, see the RailBreaker README.");
+const helpMessageRows = ref<Array<[string, string]>>([
+    ["Open Racecard", "Cmd/Ctrl+O"],
+    ["Open Zip", "Cmd/Ctrl+Shift+O"],
+    ["Print Racecard", "Cmd/Ctrl+Shift+P"],
+    ["Next Page", "Cmd/Ctrl+N"],
+    ["Previous Page", "Cmd/Ctrl+P"],
+    ["Sort Horses", "Cmd/Ctrl+S"],
+    ["Help", "Cmd/Ctrl+H"],
+    ["Exit", "Cmd/Ctrl+Q"],
+]);
+const helpMessage = ref("This output from the Contextual Speed and Pace Model is based on a mathematical model and is intended to be used as one of several analytical tools. Projected winners have an increased likelihood of success if the race unfolds in accordance with the model’s assumptions. However, horse racing is inherently unpredictable. Do not rely solely on computer projections, as late scratches and race-day variables can materially affect the outcome.\n\nThe Trip Handicapping Model is very much a work in progress. Be sure to study the PP info in the tooltip to get a more accurate depiction of the trip.");
 const showPrintDialog = ref(false);
 const showSelectRacecardDialog = ref(false);
 const showSortMethodDialog = ref(false);
@@ -586,13 +596,12 @@ onUnmounted(() => {
         <MessageDialog
             v-model="showHelpDialog"
             :message="helpMessage"
+            :messageRows="helpMessageRows"
+            messageRowsTitle="Keyboard Shortcuts"
             :title="helpTitle"
+            dialogWidth="min(90vw, 1040px)"
             titleColor="--accent-yellow"
             messageColor="--accent-green"
-            linkLabel="Docs: "
-            linkText="https://github.com/mdg1019/railbreaker#readme"
-            linkHref="https://github.com/mdg1019/railbreaker#readme"
-            linkColor="--accent-yellow"
         />
         <SelectRacecardDialog v-model="showSelectRacecardDialog" :racecards="filteredRacecards"
             :selectedRacecardId="racecard?.id"

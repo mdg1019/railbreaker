@@ -5,6 +5,8 @@ const props = defineProps<{
   modelValue: boolean
   title?: string,
   titleColor?: string
+  dialogWidth?: string
+  dialogMaxWidth?: string
 }>()
 
 const emit = defineEmits<{
@@ -179,7 +181,17 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <transition name="fade">
       <div v-if="modelValue" class="backdrop">
-        <div ref="dialogRef" class="dialog" role="dialog" aria-modal="true" tabindex="-1">
+        <div
+          ref="dialogRef"
+          class="dialog"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          :style="{
+            width: dialogWidth || undefined,
+            maxWidth: dialogMaxWidth || undefined
+          }"
+        >
           <div class="header-content-wrapper">
             <header class="titlebar">
               <span class="title" :style="titleColor ? 'color: var(' + titleColor + ')' : 'color: var(--fg)'">{{ title }}</span>

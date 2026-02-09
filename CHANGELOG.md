@@ -1,7 +1,9 @@
-## 0.3.3
-- Fixed some issues about displaying the correct PPs, workouts, and key trainer stats after the first race.
-- Added the track code to the workouts.
-- Found the correct lengths behind using a SQL query for the following: 0.03 - nose, 0.13 - head, 0.25 - neck.
+## 0.4.0
+- RailBreaker now requires using the railbreaker-lib library to compile. See the README.md for details.
+- Added a Trip Handicapping Model. This is a work in progress. Check out the tooltips over the trip info. Super handy.
+- Lots of UI changes. Added support for the Trip Handicapping Model. The horses can be sorted (see View -> Sort Horses menu option). Hotkeys are available for Next and Previous races. 
+- Added a Help dialog. It explains the available hotkeys and has warnings about the handicapping model. Use the models as guides!!!
+- I'm using a Pinia state to better handle the racecard info.
 ## 0.3.2
 - Improved the code that was allowing an incorrectly formatted Brisnet file load.
 - Added an About dialog box.
@@ -10,7 +12,6 @@
 - Refactored how scratches are done. The old code worked, but it was kind of sloppy.
 ## 0.3.0
 - Added a Contextual Speed and Pace Model to try to project the outcome of a race. Use any results with caution. If a computer was really good at picking winning horse races, the tracks would be out of business a long time ago. It's a guide. Nothing more. Because the model is dependent upon scratches, it only appears in the display screen and not in printouts. There are many factors that can skew a race, track bias, jockey change, trainer change, bad weather, etc.
-
 ## 0.2.0
 - Added notes. You can create a note for each horse. Empty notes are ignored in printouts. 
 - Racecards are now saved in a Sqlite database in the Racecards directory with the filenames "railbreaker.db*"

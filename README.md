@@ -2,24 +2,20 @@
 
 Is a Rust/Tauri app for handicapping horse races. It uses the single-file data files from Brisnet.
 
+### To compile RailBreaker:
+You will need to use the [railbreaker-lib](https://github.com/mdg1019/railbreaker-lib) to compile RailBreaker. Directions for using the library are contained in the library's README. Easy to use!!!
+
 #### Railbreaker can do this at present:
 
 - Unzip and load a racecard file.
 - Load a previously unzipped racecard file.
 - Load multiple racecards. (Racecard selection is changed in the sliding-left menu.)
-- The basic racecard is complete. (I need to proofread it more against Brisnet PPs.)
-- Added a tooltip to the comments. When clicking on a comment, you can see the extended comment if one is available. I'll be adding more helpful tooltips like this where I think they'd be useful.
-- Printouts are working. It prints the whole card right now, but I plan to add a dialog box to allow the user to select either all races or select which ones to print.
-- Added a Print Dialog box so that the user can select what races should be printed. See pic below.
-- Switched to a Sqlite database instead of the .json files.
-- Notes for each horse are working.
+- Printouts are working. A Print Dialog box is available to select all or individual races.
+- SQLite database holds the racecard info.
+- Notes for each horse is available.
 - Contextual Speed and Pace Model attempts to determine the outcome of each race.
-
-#### Things to do:
-
-- Add more bells and whistles over time to the UI.
-- Build a companion program that will take the Contextual Speed and Pace Model and compare that with data from the PP and a Brisnet comprehensive results file to see where the model did well and where it didn't do well. Hopefully, this can spot patterns to improve the analysis. This will take time to build the data to see if anything pops out.
-- Research other handicapping models.
+- Trip Handicapping Model helps you see significant trip comments.
+- Sorting of the horses by varying means.
 
 #### Windows Users:
 I do not have a signing certificate. You will be asked about this during installation. Go ahead and install it. To run the app, you need to run it as an Administrator. Just right-click the app's icon and select ***Run as Administrator***.

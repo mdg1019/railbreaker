@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, PropType, nextTick, ref, watch } from 'vue';
+import { defineComponent, PropType, computed, nextTick, ref, watch } from 'vue';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import ModalDialog from './ModalDialog.vue';
 
@@ -15,9 +15,29 @@ export default defineComponent({
       type: String as PropType<string>,
       default: ''
     },
+    dialogWidth: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    dialogMaxWidth: {
+      type: String as PropType<string>,
+      default: ''
+    },
     message: {
       type: String as PropType<string>,
       required: true
+    },
+    messageRows: {
+      type: Array as PropType<Array<[string, string]>>,
+      default: () => []
+    },
+    messageRowsTitle: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    messageColumns: {
+      type: Number as PropType<number>,
+      default: 0
     },
     titleColor: {
       type: String as PropType<string>,
@@ -68,6 +88,23 @@ export default defineComponent({
   setup(props, { emit }) {
     const okButton = ref<HTMLButtonElement | null>(null)
 
+    const messageStyle = computed(() => {
+      const style: Record<string, string> = {}
+      if (props.messageColor) {
+        style.color = `var(${props.messageColor})`
+      }
+      if (props.messageColumns && props.messageColumns > 1) {
+        style.columnCount = String(props.messageColumns)
+        style.columnGap = '1.5rem'
+      }
+      return Object.keys(style).length ? style : undefined
+    })
+
+    const messageColorStyle = computed(() => {
+      if (!props.messageColor) return undefined
+      return { color: `var(${props.messageColor})` }
+    })
+
     const close = () => {
       emit('update:modelValue', false);
     };
@@ -92,7 +129,7 @@ export default defineComponent({
       await openUrl(href)
     }
 
-    return { close, updateModelValue, okButton, handleLinkClick };
+    return { close, updateModelValue, okButton, handleLinkClick, messageStyle, messageColorStyle };
   }
 });
 </script>
@@ -102,15 +139,29 @@ export default defineComponent({
     :model-value="modelValue"
     :title="title"
     :title-color="titleColor"
+    :dialog-width="dialogWidth"
+    :dialog-max-width="dialogMaxWidth"
     @update:modelValue="updateModelValue"
   >
-    <p class="message" :style="messageColor ? 'color: var(' + messageColor + ')' : undefined">
+    <template v-if="messageRows.length">
+      <p v-if="messageRowsTitle" class="message message-left message-rows-title">
+        {{ messageRowsTitle }}
+      </p>
+      <div class="message-grid" :style="messageColorStyle">
+        <div v-for="(row, idx) in messageRows" :key="idx" class="message-grid-row">
+          <span class="message-cell">{{ row[0] }}</span>
+          <span class="message-cell message-cell-key">{{ row[1] }}</span>
+        </div>
+      </div>
+      <p v-if="message" class="message message-left" :style="messageColorStyle">{{ message }}</p>
+    </template>
+    <p v-else class="message" :style="messageStyle">
       {{ message }}
     </p>
     <p
       v-if="(linkText && linkHref) || (link2Text && link2Href)"
       class="message"
-      :style="messageColor ? 'color: var(' + messageColor + ')' : undefined"
+      :style="messageColorStyle"
     >
       <span v-if="linkText && linkHref">{{ linkLabel }}</span>
       <a
@@ -151,6 +202,39 @@ export default defineComponent({
 <style scoped>
 .message {
   white-space: pre-line;
+}
+
+.message-left {
+  text-align: left;
+}
+
+.message-rows-title {
+  color: var(--accent-yellow);
+}
+
+.message-grid {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-auto-rows: min-content;
+  row-gap: 0.3rem;
+  column-gap: 4rem;
+  margin: 1rem 0 1rem 0;
+  justify-content: start;
+}
+
+.message-grid-row {
+  display: contents;
+}
+
+.message-cell {
+  padding: 0.1rem 0;
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.message-cell-key {
+  white-space: nowrap;
 }
 
 .link {
