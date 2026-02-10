@@ -2,8 +2,14 @@
 
 Is a Rust/Tauri app for handicapping horse races. It uses the single-file data files from Brisnet.
 
-### To compile RailBreaker:
+#### To compile RailBreaker:
 You will need to use the [railbreaker-lib](https://github.com/mdg1019/railbreaker-lib) to compile RailBreaker. Directions for using the library are contained in the library's README. Easy to use!!!
+
+#### Windows Users Installation:
+I do not have a signing certificate. You will be asked about this during installation. Go ahead and install it. To run the app, you need to run it as an Administrator. Just right-click the app's icon and select ***Run as Administrator***.
+
+#### Windows Hotkeys Aren't Working:
+Hotkeys not working correctly in Windows. When I was testing the Windows version of 0.4.0, I noticed that the hotkeys aren't working. There seems to be an issue with Tauri v2 that's causing this issue. All of the new options work though the menus. I didn't want to hold up the 0.4.0 release with this. I will fix the problem as a solution is found. Sorry. The hotkeys are really helpful for navigating. Score one for Linux.
 
 #### Railbreaker can do this at present:
 
@@ -16,9 +22,6 @@ You will need to use the [railbreaker-lib](https://github.com/mdg1019/railbreake
 - Contextual Speed and Pace Model attempts to determine the outcome of each race.
 - Trip Handicapping Model helps you see significant trip comments.
 - Sorting of the horses by varying means.
-
-#### Windows Users:
-I do not have a signing certificate. You will be asked about this during installation. Go ahead and install it. To run the app, you need to run it as an Administrator. Just right-click the app's icon and select ***Run as Administrator***.
 
 #### Racecard is Complete:
 
