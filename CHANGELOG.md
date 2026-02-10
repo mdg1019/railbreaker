@@ -1,3 +1,5 @@
+## 0.4.1
+- Fixed the issue with Windows now recognizing hotkeys.
 ## 0.4.0
 - RailBreaker now requires using the railbreaker-lib library to compile. See the README.md for details.
 - Added a Trip Handicapping Model. This is a work in progress. Check out the tooltips over the trip info. Super handy.

@@ -7,6 +7,8 @@ mod states;
 mod sqlite;
 
 use tauri::{Emitter, Manager};
+#[cfg(desktop)]
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
 use constants::HORSE_SORTING_METHOD_DEFAULT;
 use commands::global_state_commands::load_global_state;
 use commands::config_file_commands::{load_config_file, save_config_file, get_config_file_path};
@@ -34,9 +36,13 @@ pub fn run() {
 
     tauri::Builder::default()
         .setup(move |app| {
+            #[cfg(desktop)]
+            let _ =app.handle().plugin(tauri_plugin_global_shortcut::Builder::new().build());
+
             init_setup(app)?;
 
             menus::setup_menus(app)?;
+            register_global_shortcuts(app);
 
             if let Some(window) = app.get_webview_window("main") {
                 let window_clone = window.clone();
@@ -85,6 +91,46 @@ pub fn run() {
         ])
         .run(context)
         .expect("error while running tauri application");
+}
+
+fn register_global_shortcuts(app: &tauri::App) {
+    #[cfg(desktop)]
+    {
+        let gs = app.global_shortcut();
+
+        let _ = gs.on_shortcut("CmdOrCtrl+O", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-open", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+Shift+O", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-open-zip", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+Shift+P", move |app, _shortcut, _event| {
+            print_racecard(app.clone());
+            let _ = app.emit("menu-print", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+N", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-next-page", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+P", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-prev-page", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+S", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-sort-horses", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+H", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-help", ());
+        });
+
+        let _ = gs.on_shortcut("CmdOrCtrl+Q", move |app, _shortcut, _event| {
+            let _ = app.emit("menu-exit", ());
+        });
+    }
 }
 
 fn init_setup(app: &tauri::App) -> Result<(), String> {

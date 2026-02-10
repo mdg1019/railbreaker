@@ -1,4 +1,4 @@
-use tauri::{menu::{Menu, MenuItem, Submenu, PredefinedMenuItem}, App, Manager};
+use tauri::{menu::{Menu, MenuItem, Submenu, PredefinedMenuItem}, App};
 
 pub fn setup_menus(app: &App) -> tauri::Result<()> {
     let open = MenuItem::with_id(app, "open", "Open Racecard…", true, Some("CmdOrCtrl+O"))?;
@@ -37,9 +37,8 @@ pub fn setup_menus(app: &App) -> tauri::Result<()> {
 
     let menu = Menu::with_items(app, &[&file_menu, &view_menu, &help_menu])?;
 
-    if let Some(window) = app.get_webview_window("main") {
-        window.set_menu(menu)?;
-    }
+    // Apply as the app-wide menu so accelerators work even if the window isn't ready yet.
+    app.set_menu(menu)?;
 
     Ok(())
 }
