@@ -37,7 +37,10 @@ function normalizeExtendedStartComment(comment?: string | null): string {
     return withoutDate.trim();
 }
 
-function tripCommentClass(comment?: string | null): string {
+function tripCommentClass(comment?: string | null, daysBack?: number | null): string {
+    if (daysBack !== null && daysBack !== undefined && !Number.isNaN(daysBack) && daysBack > 60) {
+        return "color-accent-purple";
+    }
     if (!comment) return "";
     const normalized = comment.trim().toLowerCase();
     const tag = normalized.split(":")[0]?.replace(/_/g, " ").trim() ?? "";
@@ -127,21 +130,21 @@ function createTripCommentTooltip(comment: string | null | undefined, pp: PastPe
                     }}</div>
                     <div :class="tripScoreClass(trip.score)">{{ Transformers.capitalize(trip.horse_name!) }}</div>
                     <div :class="tripScoreClass(trip.score)">{{ trip.score }}</div>
-                    <div :class="tripCommentClass(trip.comment_1)">{{ trip.days_back_1 }}</div>
+                    <div :class="tripCommentClass(trip.comment_1, trip.days_back_1)">{{ trip.days_back_1 }}</div>
 
                     <Tooltip class="trip-tooltip"
                         :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_1, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[0] || null)}</div>`">
                         <div :class="tripCommentClass(trip.comment_1)">{{ formatTripComment(trip.comment_1) }}</div>
                     </Tooltip>
 
-                    <div :class="tripCommentClass(trip.comment_2)">{{ trip.days_back_2 ? trip.days_back_2 : "" }}</div>
+                    <div :class="tripCommentClass(trip.comment_2, trip.days_back_2)">{{ trip.days_back_2 ? trip.days_back_2 : "" }}</div>
 
                     <Tooltip class="trip-tooltip"
                         :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_2, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[1] || null)}</div>`">
                         <div :class="tripCommentClass(trip.comment_2)">{{ formatTripComment(trip.comment_2) }}</div>
                     </Tooltip>
 
-                    <div :class="tripCommentClass(trip.comment_3)">{{ trip.days_back_3 ? trip.days_back_3 : "" }}</div>
+                    <div :class="tripCommentClass(trip.comment_3, trip.days_back_3)">{{ trip.days_back_3 ? trip.days_back_3 : "" }}</div>
 
                     <Tooltip class="trip-tooltip"
                         :text="`<div class='tooltip-title'>${createTripCommentTooltip(trip.comment_3, race.horses.find(horse => horse.program_number === trip.program_number)?.past_performances?.[2] || null)}</div>`">

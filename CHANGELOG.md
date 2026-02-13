@@ -1,3 +1,5 @@
+## 0.4.2 - NOT RELEASED YET
+- The trip handicapper no longer filters out trips older than 60 days. The number of days is highlighted in purple to show the significance of the date. The trip handicapper is really great for looking at trip information. So showing older trips is beneficial to the user.
 ## 0.4.1
 - Fixed the issue with Windows not recognizing hotkeys.
 ## 0.4.0
