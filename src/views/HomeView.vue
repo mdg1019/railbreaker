@@ -12,7 +12,6 @@ import RaceDetails from "../components/racecard/RaceDetails.vue";
 import EqualizerLoader from "../components/ui/EqualizerLoader.vue";
 import MessageDialog from "../components/ui/MessageDialog.vue";
 import PrintDialog from "../components/ui/PrintDialog.vue";
-import RacecardSideMenu from "../components/racecard/RacecardSideMenu.vue";
 import { openPrintWindowAndSendPayload } from "../utils/openPrintWindowEvent";
 import { computePrimePowerComparisons } from "../utils/computePrimePowerComparisons";
 import Horse from "../components/racecard/Horse.vue";
@@ -30,6 +29,7 @@ import {
     HORSE_SORTING_METHOD_CSPM,
     HORSE_SORTING_METHOD_TRIP,
 } from "../constants/horseSortingMethods";
+import RaceClassification from "../components/racecard/RaceClassification.vue";
 
 const globalStateStore = useGlobalStateStore();
 const configFileStore = useConfigFileStore();
@@ -62,12 +62,30 @@ const currentRacecardIndex = computed({
 
 const racecards = getRacecards;
 
-const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
+const racecardLabel = computed(() => {
+    if (racecards.value.racecardEntries.length === 0) {
+        return "No racecards loaded";
+    }
+    const entry = racecards.value.racecardEntries[currentRacecardIndex.value];
+    if (!entry) {
+        return "Select racecard";
+    }
+    const track = entry.racecard.track || entry.racecard.track_code || "Racecard";
+    const date = entry.racecard.long_date || entry.racecard.date || entry.racecard.zip_file_name;
+    return `${track} — ${date}`;
+});
 
-const isRacecardMenuOpen = ref(false);
+const raceOptions = computed(() => racecard.value?.races?.length ?? 0);
+
+const primePowerComparisons = ref<Array<[number | string, string, string]>>([]);
 
 const raceContainerRef = ref<HTMLElement | null>(null);
 const raceContentRef = ref<HTMLElement | null>(null);
+const racecardDropdownRef = ref<HTMLElement | null>(null);
+const raceDropdownRef = ref<HTMLElement | null>(null);
+
+const isRacecardDropdownOpen = ref(false);
+const isRaceDropdownOpen = ref(false);
 
 const showErrorDialog = ref(false);
 const errorMessage = ref("");
@@ -310,18 +328,61 @@ function openDialog(target: "error" | "about" | "help" | "print" | "select" | "s
 
 function handleSelectedRace(value: number) {
     racecardStateStore.setLastOpenedRace(value);
-    isRacecardMenuOpen.value = false;
 }
 
-function handleDeleteRacecard(index: number) {
-    racecardStateStore.deleteRacecardAt(index);
+function toggleRacecardDropdown() {
     if (racecards.value.racecardEntries.length === 0) {
-        racecardStateStore.setCurrentRacecardIdx(0);
         return;
     }
+    isRacecardDropdownOpen.value = !isRacecardDropdownOpen.value;
+    if (isRacecardDropdownOpen.value) {
+        isRaceDropdownOpen.value = false;
+    }
+}
 
-    const newIndex = index - 1 >= 0 ? index - 1 : 0;
-    racecardStateStore.setCurrentRacecardIdx(Math.min(newIndex, racecards.value.racecardEntries.length - 1));
+function toggleRaceDropdown() {
+    if (!racecard.value) {
+        return;
+    }
+    isRaceDropdownOpen.value = !isRaceDropdownOpen.value;
+    if (isRaceDropdownOpen.value) {
+        isRacecardDropdownOpen.value = false;
+    }
+}
+
+function handleSelectRacecard(index: number) {
+    currentRacecardIndex.value = index;
+    isRacecardDropdownOpen.value = false;
+}
+
+function handleSelectRace(value: number) {
+    handleSelectedRace(value);
+    isRaceDropdownOpen.value = false;
+}
+
+function handleDropdownOutsideClick(event: MouseEvent) {
+    const target = event.target as Node | null;
+    if (!target) {
+        return;
+    }
+    if (racecardDropdownRef.value && !racecardDropdownRef.value.contains(target)) {
+        isRacecardDropdownOpen.value = false;
+    }
+    if (raceDropdownRef.value && !raceDropdownRef.value.contains(target)) {
+        isRaceDropdownOpen.value = false;
+    }
+}
+
+function handleDropdownKeydown(event: KeyboardEvent) {
+    if (event.key !== "Escape") {
+        return;
+    }
+    if (isRacecardDropdownOpen.value) {
+        isRacecardDropdownOpen.value = false;
+    }
+    if (isRaceDropdownOpen.value) {
+        isRaceDropdownOpen.value = false;
+    }
 }
 
 async function handleOpenRacecard(id: number | null) {
@@ -346,8 +407,6 @@ async function handleOpenRacecard(id: number | null) {
 }
 
 watch(racecard, async (rc) => {
-    isRacecardMenuOpen.value = false;
-
     await invoke('set_print_racecard_enabled', { enabled: !!rc }).catch(() => { });
     await invoke('set_view_menu_enabled', { enabled: !!rc }).catch(() => { });
 });
@@ -384,6 +443,8 @@ watch(race_number, async (_newVal, _oldVal) => {
 document.documentElement.classList.add('dark');
 
 onMounted(async () => {
+    window.addEventListener("click", handleDropdownOutsideClick, true);
+    window.addEventListener("keydown", handleDropdownKeydown);
     try {
         const [_, version] = await Promise.all([getName(), getVersion()]);
         aboutTitle.value = `About RailBreaker`;
@@ -526,6 +587,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+    window.removeEventListener("click", handleDropdownOutsideClick, true);
+    window.removeEventListener("keydown", handleDropdownKeydown);
     unlistenOpen();
     unlistenOpenZip();
     unlistenPrintRacecard();
@@ -548,10 +611,61 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <RacecardSideMenu v-if="racecards.racecardEntries.length > 0" :racecards="racecards"
-            v-model:currentRacecardIndex="currentRacecardIndex" v-model:open="isRacecardMenuOpen"
-            :currentRace="race_number" @update:selectedRace="handleSelectedRace"
-            @delete:racecard="handleDeleteRacecard" />
+        <div class="menubar">
+            <div class="menu-group" ref="racecardDropdownRef">
+                <span class="menu-label">Racecard</span>
+                <button
+                    type="button"
+                    class="menu-trigger"
+                    :class="{ disabled: racecards.racecardEntries.length === 0 }"
+                    :disabled="racecards.racecardEntries.length === 0"
+                    :aria-expanded="isRacecardDropdownOpen"
+                    @click="toggleRacecardDropdown"
+                >
+                    <span class="menu-trigger-text">{{ racecardLabel }}</span>
+                </button>
+                <div v-if="isRacecardDropdownOpen" class="menu-list" role="listbox">
+                    <button
+                        v-for="(entry, idx) in racecards.racecardEntries"
+                        :key="entry.racecard.id ?? entry.racecard.zip_file_name ?? idx"
+                        type="button"
+                        class="menu-item"
+                        :class="{ active: idx === currentRacecardIndex }"
+                        @click="handleSelectRacecard(idx)"
+                    >
+                        {{ entry.racecard.track || entry.racecard.track_code || "Racecard" }} — {{ entry.racecard.long_date || entry.racecard.date || entry.racecard.zip_file_name }}
+                    </button>
+                </div>
+            </div>
+            <div class="menu-group" ref="raceDropdownRef">
+                <span class="menu-label">Race</span>
+                <button
+                    type="button"
+                    class="menu-trigger"
+                    :class="{ disabled: !racecard }"
+                    :disabled="!racecard"
+                    :aria-expanded="isRaceDropdownOpen"
+                    @click="toggleRaceDropdown"
+                >
+                    <span class="menu-trigger-text" v-if="racecard">
+                        Race {{ race_number }} - <RaceClassification :race="racecard.races[race_number - 1]" />
+                    </span>
+                    <span class="menu-trigger-text" v-else>No racecard selected</span>
+                </button>
+                <div v-if="isRaceDropdownOpen" class="menu-list" role="listbox">
+                    <button
+                        v-for="n in raceOptions"
+                        :key="n"
+                        type="button"
+                        class="menu-item"
+                        :class="{ active: n === race_number }"
+                        @click="handleSelectRace(n)"
+                    >
+                        Race {{ n }} - <RaceClassification :race="racecard!.races[n - 1]" />
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="processing" v-if="isProcessingZip">
             <EqualizerLoader :bars="5" :width="70" :height="100" color="#4ade80" :title="'Processing ZIP File'" />
         </div>
@@ -623,13 +737,116 @@ onUnmounted(() => {
     box-sizing: border-box;
     height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.menubar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--accent-green);
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(11, 11, 11, 0.92), rgba(24, 24, 24, 0.92));
+    font-family: "MGSans", sans-serif;
+}
+
+.menu-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.menu-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-yellow);
+    white-space: nowrap;
+    font-family: "MGSans", sans-serif;
+}
+
+.menu-trigger {
+    min-width: 220px;
+    max-width: 420px;
+    padding: 0.45rem 2rem 0.45rem 0.65rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--accent-green);
+    background-color: #000;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: "MGSans", sans-serif;
+    text-align: left;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem 1rem;
+}
+
+.menu-trigger:disabled,
+.menu-trigger.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.menu-trigger-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-list {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    z-index: 20;
+    min-width: 100%;
+    max-width: 520px;
+    max-height: none;
+    height: auto;
+    overflow: visible;
+    background: #000;
+    border: 2px solid var(--accent-green);
+    border-radius: 0.5rem;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
+    padding: 0.25rem 0;
+    box-sizing: border-box;
+}
+
+.menu-item {
+    width: 100%;
+    text-align: left;
+    padding: 0.45rem 0.65rem;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: "MGSans", sans-serif;
+    cursor: pointer;
+}
+
+.menu-item:hover,
+.menu-item:focus {
+    background: rgba(74, 222, 128, 0.18);
+    outline: none;
+}
+
+.menu-item.active {
+    background: rgba(74, 222, 128, 0.3);
 }
 
 .race-container {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    height: 100vh;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .race-header {
@@ -644,6 +861,7 @@ onUnmounted(() => {
     -webkit-overflow-scrolling: touch;
     flex: 1 1 auto;
     padding-bottom: 1rem;
+    min-height: 0;
 }
 
 .processing {

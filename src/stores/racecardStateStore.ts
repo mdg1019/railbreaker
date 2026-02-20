@@ -111,7 +111,6 @@ export const useRacecardStateStore = defineStore("RacecardState", {
                     comment_3: cols[6],
                 };
 
-                console.log(`Parsed trip info for horse ${horse.horse_name}:`, tripInfo);
                 trips.push(tripInfo);
             }
 

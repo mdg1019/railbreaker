@@ -11,13 +11,13 @@ const raceClassification = computed(() => Transformers.getRaceClassification(pro
 </script>
 
 <template>
-    <span class="container">
+    <span class="classification" v-if="raceClassification">
         <span class="prefix-adjust" :style="{ color: props.prefixColor }">{{ raceClassification.prefix }}</span>{{ raceClassification.classification }}
     </span>
 </template>
 
 <style scoped lang="scss">
-.container {
+.classification {
     font-family: "MGSans", sans-serif;
 }
 .prefix-adjust {
