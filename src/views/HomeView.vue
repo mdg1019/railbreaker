@@ -611,7 +611,7 @@ onUnmounted(() => {
 
 <template>
     <main class="container">
-        <div class="menubar">
+        <div class="menubar" v-if="racecards.racecardEntries.length > 0">
             <div class="menu-group" ref="racecardDropdownRef">
                 <span class="menu-label">Racecard</span>
                 <button
@@ -648,20 +648,23 @@ onUnmounted(() => {
                     @click="toggleRaceDropdown"
                 >
                     <span class="menu-trigger-text" v-if="racecard">
-                        Race {{ race_number }} - <RaceClassification :race="racecard.races[race_number - 1]" />
+                        <span class="color-accent-yellow">Race {{ race_number }} - </span><RaceClassification class="color-accent-yellow" :race="racecard.races[race_number - 1]" />
                     </span>
                     <span class="menu-trigger-text" v-else>No racecard selected</span>
                 </button>
-                <div v-if="isRaceDropdownOpen" class="menu-list" role="listbox">
+                <div v-if="isRaceDropdownOpen" class="menu-list race-list" role="listbox">
                     <button
                         v-for="n in raceOptions"
                         :key="n"
                         type="button"
-                        class="menu-item"
+                        class="menu-item race-item"
                         :class="{ active: n === race_number }"
                         @click="handleSelectRace(n)"
                     >
-                        Race {{ n }} - <RaceClassification :race="racecard!.races[n - 1]" />
+                        <span class="race-item-left">Race {{ n }}</span>
+                        <span class="race-item-right">
+                            <RaceClassification :race="racecard!.races[n - 1]" />
+                        </span>
                     </button>
                 </div>
             </div>
@@ -771,6 +774,7 @@ onUnmounted(() => {
 }
 
 .menu-trigger {
+    position: relative;
     min-width: 220px;
     max-width: 420px;
     padding: 0.45rem 2rem 0.45rem 0.65rem;
@@ -782,10 +786,19 @@ onUnmounted(() => {
     font-family: "MGSans", sans-serif;
     text-align: left;
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.6rem center;
-    background-size: 1rem 1rem;
+}
+
+.menu-trigger::after {
+    content: "";
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    transform: translateY(-50%);
+    background-color: var(--accent-green);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E") no-repeat center / contain;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E") no-repeat center / contain;
 }
 
 .menu-trigger:disabled,
@@ -799,6 +812,7 @@ onUnmounted(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--accent-yellow);
 }
 
 .menu-list {
@@ -825,7 +839,7 @@ onUnmounted(() => {
     padding: 0.45rem 0.65rem;
     border: none;
     background: transparent;
-    color: #fff;
+    color: var(--accent-yellow);
     font-size: 0.95rem;
     font-family: "MGSans", sans-serif;
     cursor: pointer;
@@ -839,6 +853,24 @@ onUnmounted(() => {
 
 .menu-item.active {
     background: rgba(74, 222, 128, 0.3);
+}
+
+.race-item {
+    display: grid;
+    grid-template-columns: 8ch 1fr;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.race-item-left {
+    text-align: left;
+    justify-self: start;
+    font-variant-numeric: tabular-nums;
+}
+
+.race-item-right {
+    text-align: left;
+    min-width: 0;
 }
 
 .race-container {
