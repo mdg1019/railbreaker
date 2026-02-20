@@ -1,3 +1,5 @@
+## 0.4.3 (In Progress)
+- Removed the sliding "Races" menu and replaced it with a menu bar that appears at the top of the window once a racecard has been opened. You can select an open racecard or a race from two dropdowns. There is also a "Sort" menu for selecting the current sort type.
 ## 0.4.2
 - The trip handicapper no longer filters out trips older than 60 days. The number of days is highlighted in purple to show the significance of the date. The trip handicapper is really great for looking at trip information. So showing older trips is beneficial to the user.
 ## 0.4.1

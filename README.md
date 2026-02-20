@@ -12,7 +12,7 @@ I do not have a signing certificate. You will be asked about this during install
 
 - Unzip and load a racecard file.
 - Load a previously unzipped racecard file.
-- Load multiple racecards. (Racecard selection is changed in the sliding-left menu.)
+- Load multiple racecards.
 - Printouts are working. A Print Dialog box is available to select all or individual races.
 - SQLite database holds the racecard info.
 - Notes for each horse is available.
@@ -20,13 +20,9 @@ I do not have a signing certificate. You will be asked about this during install
 - Trip Handicapping Model helps you see significant trip comments.
 - Sorting of the horses by varying means.
 
-#### Racecard is Complete:
+#### Racecard:
 
 ![racecard](images/racecard.png)
-
-#### Sliding Menu
-
-![sliding menu](images/sliding-menu.png)
 
 #### Sample Printout
 
