@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
-    "productName": "railbreaker",
-    "version": "0.4.2",
+    "productName": "RailBreaker",
+    "version": "0.5.0",
     "identifier": "dev.markgoodwin.railbreaker",
     "build": {
         "beforeDevCommand": "npm run dev",
@@ -29,8 +29,13 @@
     },
     "bundle": {
         "active": true,
-        "targets": ["deb", "rpm", "msi"],
-            "icon": [
+        "targets": ["deb", "rpm", "nsis"],
+        "windows": {
+            "nsis": {
+                "installMode": "currentUser"
+            }
+        },
+        "icon": [
             "icons/32x32.png",
             "icons/128x128.png",
             "icons/256x256.png",
