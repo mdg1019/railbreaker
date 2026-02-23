@@ -1,8 +1,8 @@
 [package]
 name = "railbreaker"
-version = "0.4.2"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.5.0"
+description = "A Rust/Tauri/Vue Open Source Handicapping App"
+authors = ["Mark Goodwin"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
