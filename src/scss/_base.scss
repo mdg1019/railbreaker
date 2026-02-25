@@ -62,6 +62,9 @@ body {
   font-size: 1.6rem;
   overflow-x: hidden;
   @include mixins.unselectable;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a:link,

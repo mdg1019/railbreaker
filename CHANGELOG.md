@@ -1,3 +1,5 @@
+## 0.5.1
+- Enabled anti-aliasing for smoother font look.
 ## 0.5.0 - First Beta Release
 - I think the app is relatively stable and won't need many more new features right away. Therefore, I'm going to call this the first beta release. 
 - Removed the sliding "Races" menu and replaced it with a menu bar that appears at the top of the window once a racecard has been opened. You can select an open racecard or a race from two dropdowns. There is also a "Sort" menu for selecting the current sort type.
